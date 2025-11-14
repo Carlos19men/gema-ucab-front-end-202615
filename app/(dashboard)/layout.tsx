@@ -1,9 +1,9 @@
 // app/(dashboard)/layout.tsx
 'use client'
 
-import { SidebarProvider } from '@/components/ui/sidebar'
-import { AppSidebar } from '@/components/AppSidebar'
-import { SidebarTrigger } from '@/components/ui/sidebar'
+import { SidebarProvider } from '@/components/sidebar/sidebar-provider'
+import { AppSidebar } from '@/components/layout/app-sidebar'
+import { SidebarTrigger } from '@/components/sidebar/sidebar'
 
 export default function DashboardLayout({
   children,
