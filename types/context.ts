@@ -7,4 +7,6 @@ export interface AuthContextType {
   logout: () => void;
   isLoading: boolean;
   isAuthenticated: boolean;
+  error: string | null;
+  clearError: () => void;
 }

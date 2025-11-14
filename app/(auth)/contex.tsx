@@ -23,6 +23,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [token, setToken] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
 
   // Verificar si está autenticado
   const isAuthenticated = !!user && !!token;
@@ -31,6 +32,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = async (credentials: LoginRequest) => {
     try {
       setIsLoading(true)
+      setError(null) 
       const response: AuthResponse = await authAPI.login(credentials)
       
       // Guardar token y usuario
@@ -42,9 +44,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (response.refreshToken) {
         localStorage.setItem('refresh-token', response.refreshToken)
       }
-      
-    } catch (error) {
-      console.error('Error en login:', error)
+
+    } catch (err: any) {
+      setError(err.message || 'Error during login')
       throw error
     } finally {
       setIsLoading(false)
@@ -88,6 +90,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     logout,
     isLoading,
     isAuthenticated,
+    error,
+    clearError: () => setError(null),
   }
 
   return (

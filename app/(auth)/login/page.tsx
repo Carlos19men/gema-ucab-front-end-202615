@@ -4,7 +4,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { loginSchema } from "@/validators/loginSchema";
+import { loginSchema } from "@/lib/validations/loginSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
@@ -14,8 +14,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/componets/ui/input";
-import { Button } from "@/componets/ui/button";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { useAuth } from "../contex";
 
 export default function LoginPage() {
