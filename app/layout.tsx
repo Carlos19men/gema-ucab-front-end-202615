@@ -1,12 +1,23 @@
 // app/layout.tsx
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Poppins, Inter } from 'next/font/google'
 import './globals.css'
 import { AuthProvider } from './(auth)/contex'
 import { QueryProvider } from '@/lib/providers/query-providers'
 import { Toaster } from 'react-hot-toast'
+import { SidebarProvider } from '@/components/sidebar/sidebar' // ← AÑADE ESTO
 
-const inter = Inter({ subsets: ['latin'] })
+
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter'
+})
+
+const poppins = Poppins({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-poppins'
+})
 
 export const metadata: Metadata = {
   title: 'Tu App',
@@ -20,10 +31,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <body className={inter.className}>
+      <body className={`${poppins.variable} ${inter.variable}`}>
         <QueryProvider>
           <AuthProvider>
-            {children}
+            <SidebarProvider> {/* ← ENVUELVE CON ESTO */}
+              {children}
+            </SidebarProvider>
             <Toaster position="top-right" />
           </AuthProvider>
         </QueryProvider>
