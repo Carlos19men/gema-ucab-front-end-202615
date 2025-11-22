@@ -267,7 +267,7 @@ const UbicacionesTecnicas: React.FC = () => {
   if (error) return <div className="p-6 text-red-600">Error al obtener ubicaciones técnicas</div>;
 
   return (
-    <div className="p-6 mx-auto max-w-7xl">
+    <div className="p-4 sm:p-6 mx-auto max-w-7xl">
       <h1 className="text-2xl font-bold mb-6">Ubicaciones Técnicas</h1>
 
       <VerManualDialog
@@ -275,10 +275,10 @@ const UbicacionesTecnicas: React.FC = () => {
         onOpenChange={handleManualClose}
       />
 
-      <div className="flex gap-2 mb-6">
+      <div className="flex flex-col md:flex-row gap-2 mb-6">
         <Dialog open={open && !manualOpen} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-gema-green/80 hover:bg-gema-green">
+            <Button className="bg-gema-green/80 hover:bg-gema-green ">
               <CirclePlus className="mr-2 h-4 w-4" />
               Crear nueva ubicación
             </Button>
@@ -293,7 +293,7 @@ const UbicacionesTecnicas: React.FC = () => {
           />
         </Dialog>
         <Button
-          className="bg-gema-blue/80 hover:bg-gema-blue"
+          className="bg-gema-blue/80 hover:bg-gema-blue "
           onClick={handleExportExcel}
           disabled={isExporting}
         >
@@ -311,17 +311,17 @@ const UbicacionesTecnicas: React.FC = () => {
         open={!!verDetalle}
         onOpenChange={(isOpen) => !isOpen && setVerDetalle(null)}
       >
-        <DialogContent className="max-w-2xl bg-white">
+        <DialogContent className="max-w-2xl bg-white w-[95vw] sm:w-full">
           <div className="space-y-4">
             <h2 className="font-semibold text-lg text-center">
               Detalles de la Ubicación
             </h2>
             {verDetalle && (
               <div className="space-y-3">
-                <div className="text-sm">
+                <div className="text-sm break-words">
                   <span className="font-medium">Código:</span> {verDetalle.codigo_Identificacion}
                 </div>
-                <div className="text-sm">
+                <div className="text-sm break-words">
                   <span className="font-medium">Descripción:</span> {verDetalle.descripcion}
                 </div>
               </div>
@@ -338,8 +338,8 @@ const UbicacionesTecnicas: React.FC = () => {
                     key={padre.idUbicacion}
                     className="text-sm p-3 border rounded-lg bg-gray-50"
                   >
-                    <div className="font-medium">{padre.codigo_Identificacion}</div>
-                    <div className="text-gray-600">{padre.descripcion}</div>
+                    <div className="font-medium break-words">{padre.codigo_Identificacion}</div>
+                    <div className="text-gray-600 break-words">{padre.descripcion}</div>
                     {padre.esUbicacionFisica && (
                       <span className="inline-block mt-1 bg-blue-100 text-blue-800 text-xs font-medium px-2 py-0.5 rounded-full">
                         Ubicación Física
@@ -369,17 +369,17 @@ const UbicacionesTecnicas: React.FC = () => {
           if (!open) setBorrarUbicacion(null);
         }}
       >
-        <DialogContent className="max-w-2xl bg-white">
+        <DialogContent className="max-w-2xl bg-white w-[95vw] sm:w-full">
           <div className="space-y-4">
             <h2 className="font-semibold text-lg text-center">
               ¿Seguro que desea eliminar esta ubicación técnica?
             </h2>
 
             <div className="space-y-3 p-4 border rounded-lg bg-gray-50">
-              <div className="text-sm">
+              <div className="text-sm break-words">
                 <span className="font-medium">Nombre:</span> {borrarUbicacion?.descripcion}
               </div>
-              <div className="text-sm">
+              <div className="text-sm break-words">
                 <span className="font-medium">Código:</span> {borrarUbicacion?.codigo_Identificacion}
               </div>
             </div>
@@ -397,7 +397,7 @@ const UbicacionesTecnicas: React.FC = () => {
                 {dependencias.data.data.map((dep: UbicacionTecnica) => (
                   <div
                     key={dep.idUbicacion}
-                    className="text-sm p-2 border rounded bg-white"
+                    className="text-sm p-2 border rounded bg-white break-words"
                   >
                     {dep.descripcion} ({dep.codigo_Identificacion})
                   </div>
@@ -409,9 +409,9 @@ const UbicacionesTecnicas: React.FC = () => {
               </p>
             )}
 
-            <div className="flex justify-between items-center pt-4">
+            <div className="flex flex-col sm:flex-row justify-between items-center pt-4 gap-4 sm:gap-0">
               <Button
-                className="bg-gema-blue hover:bg-blue-500 text-black"
+                className="bg-gema-blue hover:bg-blue-500 text-black w-full sm:w-auto"
                 onClick={handleExportExcel}
                 disabled={isExporting || deleteMutation.isPending}
               >
@@ -423,17 +423,18 @@ const UbicacionesTecnicas: React.FC = () => {
                 {isExporting ? "Exportando..." : "Guardar respaldo"}
               </Button>
 
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-[70%]">
                 <Button
                   variant="outline"
                   onClick={() => setBorrarUbicacion(null)}
                   disabled={deleteMutation.isPending}
+                  className="w-full sm:w-auto"
                 >
                   Cancelar
                 </Button>
                 <Button
                   variant="destructive"
-                  className="bg-red-500 hover:bg-red-600 text-black"
+                  className="bg-red-500 hover:bg-red-600 text-black w-full sm:w-auto"
                   onClick={() => {
                     if (borrarUbicacion) {
                       deleteMutation.mutate(borrarUbicacion.idUbicacion);
@@ -476,7 +477,7 @@ const UbicacionesTecnicas: React.FC = () => {
       <Accordion
         type="single"
         collapsible
-        className="w-full bg-white rounded-lg border shadow-sm"
+        className="w-full bg-white rounded-lg border"
       >
         {filteredData.map((ubicacion) => (
           <AccordionItem
@@ -484,26 +485,30 @@ const UbicacionesTecnicas: React.FC = () => {
             value={ubicacion.codigo_Identificacion}
             className="border-b last:border-b-0"
           >
-            <AccordionTrigger className="hover:bg-gray-50 px-6 py-4">
-              <div className="flex items-center gap-3">
-                <Building className="text-blue-600 w-5 h-5" />
-                <span className="text-lg font-semibold text-left">
-                  {ubicacion.codigo_Identificacion}
-                </span>
-                <span className="bg-gray-100 text-gray-700 text-xs font-medium px-2.5 py-1 rounded-full">
+            <AccordionTrigger className="hover:bg-gray-50 px-4 sm:px-6 py-4">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 w-full">
+                <div className="flex items-center gap-2">
+                  <Building className="text-blue-600 w-5 h-5 shrink-0" />
+                  <span className="text-base sm:text-lg font-semibold text-left break-all">
+                    {ubicacion.codigo_Identificacion}
+                  </span>
+                </div>
+                <span className="bg-gray-100 text-gray-700 text-xs font-medium px-2.5 py-1 rounded-full whitespace-nowrap">
                   {1 + countChildren(ubicacion)} ubicaciones
                 </span>
               </div>
             </AccordionTrigger>
-            <AccordionContent className="px-2">
-              <UbicacionHierarchy
-                ubicaciones={[ubicacion]}
-                onCreateFrom={initializeFormValues}
-                onDelete={setBorrarUbicacion}
-                onViewDetails={setVerDetalle}
-                onEdit={handleEditarClick}
-                activeDetailItem={verDetalle}
-              />
+            <AccordionContent className="px-0 sm:px-2 overflow-x-auto max-w-[85vw] sm:max-w-full">
+              <div className="min-w-[600px] sm:min-w-0">
+                <UbicacionHierarchy
+                  ubicaciones={[ubicacion]}
+                  onCreateFrom={initializeFormValues}
+                  onDelete={setBorrarUbicacion}
+                  onViewDetails={setVerDetalle}
+                  onEdit={handleEditarClick}
+                  activeDetailItem={verDetalle}
+                />
+              </div>
             </AccordionContent>
           </AccordionItem>
         ))}

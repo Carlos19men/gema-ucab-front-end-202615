@@ -5,7 +5,7 @@ import { UserCheck, CirclePlus, LoaderCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useGruposTrabajo } from "@/hooks/grupos-trabajo/useGrupoTrabajo";
 import { useTecnicos } from "@/hooks/grupos-trabajo/useTecnicos";
-import { useTrabajadoresPorGrupo } from "@/hooks/grupos-trabajo/useTrabajadoresPorGrupo"; 
+import { useTrabajadoresPorGrupo } from "@/hooks/grupos-trabajo/useTrabajadoresPorGrupo";
 import { CreateGrupoForm } from "@/components/forms/grupos/CreateGrupoForm";
 import { EditGrupoForm } from "@/components/forms/grupos/EditGrupoForm";
 import { EliminarGrupoForm } from "@/components/forms/grupos/EliminarGrupoForm";
@@ -22,7 +22,7 @@ const GruposTrabajo: React.FC = () => {
 
   const { grupos, isLoading: gruposLoading } = useGruposTrabajo();
   const { tecnicos, isLoading: tecnicosLoading } = useTecnicos();
-  const { trabajadoresPorGrupo, isLoading: trabajadoresLoading } = useTrabajadoresPorGrupo(); 
+  const { trabajadoresPorGrupo, isLoading: trabajadoresLoading } = useTrabajadoresPorGrupo();
 
   const isLoading = gruposLoading || tecnicosLoading || trabajadoresLoading;
 
@@ -84,7 +84,7 @@ const GruposTrabajo: React.FC = () => {
       />
 
       {/* Vista responsiva */}
-      <div className="hidden md:block">
+      <div className="">
         <GruposTable
           grupos={grupos || []}
           trabajadoresPorGrupo={trabajadoresPorGrupo || {}}
