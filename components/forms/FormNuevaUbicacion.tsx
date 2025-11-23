@@ -3,7 +3,7 @@
 
 import * as React from "react";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -301,9 +301,9 @@ const FormNuevaUbicacion: React.FC<Props> = ({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="w-6xl md:min-w-5xl bg-white" contentClassName="space-y-2">
+      <DialogContent className=" bg-white" contentClassName="space-y-2">
         <div className="flex items-center gap-1">
-          <h2 className="text-xl font-semibold">Crear Ubicación Técnica</h2>
+          <DialogTitle className="text-xl font-semibold">Crear Ubicación Técnica</DialogTitle>
           <Tooltip>
             <TooltipTrigger asChild>
               <Button variant="ghost" size="icon" onClick={downloadGuia} aria-label="Descargar guía de ubicaciones técnicas">
@@ -314,7 +314,7 @@ const FormNuevaUbicacion: React.FC<Props> = ({
           </Tooltip>
         </div>
 
-        <div className="grid grid-cols-2 gap-8">
+        <div className="flex flex-col md:flex-row gap-8">
           <div className="space-y-2">
             {/* Nivel 1 */}
             <div>
