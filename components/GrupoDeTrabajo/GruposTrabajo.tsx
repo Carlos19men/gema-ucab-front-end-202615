@@ -50,7 +50,7 @@ const GruposTrabajo: React.FC = () => {
         <h1 className="text-2xl font-bold">Grupos de Trabajo</h1>
         <Button
           onClick={() => setIsModalOpen(true)}
-          className="bg-gema-green hover:bg-green-700"
+          className="bg-gema-green/80 hover:bg-gema-green"
         >
           <CirclePlus className="mr-2 h-4 w-4" />
           Crear nuevo grupo

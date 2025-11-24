@@ -122,7 +122,7 @@ export const CreateGrupoForm: React.FC<CreateGrupoFormProps> = ({
               </Button>
               <Button
                 type="submit"
-                className="bg-gema-green hover:bg-green-700"
+                className="bg-gema-green/80 hover:bg-gema-green"
                 disabled={createGrupoMutation.isPending}
               >
                 {createGrupoMutation.isPending ? "Guardando..." : "Guardar"}

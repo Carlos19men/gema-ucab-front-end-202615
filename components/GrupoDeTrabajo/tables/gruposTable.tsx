@@ -53,14 +53,14 @@ export const GruposTable: React.FC<GruposTableProps> = ({
             </td>
             <td className="px-6 py-4 whitespace-nowrap text-sm">
               <div className="flex items-center gap-2">
-                <UserCheck className="h-5 w-5 text-green-500" />
+                <UserCheck className="h-5 w-5 text-gema-green/80" />
                 <span>{getSupervisorNombre(grupo.supervisorId)}</span>
               </div>
             </td>
             <td className="px-6 py-4 whitespace-nowrap text-sm">
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div 
+                  <div
                     className="flex items-center justify-center border-2 border-gray-300 rounded-lg bg-gray-200 font-medium hover:bg-gray-300 transition cursor-pointer py-1"
                     onClick={() => onOpenTecnicos(grupo.id)}
                   >
@@ -76,7 +76,7 @@ export const GruposTable: React.FC<GruposTableProps> = ({
               <div className="flex items-center gap-2">
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <button 
+                    <button
                       className="p-1 border-2 border-gray-200 rounded-sm hover:bg-gray-100"
                       onClick={() => onEditGrupo(grupo)}
                     >
@@ -89,7 +89,7 @@ export const GruposTable: React.FC<GruposTableProps> = ({
                 </Tooltip>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <button 
+                    <button
                       className="p-1 border-2 border-gray-200 rounded-sm hover:bg-gray-100"
                       onClick={() => onDeleteGrupo(grupo)}
                     >

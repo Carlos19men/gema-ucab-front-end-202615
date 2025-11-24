@@ -485,7 +485,7 @@ const UbicacionesTecnicas: React.FC = () => {
             value={ubicacion.codigo_Identificacion}
             className="border-b last:border-b-0"
           >
-            <AccordionTrigger className="hover:bg-gray-50 px-4 sm:px-6 py-4">
+            <AccordionTrigger className="bg-desplegable-background/80 hover:bg-desplegable-background border-b px-4 sm:px-6 py-4">
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 w-full">
                 <div className="flex items-center gap-2">
                   <Building className="text-blue-600 w-5 h-5 shrink-0" />
@@ -498,7 +498,7 @@ const UbicacionesTecnicas: React.FC = () => {
                 </span>
               </div>
             </AccordionTrigger>
-            <AccordionContent className="px-0 sm:px-2 overflow-x-auto max-w-[85vw] sm:max-w-full">
+            <AccordionContent className="px-0  overflow-x-auto max-w-[85vw] sm:max-w-full">
               <div className="min-w-[600px] sm:min-w-0">
                 <UbicacionHierarchy
                   ubicaciones={[ubicacion]}

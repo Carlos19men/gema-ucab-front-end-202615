@@ -341,9 +341,9 @@ const FormNuevaUbicacion: React.FC<Props> = ({
             {renderNivel(6, "Nivel 6", "numero", "Ejemplo: 01")}
             {renderNivel(7, "Nivel 7", "pieza", "Ejemplo: COMP, EVAP")}
 
-            <div className="flex gap-2 mt-1">
+            <div className="flex flex-col md:flex-row gap-2 mt-1">
               {displayedLevels >= 2 && (
-                <Button className="flex-1 border-red-500 text-red-700 hover:text-red-800" variant="outline"
+                <Button className="flex-1 border border-red-500 text-red-700 hover:text-red-800" variant="outline"
                   onClick={() => {
                     setDisplayedLevels((prev) => Math.max(prev - 1, 1));
                     resetNivelesSuperiores(displayedLevels);
@@ -355,7 +355,7 @@ const FormNuevaUbicacion: React.FC<Props> = ({
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <span className="flex-1" tabIndex={0}>
-                      <Button className="w-full border-gema-green text-green-700 hover:text-green-800" variant="outline"
+                      <Button className="w-full border-gema-green text-gema-green/80 hover:text-gema-green" variant="outline"
                         onClick={() => setDisplayedLevels((prev) => prev + 1)} disabled={!isLastLevelValid}>
                         <PlusCircle /> Agregar nivel
                       </Button>
@@ -427,7 +427,7 @@ const FormNuevaUbicacion: React.FC<Props> = ({
 
         <div className="flex justify-end gap-2">
           <Button variant="outline" onClick={closeModal} className="px-4 md:px-8">Cancelar</Button>
-          <Button className="bg-gema-green/80 hover:bg-gema-green text-white px-4 md:px-8" onClick={onSubmit} disabled={status === "pending" || mutation.isPending}>
+          <Button className="bg-gema-green/80 hover:bg-gema-green text-primary-foreground px-4 md:px-8" onClick={onSubmit} disabled={status === "pending" || mutation.isPending}>
             {status === "pending" ? "Creando..." : "Crear Ubicación"}
           </Button>
         </div>

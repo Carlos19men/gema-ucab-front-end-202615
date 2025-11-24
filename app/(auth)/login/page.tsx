@@ -20,7 +20,7 @@ import { useAuth } from "../contex";
 
 export default function LoginPage() {
   const { login, isLoading, error: authError } = useAuth();
-  
+
   const loginForm = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -31,9 +31,9 @@ export default function LoginPage() {
 
   const onSubmit = async (formData: z.infer<typeof loginSchema>) => {
     try {
-      await login({ 
-        email: formData.email, 
-        password: formData.password 
+      await login({
+        email: formData.email,
+        password: formData.password
       });
       // No necesitas redirigir manualmente
       // El middleware redirige automáticamente a /dashboard
@@ -110,7 +110,7 @@ export default function LoginPage() {
                 )}
                 <Button
                   type="submit"
-                  className="w-full bg-gema-green hover:bg-green-600 text-black font-semibold mt-2"
+                  className="w-full bg-gema-green/80 hover:bg-gema-green text-black font-semibold mt-2"
                   disabled={isLoading}
                 >
                   {isLoading ? "Ingresando..." : "Ingresar"}

@@ -36,7 +36,7 @@ export const GruposCards: React.FC<GruposCardsProps> = ({
               <div className="flex space-x-2">
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <button 
+                    <button
                       className="p-1 border-2 border-gray-200 rounded-sm hover:bg-gray-100"
                       onClick={() => onEditGrupo(grupo)}
                     >
@@ -49,7 +49,7 @@ export const GruposCards: React.FC<GruposCardsProps> = ({
                 </Tooltip>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <button 
+                    <button
                       className="p-1 border-2 border-gray-200 rounded-sm hover:bg-gray-100"
                       onClick={() => onDeleteGrupo(grupo)}
                     >
@@ -68,7 +68,7 @@ export const GruposCards: React.FC<GruposCardsProps> = ({
             </div>
 
             <div className="flex items-center space-x-2">
-              <UserCheck className="h-5 w-5 text-green-500" />
+              <UserCheck className="h-5 w-5 text-gema-green/80" />
               <span className="text-sm">
                 {getSupervisorNombre(grupo.supervisorId)}
               </span>

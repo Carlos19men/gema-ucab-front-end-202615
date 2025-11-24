@@ -40,7 +40,7 @@ export const EditGrupoForm: React.FC<EditGrupoFormProps> = ({
 
   const handleSubmit = (values: z.infer<typeof grupoTrabajoSchema>) => {
     if (!grupo) return;
-    
+
     editGrupoMutation.mutate({
       id: grupo.id,
       codigo: values.codigo,
@@ -125,7 +125,7 @@ export const EditGrupoForm: React.FC<EditGrupoFormProps> = ({
               </Button>
               <Button
                 type="submit"
-                className="bg-gema-green hover:bg-green-700"
+                className="bg-gema-green/80 hover:bg-gema-green"
                 disabled={editGrupoMutation.isPending}
               >
                 {editGrupoMutation.isPending ? "Guardando..." : "Guardar cambios"}

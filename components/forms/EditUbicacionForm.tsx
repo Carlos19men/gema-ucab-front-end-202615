@@ -63,7 +63,7 @@ const EditUbicacionForm: React.FC<EditUbicacionProps> = ({
           <Button
             onClick={onSubmit}
             disabled={!descripcion.trim() || status === "pending"}
-            className="bg-gema-green text-white hover:bg-green-700"
+            className="bg-gema-green/80 hover:bg-gema-green text-primary-foreground"
           >
             {status === "pending" ? "Actualizando..." : "Actualizar"}
           </Button>

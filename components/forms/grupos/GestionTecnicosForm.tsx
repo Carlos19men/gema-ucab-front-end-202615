@@ -108,7 +108,7 @@ export const GestionTecnicosForm: React.FC<GestionTecnicosFormProps> = ({
 
               <div className="flex justify-end mt-2">
                 <Button
-                  className="bg-gema-green hover:bg-green-700"
+                  className="bg-gema-green/80 hover:bg-gema-green"
                   onClick={handleAddTecnico}
                   disabled={!tecnicoSeleccionado || addTecnicoMutation.isPending}
                   type="button"

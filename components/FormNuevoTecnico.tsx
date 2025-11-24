@@ -124,7 +124,7 @@ const FormNuevoTecnico: React.FC<Props> = ({ open, onClose }) => {
                 Cancelar
               </Button>
               <Button
-                className="bg-gema-green hover:bg-green-700 text-white"
+                className="bg-gema-green/80 hover:bg-gema-green text-primary-foreground"
                 type="submit"
                 disabled={mutation.isPending}
               >

@@ -8,6 +8,8 @@
   --color-gema-blue: #36b3e1;
   --color-gema-green: #0EAD69;
 
+  /*DESPLEGABLE*/
+  --color-desplegable-background: #e5e7eb;
   /* FUENTES */
   --font-sans: 'Poppins', 'Inter', sans-serif;
 
@@ -15,7 +17,7 @@
   --radius: 0.625rem;
 
   /* COLORES TAILWIND - Versión simplificada */
-  --background: oklch(1 0 0);
+  --background: #F1F5F9;
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
@@ -33,11 +35,11 @@
   --ring: oklch(0.708 0 0);
 
   /* SIDEBAR */
-  --sidebar-background: oklch(0.985 0 0);
+  --sidebar-background: #E5E7EB;
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-primary-foreground: #E5E7EB;
+  --sidebar-accent: rgba(0, 0, 0, 0.1);
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
@@ -103,6 +105,8 @@ body {
   --color-gema-green: var(--color-gema-green);
   --color-gema-blue: var(--color-gema-blue);
 
+  --color-desplegable-background: var(--color-desplegable-background);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -122,7 +126,7 @@ body {
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  --color-sidebar: var(--sidebar-background);
+  --color-sidebar-background: var(--sidebar-background);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
   --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
