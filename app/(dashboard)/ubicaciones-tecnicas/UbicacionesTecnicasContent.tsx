@@ -16,9 +16,14 @@ import EditUbicacionForm from "@/components/forms/EditUbicacionForm";
 
 import {
   deleteUbicacionTecnica,
-  getUbicacionesDependientes,
-  getPadresDeUbicacion,
+  // getUbicacionesDependientes,
+  // getPadresDeUbicacion,
 } from "@/lib/api/ubicacionesTecnicas";
+import {
+  getPadresDeUbicacionMock as getPadresDeUbicacion,
+  getUbicacionesDependientesMock as getUbicacionesDependientes,
+} from "./mockServices";
+
 import {
   Accordion,
   AccordionContent,

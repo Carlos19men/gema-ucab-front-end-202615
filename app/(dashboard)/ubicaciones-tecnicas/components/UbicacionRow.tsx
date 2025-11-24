@@ -127,7 +127,7 @@ export const UbicacionRow: React.FC<UbicacionRowProps> = ({
                                 <span className="sr-only">Abrir menú</span>
                             </Button>
                         </PopoverTrigger>
-                        <PopoverContent className="w-50 p-1" align="end">
+                        <PopoverContent className="w-55 p-1" align="end">
                             <div className="flex flex-col gap-1">
                                 <Button
                                     variant="ghost"
