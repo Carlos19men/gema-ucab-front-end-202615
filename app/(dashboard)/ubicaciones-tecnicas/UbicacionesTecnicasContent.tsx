@@ -318,10 +318,10 @@ const UbicacionesTecnicas: React.FC = () => {
             </h2>
             {verDetalle && (
               <div className="space-y-3">
-                <div className="text-sm break-words">
+                <div className="text-sm wrap-break-word">
                   <span className="font-medium">Código:</span> {verDetalle.codigo_Identificacion}
                 </div>
-                <div className="text-sm break-words">
+                <div className="text-sm wrap-break-word">
                   <span className="font-medium">Descripción:</span> {verDetalle.descripcion}
                 </div>
               </div>
@@ -338,8 +338,8 @@ const UbicacionesTecnicas: React.FC = () => {
                     key={padre.idUbicacion}
                     className="text-sm p-3 border rounded-lg bg-gray-50"
                   >
-                    <div className="font-medium break-words">{padre.codigo_Identificacion}</div>
-                    <div className="text-gray-600 break-words">{padre.descripcion}</div>
+                    <div className="font-medium wrap-break-word">{padre.codigo_Identificacion}</div>
+                    <div className="text-gray-600 wrap-break-word">{padre.descripcion}</div>
                     {padre.esUbicacionFisica && (
                       <span className="inline-block mt-1 bg-blue-100 text-blue-800 text-xs font-medium px-2 py-0.5 rounded-full">
                         Ubicación Física
@@ -376,10 +376,10 @@ const UbicacionesTecnicas: React.FC = () => {
             </h2>
 
             <div className="space-y-3 p-4 border rounded-lg bg-gray-50">
-              <div className="text-sm break-words">
+              <div className="text-sm wrap-break-word">
                 <span className="font-medium">Nombre:</span> {borrarUbicacion?.descripcion}
               </div>
-              <div className="text-sm break-words">
+              <div className="text-sm wrap-break-word">
                 <span className="font-medium">Código:</span> {borrarUbicacion?.codigo_Identificacion}
               </div>
             </div>
@@ -397,7 +397,7 @@ const UbicacionesTecnicas: React.FC = () => {
                 {dependencias.data.data.map((dep: UbicacionTecnica) => (
                   <div
                     key={dep.idUbicacion}
-                    className="text-sm p-2 border rounded bg-white break-words"
+                    className="text-sm p-2 border rounded bg-white wrap-break-word"
                   >
                     {dep.descripcion} ({dep.codigo_Identificacion})
                   </div>

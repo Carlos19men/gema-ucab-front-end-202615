@@ -400,7 +400,7 @@ const FormNuevaUbicacion: React.FC<Props> = ({
                             {padres.filter((p) => p !== null).map((p) => posiblesPadres.data?.data.find(ubicacion => ubicacion.idUbicacion == p)).map((ubicacion) => (
                               <div key={ubicacion?.idUbicacion} className="flex space-x-3 items-center bg-slate-200 rounded px-2 mb-3">
                                 <span className="text-sm text-neutral-700">{ubicacion?.codigo_Identificacion}</span>
-                                <Button variant="ghost" className="text-red-500 hover:text-red-700 hover:bg-slate-100 !px-1"
+                                <Button variant="ghost" className="text-red-500 hover:text-red-700 hover:bg-slate-100 px-1"
                                   onClick={() => setPadres((prev) => prev.filter(id => id != ubicacion?.idUbicacion))}>
                                   <CircleX />
                                 </Button>
