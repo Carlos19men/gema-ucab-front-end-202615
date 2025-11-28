@@ -1,9 +1,15 @@
-export default function UcabBar() {
+import { cn } from "@/lib/utils";
+
+interface UcabBarProps {
+  className?: string;
+}
+
+export default function UcabBar({ className }: UcabBarProps) {
   return (
-    <div className="flex w-full h-3">
-      <div className="bg-gema-yellow w-1/3 rounded-tl-xl" />
-      <div className="bg-gema-blue w-1/3" />
-      <div className="bg-gema-green w-1/3 rounded-tr-xl" />
+    <div className={cn("flex w-full h-3 rounded-t-xl overflow-hidden", className)} aria-hidden="true">
+      <div className="bg-gema-yellow flex-1" />
+      <div className="bg-gema-blue flex-1" />
+      <div className="bg-gema-green flex-1" />
     </div>
   );
 }

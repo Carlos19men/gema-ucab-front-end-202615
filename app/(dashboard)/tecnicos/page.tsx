@@ -100,7 +100,7 @@ const Tecnicos = () => {
 
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-gema-green hover:bg-green-700">
+            <Button className="bg-gema-green/80 hover:bg-gema-green">
               <CirclePlus className="mr-2 h-4 w-4" />
               Crear nuevo técnico
             </Button>

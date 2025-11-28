@@ -7,11 +7,7 @@ import {
   Building,
   LoaderCircle,
   Trash,
-  CornerDownRight,
-  Eye,
-  EyeOff,
   FileSpreadsheet,
-  Pencil,
 } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import FormNuevaUbicacion from "@/components/forms/ubicaciones-tecnicas/FormNuevaUbicacion";
@@ -20,15 +16,14 @@ import EditUbicacionForm from "@/components/forms/ubicaciones-tecnicas/EditUbica
 
 import {
   deleteUbicacionTecnica,
-  getUbicacionesDependientes,
-  getUbicacionesTecnicas,
-  getPadresDeUbicacion,
+  // getUbicacionesDependientes,
+  // getPadresDeUbicacion,
 } from "@/lib/api/ubicacionesTecnicas";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+  getPadresDeUbicacionMock as getPadresDeUbicacion,
+  getUbicacionesDependientesMock as getUbicacionesDependientes,
+} from "./mockServices";
+
 import {
   Accordion,
   AccordionContent,
@@ -40,153 +35,11 @@ import type {
   UbicacionTecnica,
   PadreUbicacion,
 } from "@/types/models/ubicacionesTecnicas.types";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import VerManualDialog from "@/components/VerManualDialog";
-
-
-const NIVELES = [
-  "modulo",
-  "planta",
-  "espacio",
-  "tipo",
-  "subtipo",
-  "numero",
-  "pieza",
-] as const;
-
-type Nivel = (typeof NIVELES)[number];
-type Filters = Record<Nivel, string>;
-
-// Componente recursivo para renderizar la jerarquía de ubicaciones
-const UbicacionHierarchy: React.FC<{
-  ubicaciones: UbicacionTecnica[];
-  onCreateFrom: (codigo: string) => void;
-  onDelete: (detalle: UbicacionTecnica) => void;
-  onViewDetails: (detalle: UbicacionTecnica | null) => void;
-  onEdit: (detalle: UbicacionTecnica | null) => void;
-  activeDetailItem: UbicacionTecnica | null;
-}> = ({
-  ubicaciones,
-  onCreateFrom,
-  onDelete,
-  onViewDetails,
-  onEdit,
-  activeDetailItem,
-}) => {
-    return (
-      <>
-        {ubicaciones.map((ubicacion) => {
-          const isViewing =
-            activeDetailItem?.idUbicacion === ubicacion.idUbicacion;
-          return (
-            <div key={ubicacion.idUbicacion}>
-              <div className="flex px-4 py-2 bg-white hover:bg-gray-50 items-center">
-                <div className="flex-1 flex flex-row items-center gap-2">
-                  <div style={{ paddingLeft: `${(ubicacion.nivel - 1) * 20}px` }}>
-                    {ubicacion.nivel > 1 && (
-                      <CornerDownRight size={18} className="text-gray-400" />
-                    )}
-                  </div>
-                  <div>
-                    <p className="font-mono font-semibold text-sm">
-                      {ubicacion.codigo_Identificacion}
-                    </p>
-                    <p className="text-sm text-gray-700">
-                      {ubicacion.descripcion}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center justify-end gap-1 ml-4">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        className="text-blue-600 !px-2"
-                        aria-label={isViewing ? "Cerrar detalles" : "Ver detalles"}
-                        onClick={() =>
-                          onViewDetails(isViewing ? null : ubicacion)
-                        }
-                      >
-                        {isViewing ? <EyeOff size={16} /> : <Eye size={16} />}
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <span>
-                        {isViewing ? "Cerrar detalles" : "Ver detalles"}
-                      </span>
-                    </TooltipContent>
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        className="text-gray-500 !px-2"
-                        aria-label="Crear ubicación desde esta"
-                        onClick={() =>
-                          onCreateFrom(ubicacion.codigo_Identificacion)
-                        }
-                      >
-                        <CirclePlus size={16} />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <span>Crear ubicación a partir de esta</span>
-                    </TooltipContent>
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        className="text-yellow-600 !px-2 hover:text-yellow-700"
-                        aria-label="Editar descripción"
-                        onClick={() => onEdit(ubicacion)}
-                      >
-                        <Pencil size={16} />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <span>Editar descripción</span>
-                    </TooltipContent>
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        className="text-red-500 !px-2 hover:text-red-600"
-                        aria-label="Eliminar ubicación"
-                        onClick={() => onDelete(ubicacion)}
-                      >
-                        <Trash size={16} />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <span>Eliminar ubicación</span>
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-              </div>
-              {ubicacion.children && ubicacion.children.length > 0 && (
-                <UbicacionHierarchy
-                  ubicaciones={ubicacion.children}
-                  onCreateFrom={onCreateFrom}
-                  onDelete={onDelete}
-                  onViewDetails={onViewDetails}
-                  onEdit={onEdit}
-                  activeDetailItem={activeDetailItem}
-                />
-              )}
-            </div>
-          );
-        })}
-      </>
-    );
-  };
+import { mockUbicaciones } from "./mockData";
+import { UbicacionHierarchy } from "./components/UbicacionHierarchy";
+import { UbicacionesFilters } from "./components/UbicacionesFilters";
+import { NIVELES, type Filters } from "./components/constants";
 
 const UbicacionesTecnicas: React.FC = () => {
   // Estados para modales
@@ -248,6 +101,7 @@ const UbicacionesTecnicas: React.FC = () => {
     pieza: "",
     descripcion: "",
   });
+
   const [displayedLevels, setDisplayedLevels] = useState<number>(1);
 
   const initializeFormValues = (codigo: string) => {
@@ -263,10 +117,14 @@ const UbicacionesTecnicas: React.FC = () => {
     setOpen(true);
   };
 
-  const { data, error, isLoading } = useQuery({
-    queryKey: ["ubicacionesTecnicas"],
-    queryFn: getUbicacionesTecnicas,
-  });
+  // const { data, error, isLoading } = useQuery({
+  //   queryKey: ["ubicacionesTecnicas"],
+  //   queryFn: getUbicacionesTecnicas,
+  // });
+
+  const data = { data: mockUbicaciones };
+  const error = null;
+  const isLoading = false;
 
   const queryClient = useQueryClient();
 
@@ -306,26 +164,6 @@ const UbicacionesTecnicas: React.FC = () => {
     };
     return flatten(data.data);
   }, [data]);
-
-  const getOptions = (nivel: Nivel, prevFilters: Filters) => {
-    let ubicaciones = flatUbicaciones;
-    for (let i = 0; i < NIVELES.length; i++) {
-      const n = NIVELES[i];
-      if (n === nivel) break;
-      if (prevFilters[n as Nivel]) {
-        ubicaciones = ubicaciones.filter(
-          (u) =>
-            (u.codigo_Identificacion.split("-")[i] || "") === prevFilters[n as Nivel]
-        );
-      }
-    }
-    const idx = NIVELES.indexOf(nivel as (typeof NIVELES)[number]);
-    return Array.from(
-      new Set(
-        ubicaciones.map((u) => u.codigo_Identificacion.split("-")[idx] || "")
-      )
-    ).filter(Boolean);
-  };
 
   const filteredData = React.useMemo(() => {
     if (!data?.data) return [];
@@ -434,7 +272,7 @@ const UbicacionesTecnicas: React.FC = () => {
   if (error) return <div className="p-6 text-red-600">Error al obtener ubicaciones técnicas</div>;
 
   return (
-    <div className="p-6 mx-auto max-w-7xl">
+    <div className="p-4 sm:p-6 mx-auto max-w-7xl">
       <h1 className="text-2xl font-bold mb-6">Ubicaciones Técnicas</h1>
 
       <VerManualDialog
@@ -442,10 +280,10 @@ const UbicacionesTecnicas: React.FC = () => {
         onOpenChange={handleManualClose}
       />
 
-      <div className="flex gap-2 mb-6">
+      <div className="flex flex-col md:flex-row gap-2 mb-6">
         <Dialog open={open && !manualOpen} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-gema-green hover:bg-green-700">
+            <Button className="bg-gema-green/80 hover:bg-gema-green ">
               <CirclePlus className="mr-2 h-4 w-4" />
               Crear nueva ubicación
             </Button>
@@ -460,7 +298,7 @@ const UbicacionesTecnicas: React.FC = () => {
           />
         </Dialog>
         <Button
-          className="bg-gema-blue hover:bg-blue-500"
+          className="bg-gema-blue/80 hover:bg-gema-blue "
           onClick={handleExportExcel}
           disabled={isExporting}
         >
@@ -478,17 +316,17 @@ const UbicacionesTecnicas: React.FC = () => {
         open={!!verDetalle}
         onOpenChange={(isOpen) => !isOpen && setVerDetalle(null)}
       >
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl bg-white w-[95vw] sm:w-full">
           <div className="space-y-4">
             <h2 className="font-semibold text-lg text-center">
               Detalles de la Ubicación
             </h2>
             {verDetalle && (
               <div className="space-y-3">
-                <div className="text-sm">
+                <div className="text-sm wrap-break-word">
                   <span className="font-medium">Código:</span> {verDetalle.codigo_Identificacion}
                 </div>
-                <div className="text-sm">
+                <div className="text-sm wrap-break-word">
                   <span className="font-medium">Descripción:</span> {verDetalle.descripcion}
                 </div>
               </div>
@@ -505,8 +343,8 @@ const UbicacionesTecnicas: React.FC = () => {
                     key={padre.idUbicacion}
                     className="text-sm p-3 border rounded-lg bg-gray-50"
                   >
-                    <div className="font-medium">{padre.codigo_Identificacion}</div>
-                    <div className="text-gray-600">{padre.descripcion}</div>
+                    <div className="font-medium wrap-break-word">{padre.codigo_Identificacion}</div>
+                    <div className="text-gray-600 wrap-break-word">{padre.descripcion}</div>
                     {padre.esUbicacionFisica && (
                       <span className="inline-block mt-1 bg-blue-100 text-blue-800 text-xs font-medium px-2 py-0.5 rounded-full">
                         Ubicación Física
@@ -536,17 +374,17 @@ const UbicacionesTecnicas: React.FC = () => {
           if (!open) setBorrarUbicacion(null);
         }}
       >
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl bg-white w-[95vw] sm:w-full">
           <div className="space-y-4">
             <h2 className="font-semibold text-lg text-center">
               ¿Seguro que desea eliminar esta ubicación técnica?
             </h2>
 
             <div className="space-y-3 p-4 border rounded-lg bg-gray-50">
-              <div className="text-sm">
+              <div className="text-sm wrap-break-word">
                 <span className="font-medium">Nombre:</span> {borrarUbicacion?.descripcion}
               </div>
-              <div className="text-sm">
+              <div className="text-sm wrap-break-word">
                 <span className="font-medium">Código:</span> {borrarUbicacion?.codigo_Identificacion}
               </div>
             </div>
@@ -564,7 +402,7 @@ const UbicacionesTecnicas: React.FC = () => {
                 {dependencias.data.data.map((dep: UbicacionTecnica) => (
                   <div
                     key={dep.idUbicacion}
-                    className="text-sm p-2 border rounded bg-white"
+                    className="text-sm p-2 border rounded bg-white wrap-break-word"
                   >
                     {dep.descripcion} ({dep.codigo_Identificacion})
                   </div>
@@ -576,9 +414,9 @@ const UbicacionesTecnicas: React.FC = () => {
               </p>
             )}
 
-            <div className="flex justify-between items-center pt-4">
+            <div className="flex flex-col sm:flex-row justify-between items-center pt-4 gap-4 sm:gap-0">
               <Button
-                className="bg-gema-blue hover:bg-blue-500 text-white"
+                className="bg-gema-blue hover:bg-blue-500 text-black w-full sm:w-auto"
                 onClick={handleExportExcel}
                 disabled={isExporting || deleteMutation.isPending}
               >
@@ -590,16 +428,18 @@ const UbicacionesTecnicas: React.FC = () => {
                 {isExporting ? "Exportando..." : "Guardar respaldo"}
               </Button>
 
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-[70%]">
                 <Button
                   variant="outline"
                   onClick={() => setBorrarUbicacion(null)}
                   disabled={deleteMutation.isPending}
+                  className="w-full sm:w-auto"
                 >
                   Cancelar
                 </Button>
                 <Button
                   variant="destructive"
+                  className="bg-red-500 hover:bg-red-600 text-black w-full sm:w-auto"
                   onClick={() => {
                     if (borrarUbicacion) {
                       deleteMutation.mutate(borrarUbicacion.idUbicacion);
@@ -623,6 +463,7 @@ const UbicacionesTecnicas: React.FC = () => {
       {/* Modal de edición */}
       {ubicacionParaEditar && (
         <EditUbicacionForm
+
           open={!!ubicacionParaEditar}
           onClose={handleCerrarEditar}
           idUbicacion={ubicacionParaEditar.idUbicacion}
@@ -631,68 +472,17 @@ const UbicacionesTecnicas: React.FC = () => {
       )}
 
       {/* Filtros por niveles */}
-      {flatUbicaciones.length > 0 && (
-        <div className="mb-6">
-          <p className="text-sm font-medium text-gray-700 mb-3">Filtrar por niveles:</p>
-          <div className="flex flex-wrap gap-3">
-            {NIVELES.map((nivel, idx) => {
-              if (idx > 0 && !filters[NIVELES[idx - 1]]) return null;
-              const opciones = getOptions(nivel, filters);
-              if (!opciones.length) return null;
-              return (
-                <Select
-                  value={filters[nivel]}
-                  key={nivel}
-                  onValueChange={(value) => {
-                    setFilters((prev) => {
-                      const updated = { ...prev };
-                      updated[nivel] = value;
-                      for (let i = idx + 1; i < NIVELES.length; i++)
-                        updated[NIVELES[i]] = "";
-                      return updated;
-                    });
-                  }}
-                >
-                  <SelectTrigger className="bg-white w-40">
-                    <SelectValue placeholder={`Nivel ${idx + 1}`} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {opciones.map((op) => (
-                      <SelectItem key={op} value={op}>
-                        {op}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              );
-            })}
-            {Object.values(filters).some(Boolean) && (
-              <Button
-                variant="outline"
-                onClick={() =>
-                  setFilters({
-                    modulo: "",
-                    planta: "",
-                    espacio: "",
-                    tipo: "",
-                    subtipo: "",
-                    numero: "",
-                    pieza: "",
-                  })
-                }
-              >
-                Limpiar filtros
-              </Button>
-            )}
-          </div>
-        </div>
-      )}
+      <UbicacionesFilters
+        filters={filters}
+        setFilters={setFilters}
+        flatUbicaciones={flatUbicaciones}
+      />
 
       {/* Lista de ubicaciones */}
       <Accordion
         type="single"
         collapsible
-        className="w-full bg-white rounded-lg border shadow-sm"
+        className="w-full bg-white rounded-lg border"
       >
         {filteredData.map((ubicacion) => (
           <AccordionItem
@@ -700,33 +490,37 @@ const UbicacionesTecnicas: React.FC = () => {
             value={ubicacion.codigo_Identificacion}
             className="border-b last:border-b-0"
           >
-            <AccordionTrigger className="hover:bg-gray-50 px-6 py-4">
-              <div className="flex items-center gap-3">
-                <Building className="text-blue-600 w-5 h-5" />
-                <span className="text-lg font-semibold text-left">
-                  {ubicacion.codigo_Identificacion}
-                </span>
-                <span className="bg-gray-100 text-gray-700 text-xs font-medium px-2.5 py-1 rounded-full">
+            <AccordionTrigger className="bg-desplegable-background/80 hover:bg-desplegable-background border-b px-4 sm:px-6 py-4">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 w-full">
+                <div className="flex items-center gap-2">
+                  <Building className="text-blue-600 w-5 h-5 shrink-0" />
+                  <span className="text-base sm:text-lg font-semibold text-left break-all">
+                    {ubicacion.codigo_Identificacion}
+                  </span>
+                </div>
+                <span className="bg-gray-100 text-gray-700 text-xs font-medium px-2.5 py-1 rounded-full whitespace-nowrap">
                   {1 + countChildren(ubicacion)} ubicaciones
                 </span>
               </div>
             </AccordionTrigger>
-            <AccordionContent className="px-2">
-              <UbicacionHierarchy
-                ubicaciones={[ubicacion]}
-                onCreateFrom={initializeFormValues}
-                onDelete={setBorrarUbicacion}
-                onViewDetails={setVerDetalle}
-                onEdit={handleEditarClick}
-                activeDetailItem={verDetalle}
-              />
+            <AccordionContent className="px-0  overflow-x-auto max-w-[85vw] sm:max-w-full">
+              <div className="min-w-[600px] sm:min-w-0">
+                <UbicacionHierarchy
+                  ubicaciones={[ubicacion]}
+                  onCreateFrom={initializeFormValues}
+                  onDelete={setBorrarUbicacion}
+                  onViewDetails={setVerDetalle}
+                  onEdit={handleEditarClick}
+                  activeDetailItem={verDetalle}
+                />
+              </div>
             </AccordionContent>
           </AccordionItem>
         ))}
       </Accordion>
 
       {filteredData.length === 0 && (
-        <div className="text-center py-12 text-gray-500">
+        <div className="text-center py-12 text-gray-500 bg-white">
           No se encontraron ubicaciones técnicas
         </div>
       )}

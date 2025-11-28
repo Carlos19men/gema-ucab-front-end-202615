@@ -127,7 +127,7 @@ export const EditGrupoForm: React.FC<EditGrupoFormProps> = ({
               </Button>
               <Button
                 type="submit"
-                className="bg-gema-green hover:bg-green-700"
+                className="bg-gema-green/80 hover:bg-gema-green"
                 disabled={editGrupoMutation.isPending}
               >
                 {editGrupoMutation.isPending ? "Guardando..." : "Guardar cambios"}

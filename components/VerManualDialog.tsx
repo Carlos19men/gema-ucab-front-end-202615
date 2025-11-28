@@ -20,7 +20,7 @@ export default function VerManualDialog({
 
   const handleVerGuia = () => {
     if (!isClient) return;
-    
+
     // Método mejorado para descargar archivos en Next.js
     const link = document.createElement("a");
     link.href = "/guia-ubicaciones-tecnicas.pdf";
@@ -29,7 +29,7 @@ export default function VerManualDialog({
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    
+
     // Guardar en localStorage
     localStorage.setItem("haCargadoUbicaciones", "true");
     onOpenChange(false);
@@ -37,7 +37,7 @@ export default function VerManualDialog({
 
   const handleContinuarSinLeer = () => {
     if (!isClient) return;
-    
+
     localStorage.setItem("haCargadoUbicaciones", "true");
     onOpenChange(false);
   };
@@ -52,11 +52,11 @@ export default function VerManualDialog({
           </p>
           <div className="flex flex-col gap-3">
             <Button
-              className="bg-gema-green hover:bg-green-700"
+              className="bg-gema-green/80 hover:bg-gema-green"
               onClick={handleVerGuia}
               disabled={!isClient}
             >
-              <File className="mr-2 h-4 w-4" /> 
+              <File className="mr-2 h-4 w-4" />
               Ver guía
             </Button>
             <Button

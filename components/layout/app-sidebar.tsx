@@ -30,6 +30,9 @@ const items = [
   {
     icon: UserPlus,
     label: 'Tecnicos',
+  {
+    icon: UserPlus,
+    label: 'Tecnicos',
     path: '/tecnicos' // ← SIN /dashboard
   },
 ]
@@ -49,7 +52,7 @@ export function AppSidebar() {
   }
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="offcanvas">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -68,6 +71,7 @@ export function AppSidebar() {
         </SidebarMenu>
         <hr className="border-neutral-400 mb-2" />
       </SidebarHeader>
+
 
       <SidebarContent>
         <SidebarMenu>
@@ -88,6 +92,7 @@ export function AppSidebar() {
           ))}
         </SidebarMenu>
       </SidebarContent>
+
 
       <SidebarFooter>
         <SidebarMenu>
