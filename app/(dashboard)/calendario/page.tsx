@@ -1,6 +1,7 @@
 'use client';
 
-import { MonthlyCalendar } from "@/components/ui/monthlyCalendar";
+import { MonthlyCalendar } from "@/components/monthlyCalendar";
+import { WeeklyCalendar } from "@/components/weeklyCalendar";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger } from "@radix-ui/react-dialog";
 import { 
@@ -49,8 +50,10 @@ const Calendario = () => {
             </div>
 
             <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 w-full">
-                {/**Calendario */}
-                <MonthlyCalendar />
+                {/**Calendario Mensual*/}
+                {/*<MonthlyCalendar />*/}
+                {/**Calendario Semanal*/}
+                <WeeklyCalendar />
             </div>
         </div>
     )
