@@ -123,7 +123,43 @@ const WeeklyCalendar = () => {
               </div>
             ))}
           </div>
+
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-6 w-full">
+      
+      {/* Título */}
+      <h3 className="text-lg font-bold text-gray-900 mb-4">
+        Estados de Mantenimientos
+      </h3>
+
+      {/* Contenedor de los items (Fila flexible) */}
+      <div className="flex flex-wrap items-center gap-6">
+        {/* Item 1: No empezado (Gris) */}
+        <div className="flex items-center gap-2">
+          <div className="h-5 w-5 rounded bg-gema-darkgrey" />
+          <span className="text-sm font-medium text-gray-700">No empezado</span>
         </div>
+
+        {/* Item 2: En ejecución (Azul) */}
+        <div className="flex items-center gap-2">
+          <div className="h-5 w-5 rounded bg-gema-blue" /> {/* O usa bg-gema-blue */}
+          <span className="text-sm font-medium text-gray-700">En ejecución</span>
+        </div>
+
+        {/* Item 3: Reprogramado (Amarillo/Ámbar) */}
+        <div className="flex items-center gap-2">
+          <div className="h-5 w-5 rounded bg-gema-yellow" /> {/* O usa bg-gema-yellow */}
+          <span className="text-sm font-medium text-gray-700">Reprogramado</span>
+        </div>
+
+        {/* Item 4: Culminado (Verde) */}
+        <div className="flex items-center gap-2">
+          <div className="h-5 w-5 rounded bg-gema-green" /> {/* O usa bg-gema-green */}
+          <span className="text-sm font-medium text-gray-700">Culminado</span>
+        </div>
+
+      </div>
+    </div>
+    </div>
   )
 };
 
