@@ -45,7 +45,7 @@ interface Props {
 
 const FormNuevoTecnico: React.FC<Props> = ({ open, onClose, onSuccess }) => {
   const queryClient = useQueryClient();
-  
+
   const form = useForm<TecnicoForm>({
     resolver: zodResolver(tecnicoSchema),
     defaultValues: {
@@ -87,7 +87,7 @@ const FormNuevoTecnico: React.FC<Props> = ({ open, onClose, onSuccess }) => {
         <DialogHeader>
           <DialogTitle>Agregar Nuevo Técnico</DialogTitle>
         </DialogHeader>
-        
+
         <Form {...form}>
           <form onSubmit={handleSubmit} className="space-y-4 pt-2">
             <FormField
@@ -108,7 +108,7 @@ const FormNuevoTecnico: React.FC<Props> = ({ open, onClose, onSuccess }) => {
                 </FormItem>
               )}
             />
-            
+
             <FormField
               control={form.control}
               name="Correo"
@@ -128,11 +128,11 @@ const FormNuevoTecnico: React.FC<Props> = ({ open, onClose, onSuccess }) => {
                 </FormItem>
               )}
             />
-            
+
             <div className="flex justify-end gap-2 pt-4">
-              <Button 
-                type="button" 
-                variant="outline" 
+              <Button
+                type="button"
+                variant="outline"
                 onClick={handleClose}
                 disabled={mutation.isPending}
               >
@@ -140,7 +140,7 @@ const FormNuevoTecnico: React.FC<Props> = ({ open, onClose, onSuccess }) => {
               </Button>
               <Button
                 type="submit"
-                className="bg-gema-green hover:bg-green-700 text-white"
+                className="bg-gema-green/80 hover:bg-gema-green text-primary-foreground"
                 disabled={mutation.isPending || !form.formState.isValid}
               >
                 {mutation.isPending ? "Creando..." : "Crear Técnico"}

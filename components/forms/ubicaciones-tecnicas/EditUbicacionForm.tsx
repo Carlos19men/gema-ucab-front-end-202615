@@ -44,7 +44,7 @@ const EditUbicacionForm: React.FC<EditUbicacionProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="max-w-lg bg-white">
         <h2 className="text-lg font-semibold mb-4">Editar Ubicación</h2>
 
         <div className="space-y-2">
@@ -63,7 +63,7 @@ const EditUbicacionForm: React.FC<EditUbicacionProps> = ({
           <Button
             onClick={onSubmit}
             disabled={!descripcion.trim() || status === "pending"}
-            className="bg-gema-green text-white hover:bg-green-700"
+            className="bg-gema-green/80 hover:bg-gema-green text-primary-foreground"
           >
             {status === "pending" ? "Actualizando..." : "Actualizar"}
           </Button>
