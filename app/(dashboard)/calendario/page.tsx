@@ -36,20 +36,15 @@ const Calendario = () => {
                         <Calendar className="mr-2 h-4 w-4" />
                         {vistaActual === 'mensual' ? 'Vista Semanal' : 'Vista Mensual'}
                     </Button>
-                    <Dialog /*open={open} onOpenChange={setOpen}*/>
-                        <DialogTrigger asChild>
-                            <Button className="bg-gema-blue hover:bg-blue-700">
-                            <FileText className="mr-2 h-4 w-4" />
-                            Resumen Mensual
-                            </Button>
-                        </DialogTrigger>
-                        {/*Accion a ejecutar al presionar el boton*/}
-                    </Dialog>
+                    <Button className="bg-gema-blue hover:bg-blue-700">
+                        <FileText className="mr-2 h-4 w-4" />
+                        Resumen Mensual
+                    </Button>
                     <Dialog /*open={open} onOpenChange={setOpen}*/>
                         <DialogTrigger asChild>
                             <Button className="bg-gema-green hover:bg-green-700">
-                            <CirclePlus className="mr-2 h-4 w-4" />
-                            Nuevo Elemento
+                                <CirclePlus className="mr-2 h-4 w-4" />
+                                Nuevo Elemento
                             </Button>
                         </DialogTrigger>
                         {/*Accion a ejecutar al presionar el boton*/}

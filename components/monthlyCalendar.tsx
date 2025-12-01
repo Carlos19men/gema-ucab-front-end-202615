@@ -3,7 +3,9 @@ import { Dialog, DialogTrigger } from "./ui/dialog";
 import { 
     FileSearchCorner, 
     FileCog, 
-    Funnel 
+    Funnel, 
+    ChevronRight,
+    ChevronLeft
 } from "lucide-react";
 
 /*Dias de la semana */
@@ -58,15 +60,25 @@ const MonthlyCalendar = () => {
             {/*--- CABECERA DEL CALENDARIO ---*/}
             <div className="flex flex-col md:flex-row md:justify-between items-start">
                 <h2 className="text-xl font-semibold mb-4">Noviembre 2025</h2>
-                <Dialog /*open={open} onOpenChange={setOpen}*/>
-                    <DialogTrigger asChild>
-                        <Button className="bg-sidebar-border text-black hover:bg-gray-300">                            <Funnel className="mr-2 h-4 w-4" />
-                            Filtrar
-                        </Button>
-                    </DialogTrigger>
-                    {/*Accion a ejecutar al presionar el boton*/}
-                </Dialog>
+                <div className="flex flex-col md:flex-row md:justify-between gap-4">
+                    <Button className="bg-sidebar-border text-black hover:bg-gray-300">                            
+                        <Funnel className="mr-2 h-4 w-4" />
+                        Filtrar
+                    </Button>
+                    {/* Navegación de Meses */}
+                    <div className="flex items-center gap-2">
+                        <button className="h-10 w-10 flex items-center justify-center rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors">
+                            <ChevronLeft className="h-5 w-5 text-gray-600" />
+                        </button>
+                        <button className="h-10 px-6 flex items-center justify-center rounded-lg bg-gray-200 hover:bg-gray-300 font-medium text-gray-700 transition-colors">
+                            Mes
+                        </button>
+                        <button className="h-10 w-10 flex items-center justify-center rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors">
+                            <ChevronRight className="h-5 w-5 text-gray-600" />
+                        </button>
+                    </div>
                 </div>
+            </div>
 
                 {/*--- CUADRÍCULA DEL CALENDARIO ---*/}
                 <div className="p-6 w-full max-w-5xl mx-auto">
