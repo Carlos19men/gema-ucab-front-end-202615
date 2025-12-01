@@ -1,6 +1,14 @@
+'use client';
+
+import { MonthlyCalendar } from "@/components/monthlyCalendar";
+import { WeeklyCalendar } from "@/components/weeklyCalendar";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger } from "@radix-ui/react-dialog";
-import { CirclePlus, FileText, Calendar } from "lucide-react";
+import { 
+    CirclePlus, 
+    FileText, 
+    Calendar
+} from "lucide-react";
 
 const Calendario = () => {
     return (
@@ -39,6 +47,13 @@ const Calendario = () => {
                         {/*Accion a ejecutar al presionar el boton*/}
                     </Dialog>
                 </div>
+            </div>
+
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 w-full">
+                {/**Calendario Mensual*/}
+                {/*<MonthlyCalendar />*/}
+                {/**Calendario Semanal*/}
+                <WeeklyCalendar />
             </div>
         </div>
     )
