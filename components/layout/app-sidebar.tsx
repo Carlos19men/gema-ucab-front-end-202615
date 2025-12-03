@@ -81,6 +81,7 @@ export function AppSidebar() {
         <hr className="border-neutral-400 mb-2 group-data-[collapsible=icon]:hidden" />
       </SidebarHeader>
 
+
       <SidebarContent>
         <SidebarMenu>
           {items.map((item) => (
@@ -100,6 +101,7 @@ export function AppSidebar() {
           ))}
         </SidebarMenu>
       </SidebarContent>
+
 
       <SidebarFooter>
         <SidebarMenu>

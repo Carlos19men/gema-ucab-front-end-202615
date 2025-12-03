@@ -7,7 +7,7 @@ import {
   Building,
   LoaderCircle,
   Trash,
-  FileSpreadsheet,
+  FileSpreadsheet
 } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import FormNuevaUbicacion from "@/components/forms/ubicaciones-tecnicas/FormNuevaUbicacion";
