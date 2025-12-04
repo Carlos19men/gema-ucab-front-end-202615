@@ -293,7 +293,7 @@ const FormNuevaUbicacion: React.FC<Props> = ({
             label: `${u.abreviacion} - ${u.descripcion}`,
           })) || []}
           disabled={dependiente?.loading}
-          className="w-full border rounded p-2"
+          className="w-full border border-border rounded p-2"
         />
       </div>
     );
@@ -329,7 +329,7 @@ const FormNuevaUbicacion: React.FC<Props> = ({
                   label: `${u.abreviacion} - ${u.descripcion}`,
                 })) || []}
                 disabled={isLoading}
-                className="w-full border rounded p-2"
+                className="w-full border border-border rounded p-2"
               />
             </div>
 
@@ -371,7 +371,7 @@ const FormNuevaUbicacion: React.FC<Props> = ({
             <div>
               <Label htmlFor="descripcion">Descripción <span className="text-red-500">*</span></Label>
               <Input name="descripcion" placeholder="Ejemplo: Módulo 2, Planta 1, Aula A2-14"
-                value={formValues.descripcion} onChange={handleChange} className="w-full border rounded p-2" />
+                value={formValues.descripcion} onChange={handleChange} className="w-full border border-border rounded p-2" />
             </div>
 
             <div className="bg-slate-200 p-4 pt-3 rounded-sm">

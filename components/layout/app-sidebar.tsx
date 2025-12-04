@@ -78,7 +78,7 @@ export function AppSidebar() {
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
-        <hr className="border-neutral-400 mb-2 group-data-[collapsible=icon]:hidden" />
+        <div className="h-px bg-foreground/20 w-full mb-2 group-data-[collapsible=icon]:hidden" />
       </SidebarHeader>
 
 
