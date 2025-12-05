@@ -1,14 +1,18 @@
-import { Button } from "./ui/button";
+'use client';
+import { useState } from "react";
+
 import { 
     FileSearchCorner, 
     FileCog, 
     Funnel, 
     ChevronRight,
-    ChevronLeft
+    ChevronLeft,
+    Settings
 } from "lucide-react";
+import DropdownFilter from "./ui/dropdownFilter";
 
 /*Dias de la semana */
-  const diasSemana = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+const diasSemana = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 
 /*Array simulado */
 const diasSimulados = [
@@ -54,16 +58,20 @@ const diasSimulados = [
   ];
 
 const MonthlyCalendar = () => {
+    // Este estado controla qué iconos se ven en TODO el calendario
+    const [filtroActivo, setFiltroActivo] = useState('todos');
+
     return(
         <div>
             {/*--- CABECERA DEL CALENDARIO ---*/}
             <div className="flex flex-col md:flex-row md:justify-between items-start">
                 <h2 className="text-xl font-semibold mb-4">Noviembre 2025</h2>
                 <div className="flex flex-col md:flex-row md:justify-between gap-4">
-                    <Button className="bg-sidebar-border text-black hover:bg-gray-300">                            
-                        <Funnel className="mr-2 h-4 w-4" />
-                        Filtrar
-                    </Button>
+                    {/* Boton de filtro dinamico */}
+                    <DropdownFilter 
+                        filtroActual={filtroActivo} 
+                        onFiltroChange={setFiltroActivo} 
+                    />
                     {/* Navegación de Meses */}
                     <div className="flex items-center gap-2">
                         <button className="h-10 w-10 flex items-center justify-center rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors">
@@ -112,14 +120,14 @@ const MonthlyCalendar = () => {
 
                                 {/* Iconos de contenido */}
                                 <div className="flex gap-1">
-                                    {item.icon === 'green' && (
-                                        <FileSearchCorner className="h-7 w-7 text-gema-green" />
-                                    )}
-                                    {item.icon === 'multi' && (
-                                        <>
+                                    {/*Logica de filtrado */}
+                                    {(filtroActivo === 'todos' || filtroActivo === 'mantenimientos') && 
+                                    (item.icon === 'multi') && (
                                         <FileCog className="h-7 w-7 text-gema-blue" />
+                                    )}
+                                    {(filtroActivo === 'todos' || filtroActivo === 'inspecciones') && 
+                                    (item.icon === 'green' || item.icon === 'multi') && (
                                         <FileSearchCorner className="h-7 w-7 text-gema-green" />
-                                        </>
                                     )}
                                 </div>
                             </div>
