@@ -2,7 +2,7 @@
 'use client'
 
 import { useEffect, useRef } from "react"
-import { LogOut, MapPin, UserCircle, Users, UserPlus } from "lucide-react"
+import { LogOut, MapPin, UserCircle, Users, UserPlus, Calendar } from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
@@ -33,6 +33,11 @@ const items = [
     icon: UserPlus,
     label: 'Tecnicos',
     path: '/tecnicos' // ← SIN /dashboard
+  },
+  {
+    icon: Calendar,
+    label: 'Calendario',
+    path: '/calendario' // ← SIN /dashboard
   },
 ]
 
