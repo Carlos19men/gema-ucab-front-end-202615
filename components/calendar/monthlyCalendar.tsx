@@ -5,8 +5,8 @@ import {
     FileSearchCorner, 
     FileCog
 } from "lucide-react";
-import DropdownFilter from "./ui/dropdownFilter";
-import DateNavigator from "./ui/dateNavigator";
+import DropdownFilter from "../ui/dropdownFilter";
+import DateNavigator from "../ui/dateNavigator";
 
 /*Dias de la semana */
 const diasSemana = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];

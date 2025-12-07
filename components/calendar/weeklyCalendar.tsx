@@ -1,5 +1,5 @@
 import { useState } from "react";
-import DateNavigator from "./ui/dateNavigator";
+import DateNavigator from "../ui/dateNavigator";
 
 /*Nombres de los meses */
 const MONTH_NAMES = [
@@ -170,7 +170,7 @@ const WeeklyCalendar = () => {
 
         {/* Item 2: En ejecución (Azul) */}
         <div className="flex items-center gap-2">
-          <div className="h-5 w-5 rounded bg-gema-blue" /> {/* O usa bg-gema-blue */}
+          <div className="h-5 w-5 rounded bg-gema-blue" /> 
           <span className="text-sm font-medium text-gray-700">En ejecución</span>
         </div>
 
