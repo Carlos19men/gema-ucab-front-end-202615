@@ -6,7 +6,8 @@
   /* COLORES */
   --color-gema-yellow: #fbc22f;
   --color-gema-blue: #36b3e1;
-  --color-gema-green: #0EAD69;
+  --color-gema-green: #0ead69;
+  --color-gema-red: #e9252e;
   --color-gema-darkgrey: #c9c9c9;
   --color-gema-lightgrey: #f2eeee;
   --color-gema-grey-text: #a1a1a1;
@@ -102,6 +103,10 @@
   --color-gema-yellow: var(--color-gema-yellow);
   --color-gema-green: var(--color-gema-green);
   --color-gema-blue: var(--color-gema-blue);
+  --color-gema-darkgrey: var(--color-gema-darkgrey);
+  --color-gema-lightgrey: var(--color-gema-lightgrey);
+  --color-gema-grey-text: var(--color-gema-grey-text);
+  --color-gema-red: var(--color-gema-red);
 
   --color-desplegable-background: var(--color-desplegable-background);
 

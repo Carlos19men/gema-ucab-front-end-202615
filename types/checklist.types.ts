@@ -1,10 +1,12 @@
-export type actividad = {
+export type Actividad = {
     id: number;
     nombre: string;
     descripcion: string;
     estado: 'COMPLETADA' | 'PENDIENTE';
 }
-export type checklist = {
+export type Checklist = {
     id: number;
-    data: actividad[];
+    titulo: string;
+    ubicacion: string;
+    tareas: Actividad[];
 };
