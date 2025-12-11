@@ -1,6 +1,6 @@
-import type { Actividad } from "@/types/checklist.types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createChecklistItem } from "@/services/checklist";
+import { useCreateChecklistItem } from "@/hooks/checklist/useCreateChecklistItem";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -36,6 +36,7 @@ export const AgregarChecklistItemForm: React.FC<ChecklistProps> = ({
     checklistId
 }) => {
     const queryClient = useQueryClient();
+    const createMutation = useCreateChecklistItem();
 
     type FormValues = z.infer<typeof actividadSchema>;
 
@@ -47,25 +48,19 @@ export const AgregarChecklistItemForm: React.FC<ChecklistProps> = ({
         mode: "onChange", // Validación en cada cambio    
     });
 
-    const mutation = useMutation({
-        mutationFn: createChecklistItem,
-        onSuccess: () => {
-        toast.success("Actividad creada exitosamente");
-        form.reset();
-        queryClient.invalidateQueries({ queryKey: ["checklistItems"] });
-        onClose();
-        onSuccess?.();
-        },
-        onError: (error: Error) => {
-        console.error("Error creando actividad:", error);
-        toast.error(
-            error.message || "Error al crear la actividad. Intente nuevamente."
-        );
-        },
-    });
-
     const handleSubmit = form.handleSubmit((values) => {
-        mutation.mutate({nombre: values.nombre, descripcion: values.descripcion, estado: 'PENDIENTE' ,id:0});
+        createMutation.mutate({
+            id: checklistId,
+            nombre: values.nombre,
+            descripcion: values.descripcion || "",
+            estado: "PENDIENTE"
+        }, {
+            onSuccess: () => {
+                form.reset();
+                onClose();
+            }
+        }
+        );
     });
 
     const handleClose = () => {
@@ -93,7 +88,7 @@ export const AgregarChecklistItemForm: React.FC<ChecklistProps> = ({
                             placeholder="Ej: Revisar filtros de aires acondicionados"
                             autoComplete="name"
                             {...field}
-                            disabled={mutation.isPending}
+                            disabled={createMutation.isPending}
                             />
                         </FormControl>
                         <FormMessage />
@@ -112,7 +107,7 @@ export const AgregarChecklistItemForm: React.FC<ChecklistProps> = ({
                             placeholder="Ej: Verificar que los filtros estén limpios y en buen estado"
                             autoComplete="name"
                             {...field}
-                            disabled={mutation.isPending}
+                            disabled={createMutation.isPending}
                             />
                         </FormControl>
                         <FormMessage />
@@ -125,16 +120,16 @@ export const AgregarChecklistItemForm: React.FC<ChecklistProps> = ({
                         type="button"
                         variant="outline"
                         onClick={handleClose}
-                        disabled={mutation.isPending}
+                        disabled={createMutation.isPending}
                     >
                         Cancelar
                     </Button>
                     <Button
                         type="submit"
                         className="bg-gema-green/80 hover:bg-gema-green text-primary-foreground"
-                        disabled={mutation.isPending || !form.formState.isValid}
+                        disabled={createMutation.isPending || !form.formState.isValid}
                     >
-                        {mutation.isPending ? "Creando..." : "Crear Actividad"}
+                        {createMutation.isPending ? "Creando..." : "Crear Actividad"}
                     </Button>
                     </div>
                 </form>
