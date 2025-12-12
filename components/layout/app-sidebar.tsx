@@ -49,6 +49,11 @@ const items = [
     label: 'Calendario',
     path: '/calendario'
   },
+  {
+    icon: Calendar,
+    label: 'Calendario',
+    path: '/calendario' // ← SIN /dashboard
+  },
 ]
 
 export function AppSidebar() {

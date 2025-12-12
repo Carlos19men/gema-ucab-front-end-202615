@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Modal } from "@/components/ui/modal";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -43,33 +43,34 @@ const EditUbicacionForm: React.FC<EditUbicacionProps> = ({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-lg bg-white">
-        <h2 className="text-lg font-semibold mb-4">Editar Ubicación</h2>
+    <Modal
+      title="Editar Ubicación"
+      isOpen={open}
+      onClose={onClose}
+      className="max-w-lg bg-white"
+    >
+      <div className="space-y-2">
+        <Label>Descripción</Label>
+        <Input
+          value={descripcion}
+          onChange={(e) => setDescripcion(e.target.value)}
+          placeholder="Nueva descripción"
+        />
+      </div>
 
-        <div className="space-y-2">
-          <Label>Descripción</Label>
-          <Input
-            value={descripcion}
-            onChange={(e) => setDescripcion(e.target.value)}
-            placeholder="Nueva descripción"
-          />
-        </div>
-
-        <div className="flex justify-end gap-2 mt-6">
-          <Button variant="outline" onClick={onClose}>
-            Cancelar
-          </Button>
-          <Button
-            onClick={onSubmit}
-            disabled={!descripcion.trim() || status === "pending"}
-            className="bg-gema-green/80 hover:bg-gema-green text-primary-foreground"
-          >
-            {status === "pending" ? "Actualizando..." : "Actualizar"}
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
+      <div className="flex justify-end gap-2 mt-6">
+        <Button variant="outline" onClick={onClose}>
+          Cancelar
+        </Button>
+        <Button
+          onClick={onSubmit}
+          disabled={!descripcion.trim() || status === "pending"}
+          className="bg-gema-green/80 hover:bg-gema-green text-primary-foreground"
+        >
+          {status === "pending" ? "Actualizando..." : "Actualizar"}
+        </Button>
+      </div>
+    </Modal>
   );
 };
 
