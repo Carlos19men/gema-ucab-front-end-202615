@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from "react";
+import { useMemo, useState } from "react";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
@@ -290,7 +291,6 @@ const FormNuevaUbicacion: React.FC<Props> = ({
 
   return (
     <Modal
-      open={open}
       isOpen={open}
       onClose={onClose}
       className="bg-white"
@@ -319,7 +319,7 @@ const FormNuevaUbicacion: React.FC<Props> = ({
               placeholder={isLoading ? "Cargando..." : "Ejemplo: M2"}
               value={formValues.modulo}
               onChange={(value) => resetNivelesSuperiores(2)}
-              options={ubicacionesData?.data?.filter((u) => u.nivel === 1).map((u) => ({
+              options={ubicaciones?.filter((u) => u.nivel === 1).map((u) => ({
                 value: u.abreviacion,
                 label: `${u.abreviacion} - ${u.descripcion}`,
               })) || []}
@@ -418,11 +418,11 @@ const FormNuevaUbicacion: React.FC<Props> = ({
         </div>
       </div>
 
-      {mutation.isError && <p className="text-red-600 text-sm">{mutation.error instanceof Error ? mutation.error.message : "Error al crear la ubicación técnica, por favor intente de nuevo."}</p>}
+      {createMutation.isError && <p className="text-red-600 text-sm">{createMutation.error instanceof Error ? createMutation.error.message : "Error al crear la ubicación técnica, por favor intente de nuevo."}</p>}
 
       <div className="flex justify-end gap-2">
         <Button variant="outline" onClick={closeModal} className="px-4 md:px-8">Cancelar</Button>
-        <Button className="bg-gema-green/80 hover:bg-gema-green text-primary-foreground px-4 md:px-8" onClick={onSubmit} disabled={status === "pending" || mutation.isPending}>
+        <Button className="bg-gema-green/80 hover:bg-gema-green text-primary-foreground px-4 md:px-8" onClick={onSubmit} disabled={status === "pending" || createMutation.isPending}>
           {status === "pending" ? "Creando..." : "Crear Ubicación"}
         </Button>
       </div>
