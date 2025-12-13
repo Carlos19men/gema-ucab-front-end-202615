@@ -10,13 +10,13 @@ import { Combobox } from "@/components/ui/combobox";
 
 // ✅ Usar hooks organizados
 import { useCreateAsignacion } from "@/hooks/asignacion-grupos/useCreateAsignacion";
-import { useDeleteAsignacion } from "@/hooks/asignacion-grupos/useDeleteAsignacion";
+import { useDeleteAsignacionByTecnicoGrupo } from "@/hooks/asignacion-grupos/useDeleteAsignacion";
+import { useTecnicos } from "@/hooks/tecnicos/useTecnicos";
 
 interface GestionTecnicosFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   grupoTrabajo: any; 
-  tecnicosDisponibles: any[];
   trabajadoresPorGrupo: Record<number, any[]>;
 }
 
@@ -24,14 +24,14 @@ export const GestionTecnicosForm: React.FC<GestionTecnicosFormProps> = ({
   open,
   onOpenChange,
   grupoTrabajo,
-  tecnicosDisponibles,
   trabajadoresPorGrupo,
 }) => {
   const [tecnicoSeleccionado, setTecnicoSeleccionado] = useState<number | null>(null);
 
   // ✅ Usar hooks organizados
   const createAsignacionMutation = useCreateAsignacion();
-  const deleteAsignacionMutation = useDeleteAsignacion();
+  const deleteAsignacionMutation = useDeleteAsignacionByTecnicoGrupo();
+  const { tecnicos: tecnicosDisponibles, isLoading: isLoadingTecnicos } = useTecnicos();
 
   const handleAddTecnico = () => {
     if (!grupoTrabajo || !tecnicoSeleccionado) return;
@@ -49,9 +49,10 @@ export const GestionTecnicosForm: React.FC<GestionTecnicosFormProps> = ({
   const handleRemoveTecnico = (tecnicoId: number) => {
     if (!grupoTrabajo) return;
     
-    // Nota: Necesitaríamos el ID de la asignación, no solo el tecnicoId
-    // Por ahora usamos el tecnicoId como placeholder
-    deleteAsignacionMutation.mutate(tecnicoId);
+    deleteAsignacionMutation.mutate({
+      tecnicoId,
+      grupoId: grupoTrabajo.id
+    });
   };
 
   return (
@@ -69,7 +70,7 @@ export const GestionTecnicosForm: React.FC<GestionTecnicosFormProps> = ({
             <div className="mb-6 space-y-2">
               <Label htmlFor="tecnico">Agregar Técnico</Label>
               <Combobox
-                data={tecnicosDisponibles
+                data={(tecnicosDisponibles || [])
                   .filter(
                     (tec) =>
                       !trabajadoresPorGrupo[grupoTrabajo.id]?.some(
@@ -82,7 +83,7 @@ export const GestionTecnicosForm: React.FC<GestionTecnicosFormProps> = ({
                   }))}
                 value={tecnicoSeleccionado}
                 onValueChange={(value) => setTecnicoSeleccionado(value as number | null)}
-                placeholder="Seleccione un técnico"
+                placeholder={isLoadingTecnicos ? "Cargando técnicos..." : "Seleccione un técnico"}
                 searchPlaceholder="Buscar técnico..."
                 triggerClassName="w-full"
                 contentClassName="w-full"

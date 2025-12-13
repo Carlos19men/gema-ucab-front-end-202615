@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useCreateGrupo } from "@/hooks/grupos-trabajo/useCreateGrupo";
+import { useTecnicos } from "@/hooks/tecnicos/useTecnicos";
 import { Combobox } from "@/components/ui/combobox";
 
 const grupoTrabajoSchema = z.object({
@@ -20,13 +21,11 @@ const grupoTrabajoSchema = z.object({
 interface CreateGrupoFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  tecnicosDisponibles: any[];
 }
 
 export const CreateGrupoForm: React.FC<CreateGrupoFormProps> = ({
   open,
   onOpenChange,
-  tecnicosDisponibles,
 }) => {
   const form = useForm<z.infer<typeof grupoTrabajoSchema>>({
     resolver: zodResolver(grupoTrabajoSchema),
@@ -39,6 +38,7 @@ export const CreateGrupoForm: React.FC<CreateGrupoFormProps> = ({
   });
 
   const createGrupoMutation = useCreateGrupo();
+  const { tecnicos, isLoading: isLoadingTecnicos } = useTecnicos();
 
   const handleSubmit = (values: z.infer<typeof grupoTrabajoSchema>) => {
     createGrupoMutation.mutate({
@@ -115,13 +115,13 @@ export const CreateGrupoForm: React.FC<CreateGrupoFormProps> = ({
                   <FormLabel>Supervisor</FormLabel>
                   <FormControl>
                     <Combobox
-                      data={tecnicosDisponibles.map((tecnico) => ({
+                      data={tecnicos?.map((tecnico) => ({
                         value: tecnico.Id,
                         label: `${tecnico.Nombre} (${tecnico.Correo})`,
-                      }))}
+                      })) || []}
                       value={field.value ? Number(field.value) : null}
                       onValueChange={(value) => field.onChange(value ? String(value) : "")}
-                      placeholder="Seleccione un supervisor"
+                      placeholder={isLoadingTecnicos ? "Cargando técnicos..." : "Seleccione un supervisor"}
                       searchPlaceholder="Buscar supervisor..."
                       triggerClassName="w-full"
                       contentClassName="w-full"

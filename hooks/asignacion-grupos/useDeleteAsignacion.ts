@@ -18,3 +18,22 @@ export const useDeleteAsignacion = () => {
     },
   });
 };
+
+// Hook para eliminar asignación por técnico y grupo usando la ruta correcta
+export const useDeleteAsignacionByTecnicoGrupo = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: ({ tecnicoId, grupoId }: { tecnicoId: number; grupoId: number }) => 
+      asignacionGruposAPI.deleteByTecnicoAndGrupo(tecnicoId, grupoId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["asignaciones"] });
+      queryClient.invalidateQueries({ queryKey: ["trabajadoresPorGrupo"] });
+      toast.success("Técnico removido del grupo correctamente");
+    },
+    onError: (error: any) => {
+      console.error("Error al remover técnico:", error);
+      toast.error("Error al remover técnico del grupo");
+    },
+  });
+};

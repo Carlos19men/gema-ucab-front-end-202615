@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 // ✅ Usar hooks organizados
 import { useGrupos } from "@/hooks/grupos-trabajo/useGrupoTrabajo";
 import { useTrabajadoresPorGrupo } from "@/hooks/grupos-trabajo/useTrabajadoresPorGrupo";
-import { getTecnicos } from "@/services/tecnicos";
+import { tecnicosAPI } from "@/lib/api/tecnicos";
 import { useQuery } from "@tanstack/react-query";
 import type { Usuario } from "@/types/usuarios.types";
 import type { Tecnico } from "@/types/models/tecnicos.types";
@@ -38,7 +38,7 @@ const GruposTrabajo: React.FC = () => {
 
     const { data: tecnicos, isLoading: isLoadingTecnicos } = useQuery({
         queryKey: ["tecnicos"],
-        queryFn: () => getTecnicos(),
+        queryFn: () => tecnicosAPI.getAll(),
     });
 
     const isLoading = isLoadingGrupos || isLoadingTecnicos || isLoadingTrabajadores;
@@ -74,7 +74,6 @@ const GruposTrabajo: React.FC = () => {
             <CreateGrupoForm
                 open={isModalOpen}
                 onOpenChange={setIsModalOpen}
-                tecnicosDisponibles={tecnicos?.data || []}
             />
 
             <GestionTecnicosForm
@@ -83,7 +82,6 @@ const GruposTrabajo: React.FC = () => {
                 grupoTrabajo={
                     grupos?.find((g) => g.id === selectedGrupoId) || null
                 }
-                tecnicosDisponibles={tecnicos?.data || []}
                 trabajadoresPorGrupo={trabajadoresPorGrupo || {}}
             />
 

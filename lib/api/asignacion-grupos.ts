@@ -45,9 +45,17 @@ export const asignacionGruposAPI = {
   },
 
   /**
-   * Elimina una asignación de técnico a grupo.
+   * Elimina una asignación de técnico a grupo por ID de asignación.
    */
   async delete(asignacionId: number): Promise<void> {
     return apiClient.delete<void>(`/trabajaEnGrupo/${asignacionId}`);
+  },
+
+  /**
+   * Elimina una asignación de técnico a grupo por técnico y grupo.
+   * Ruta: /trabajaEnGrupo/{tecnicoId}/{grupoId}
+   */
+  async deleteByTecnicoAndGrupo(tecnicoId: number, grupoId: number): Promise<void> {
+    return apiClient.delete<void>(`/trabajaEnGrupo/${tecnicoId}/${grupoId}`);
   },
 };
