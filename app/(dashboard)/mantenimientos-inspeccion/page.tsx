@@ -36,19 +36,19 @@ const MantenimientosInspeccion = () => {
 
   return (
     <div className="p-6 max-w-6xl">
-      <div className="flex flex-col md:flex-row md:items-center md:gap-4 mb-6">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6">
         <h1 className="text-2xl font-bold">Mantenimientos por Inspección</h1>
-        <div className="flex flex-col gap-2 text-xs text-gray-600 mt-2 md:mt-0">
+        <div className="flex flex-col gap-2 text-sm text-gray-600 mt-2 md:mt-0">
           <div className="flex items-center gap-1.5">
-            <div className="w-3 h-3 bg-green-500 rounded"></div>
+            <div className="w-4 h-4 bg-green-500 rounded"></div>
             <span>Culminado</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <div className="w-3 h-3 bg-gray-400 rounded"></div>
+            <div className="w-4 h-4 bg-gray-400 rounded"></div>
             <span>No empezado</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <div className="w-3 h-3 bg-yellow-400 rounded"></div>
+            <div className="w-4 h-4 bg-yellow-400 rounded"></div>
             <span>Reprogramado</span>
           </div>
         </div>
