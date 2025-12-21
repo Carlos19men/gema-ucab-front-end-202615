@@ -2,7 +2,7 @@
 'use client'
 
 import { useEffect, useRef } from "react"
-import { LogOut, MapPin, UserCircle, Users, UserPlus, FileText, ClipboardCheck, Calendar } from "lucide-react"
+import { LogOut, MapPin, UserCircle, Users, UserPlus, FileText, ClipboardCheck, Calendar, BarChart3 } from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
@@ -49,7 +49,12 @@ const items = [
     label: 'Mantenimientos por Inspección',
     path: '/mantenimientos-inspeccion'
   },
-  
+  {
+    icon: BarChart3,
+    label: 'Estadísticas',
+    path: '/estadisticas'
+  },
+
 ]
 
 export function AppSidebar() {
