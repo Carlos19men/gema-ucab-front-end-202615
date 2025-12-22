@@ -1,7 +1,11 @@
 "use client";
 
 import apiClient from "@/lib/api/client";
-import type { Actividad } from "@/types/checklist.types";
+import type { Actividad, Checklist } from "@/types/checklist.types";
+
+export async function getChecklistItems(type: string,checklistId: number) {
+  return apiClient.get<Checklist>(`/${type}/${checklistId}/checklist`);
+}
 
 export async function deleteChecklistItem(id: number) {
   return apiClient.delete(`/checklist/${id}`);

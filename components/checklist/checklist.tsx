@@ -10,7 +10,6 @@ import { useEffect, useState } from "react";
 import { ArrowLeft, 
     Check, 
     CirclePlus, 
-    Edit, 
     Pencil, 
     Share, 
     Trash2 
