@@ -13,7 +13,9 @@ import { useEffect } from "react";
 
 const usuarioSchema = z.object({
     nombre: z.string().min(1, "El nombre es requerido"),
-    correo: z.string().email("Correo inválido"),
+    correo: z.string().email("Correo inválido").refine((val) => val.endsWith("@ucab.edu"), {
+        message: "El correo debe ser del dominio @ucab.edu"
+    }),
     tipo: z.string().min(1, "El tipo es requerido"),
 });
 
@@ -26,6 +28,10 @@ export const EditUsuarioForm: React.FC<EditUsuarioFormProps> = ({
     usuario,
     setUsuario,
 }) => {
+
+    console.log(usuario);
+
+
     const form = useForm<z.infer<typeof usuarioSchema>>({
         resolver: zodResolver(usuarioSchema),
         defaultValues: {
@@ -39,10 +45,16 @@ export const EditUsuarioForm: React.FC<EditUsuarioFormProps> = ({
 
     useEffect(() => {
         if (usuario) {
+            const rawTipo = usuario.tipo || usuario.Tipo || "";
+            const normalizedTipo = rawTipo
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .toUpperCase();
+
             form.reset({
                 nombre: usuario.nombre || usuario.Nombre,
                 correo: usuario.correo || usuario.Correo,
-                tipo: (usuario.tipo || usuario.Tipo || "").toUpperCase(),
+                tipo: normalizedTipo,
             });
         }
     }, [usuario, form]);
@@ -104,11 +116,11 @@ export const EditUsuarioForm: React.FC<EditUsuarioFormProps> = ({
                             name="tipo"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Tipo de Usuario</FormLabel>
+                                    <FormLabel>Rol</FormLabel>
                                     <Select onValueChange={field.onChange} value={field.value}>
                                         <FormControl>
                                             <SelectTrigger>
-                                                <SelectValue placeholder="Seleccione un tipo" />
+                                                <SelectValue placeholder="Seleccione un rol" />
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
