@@ -62,7 +62,7 @@ const resumen = () => {
                     Exportar
                 </Button>
             </div>
-            <div className="w-full flex justify-end items-center gap-4">
+            <div className="w-full flex justify-end items-center gap-4 mb-4">
                 {/* Navegación de Meses */}
                 <DateNavigator label='Mes' onPrev={handlePrevMonth} onNext={handleNextMonth}></DateNavigator>
                 {/* Boton de filtro dinamico */}
@@ -78,6 +78,9 @@ const resumen = () => {
                     <Calendar className="mr-2 h-4 w-4" />
                     {vistaActual === 'mensual' ? 'Vista Mensual' : 'Vista Semanal'}
                 </span>
+            </div>
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 w-full">
+                
             </div>
         </div>
     )
