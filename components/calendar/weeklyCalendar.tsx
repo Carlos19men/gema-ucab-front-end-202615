@@ -13,56 +13,7 @@ const MONTH_NAMES = [
 // Nombres de los días de la semana
 const DAYS_OF_WEEK = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
 
-// Tipos de tareas simuladas
-const TASK_TYPES = [
-  { titulo: "Revisión Grama", area: "Áreas Verdes" },
-  { titulo: "Revisión Baño", area: "Mod. 4 Piso 2" },
-  { titulo: "Revisión Poste", area: "Esc. Ing Industrial" },
-  { titulo: "Revisión A/A", area: "" },
-  { titulo: "Mantenimiento Bomba", area: "Planta Baja" },
-  { titulo: "Inspección Eléctrica", area: "Piso 3" },
-  { titulo: "Limpieza Filtros", area: "Azotea" }
-];
-
-const TASK_COLORS = ["grey", "blue", "yellow", "green"];
-
-// Función para generar tareas simuladas para un día específico
-const generateMockTasks = (date: Date) => {
-  const day = date.getDate();
-  const month = date.getMonth();
-  const year = date.getFullYear();
-  
-  // Usar una función determinística para generar tareas consistentes
-  const seed = day + month * 31 + year * 365;
-  const random = Math.sin(seed) * 10000;
-  const value = Math.abs(random - Math.floor(random));
-  
-  const tasks = [];
-  const numTasks = Math.floor(value * 4); // 0-3 tareas por día
-  
-  for (let i = 0; i < numTasks; i++) {
-    const taskSeed = seed + i * 100;
-    const taskRandom = Math.abs(Math.sin(taskSeed) * 10000 - Math.floor(Math.sin(taskSeed) * 10000));
-    
-    const taskIndex = Math.floor(taskRandom * TASK_TYPES.length);
-    const colorIndex = Math.floor((taskRandom * 1000) % TASK_COLORS.length);
-    
-    // Determinar el tipo de tarea basándose en el color
-    const taskType = TASK_COLORS[colorIndex] === 'blue' ? 'mantenimiento' : 'inspeccion';
-    
-    tasks.push({
-      id: `${day}-${month}-${year}-${i}`,
-      titulo: TASK_TYPES[taskIndex].titulo,
-      area: TASK_TYPES[taskIndex].area,
-      color: TASK_COLORS[colorIndex],
-      tipo: taskType
-    });
-  }
-  
-  return tasks;
-};
-
-// Función para generar los datos de la semana dinámicamente
+// Función para generar los datos de la semana dinámicamente (sin datos mockeados)
 const generateWeekData = (currentDate: Date) => {
   // Calcular el inicio de la semana (lunes)
   const startOfWeek = new Date(currentDate);
@@ -84,7 +35,7 @@ const generateWeekData = (currentDate: Date) => {
     weekData.push({
       dia: dayName,
       fecha: dayDate.getDate(),
-      tareas: generateMockTasks(dayDate)
+      tareas: [] // Vacío hasta que tengamos datos del API
     });
   }
   
@@ -142,77 +93,30 @@ const WeeklyCalendar = ({ initialDate }: WeeklyCalendarProps) => {
         return tareas;
     };
 
-    // Función para generar datos simulados del mantenimiento
-    const generateMaintenanceData = (tarea: any, fecha: Date) => {
-        const day = fecha.getDate();
-        const month = fecha.getMonth();
-        const year = fecha.getFullYear();
-        
-        // Usar el ID de la tarea para generar datos consistentes
-        const seed = parseInt(tarea.id.replace(/\D/g, '')) || day + month * 31;
-        const random = Math.abs(Math.sin(seed) * 10000 - Math.floor(Math.sin(seed) * 10000));
-        
-        const estados = ['Programado', 'En Progreso', 'Completado', 'Reprogramado'];
-        const prioridades = ['Alta', 'Media', 'Baja'];
-        const frecuencias = ['Diaria', 'Semanal', 'Mensual', 'Trimestral', 'Anual'];
-        const repeticiones = ['Sí', 'No'];
-        
-        // Generar fecha límite (entre 1-30 días después de la fecha actual)
-        const fechaLimite = new Date(fecha);
-        fechaLimite.setDate(fecha.getDate() + Math.floor(random * 30) + 1);
-        
-        return {
-            estado: estados[Math.floor(random * estados.length)],
-            prioridad: prioridades[Math.floor((random * 100) % prioridades.length)],
-            frecuencia: frecuencias[Math.floor((random * 1000) % frecuencias.length)],
-            repeticion: repeticiones[Math.floor((random * 10) % repeticiones.length)],
-            ubicacion: tarea.area || `${tarea.titulo} - Ubicación Técnica`,
-            fechaLimite: fechaLimite.toLocaleDateString('es-ES')
-        };
-    };
-
-    // Función para generar datos simulados de la inspección
-    const generateInspectionData = (tarea: any, fecha: Date) => {
-        const day = fecha.getDate();
-        const month = fecha.getMonth();
-        const year = fecha.getFullYear();
-        
-        // Usar el ID de la tarea para generar datos consistentes
-        const seed = parseInt(tarea.id.replace(/\D/g, '')) || day + month * 31 + 100; // +100 para diferenciarlo del mantenimiento
-        const random = Math.abs(Math.sin(seed) * 10000 - Math.floor(Math.sin(seed) * 10000));
-        
-        const estados = ['Realizado', 'Programado', 'En Proceso', 'Pendiente'];
-        const supervisores = ['Ana Gómez', 'Carlos Ruiz', 'María López', 'Juan Pérez', 'Luis Martín'];
-        const areas = ['Higiene y Seguridad', 'Mantenimiento General', 'Control de Calidad', 'Seguridad Industrial', 'Medio Ambiente'];
-        const frecuencias = ['Diaria', 'Semanal', 'Mensual', 'Trimestral', 'Semestral'];
-        const observaciones = [
-            'Todo en orden, sin observaciones.',
-            'Se requiere atención menor en algunos puntos.',
-            'Revisar extintores el próximo mes.',
-            'Equipos funcionando correctamente.',
-            'Se detectaron algunas irregularidades menores.',
-            'Inspección completada satisfactoriamente.',
-            'Requiere seguimiento en próxima inspección.'
-        ];
-        
-        return {
-            estado: estados[Math.floor(random * estados.length)],
-            supervisor: supervisores[Math.floor((random * 100) % supervisores.length)],
-            area: areas[Math.floor((random * 1000) % areas.length)],
-            frecuencia: frecuencias[Math.floor((random * 10000) % frecuencias.length)],
-            ubicacion: tarea.area || `${tarea.titulo} - Ubicación de Inspección`,
-            observacion: observaciones[Math.floor((random * 100000) % observaciones.length)]
-        };
-    };
-
     // Función para manejar el click en una tarea
     const handleTaskClick = (tarea: any, fecha: Date) => {
         if (tarea.tipo === 'mantenimiento') {
-            const maintenanceData = generateMaintenanceData(tarea, fecha);
+            // TODO: Generar datos reales del mantenimiento desde el API
+            const maintenanceData = {
+                estado: 'Programado',
+                prioridad: 'Alta',
+                frecuencia: 'Mensual',
+                repeticion: 'Sí',
+                ubicacion: tarea.area || 'Ubicación por definir',
+                fechaLimite: fecha.toLocaleDateString('es-ES')
+            };
             setSelectedMaintenanceData(maintenanceData);
             setIsMaintenanceModalOpen(true);
         } else if (tarea.tipo === 'inspeccion') {
-            const inspectionData = generateInspectionData(tarea, fecha);
+            // TODO: Generar datos reales de la inspección desde el API
+            const inspectionData = {
+                estado: 'Programado',
+                supervisor: 'Por asignar',
+                area: 'Por definir',
+                frecuencia: 'Mensual',
+                ubicacion: tarea.area || 'Ubicación por definir',
+                observacion: 'Sin observaciones'
+            };
             setSelectedInspectionData(inspectionData);
             setIsInspectionModalOpen(true);
         }
@@ -307,33 +211,39 @@ const WeeklyCalendar = ({ initialDate }: WeeklyCalendarProps) => {
 
                       {/* Lista de Tarjetas */}
                       <div className="flex flex-col gap-3 p-1">
-                        {tareasFiltradas.map((tarea) => (
-                          <div
-                            key={tarea.id}
-                            onClick={() => handleTaskClick(tarea, exactDate)}
-                            className={`
-                              relative p-3 rounded-r-xl rounded-l-sm border-l-[6px] shadow-sm cursor-pointer hover:opacity-90 transition-opacity
-                              ${tarea.tipo === 'mantenimiento' || tarea.tipo === 'inspeccion' ? 'hover:shadow-md hover:scale-[1.02] transition-all' : ''}
-                              ${cardColors[tarea.color as keyof typeof cardColors]}
-                            `}
-                          >
-                            <h4 className="font-bold text-gray-800 text-sm leading-tight mb-1">
-                              {tarea.titulo}
-                            </h4>
-                            {tarea.area && (
-                              <p className="text-xs text-gray-600 font-medium">
-                                {tarea.area}
-                              </p>
-                            )}
-                            {/* Indicador visual para tareas clickeables */}
-                            {tarea.tipo === 'mantenimiento' && (
-                              <div className="absolute top-2 right-2 w-2 h-2 bg-blue-500 rounded-full opacity-60"></div>
-                            )}
-                            {tarea.tipo === 'inspeccion' && (
-                              <div className="absolute top-2 right-2 w-2 h-2 bg-green-500 rounded-full opacity-60"></div>
-                            )}
+                        {tareasFiltradas.length === 0 ? (
+                          <div className="text-center text-gray-400 text-sm py-8">
+                            Sin actividades programadas
                           </div>
-                        ))}
+                        ) : (
+                          tareasFiltradas.map((tarea) => (
+                            <div
+                              key={tarea.id}
+                              onClick={() => handleTaskClick(tarea, exactDate)}
+                              className={`
+                                relative p-3 rounded-r-xl rounded-l-sm border-l-[6px] shadow-sm cursor-pointer hover:opacity-90 transition-opacity
+                                ${tarea.tipo === 'mantenimiento' || tarea.tipo === 'inspeccion' ? 'hover:shadow-md hover:scale-[1.02] transition-all' : ''}
+                                ${cardColors[tarea.color as keyof typeof cardColors]}
+                              `}
+                            >
+                              <h4 className="font-bold text-gray-800 text-sm leading-tight mb-1">
+                                {tarea.titulo}
+                              </h4>
+                              {tarea.area && (
+                                <p className="text-xs text-gray-600 font-medium">
+                                  {tarea.area}
+                                </p>
+                              )}
+                              {/* Indicador visual para tareas clickeables */}
+                              {tarea.tipo === 'mantenimiento' && (
+                                <div className="absolute top-2 right-2 w-2 h-2 bg-blue-500 rounded-full opacity-60"></div>
+                              )}
+                              {tarea.tipo === 'inspeccion' && (
+                                <div className="absolute top-2 right-2 w-2 h-2 bg-green-500 rounded-full opacity-60"></div>
+                              )}
+                            </div>
+                          ))
+                        )}
                       </div>
                     </div>
                   </div>

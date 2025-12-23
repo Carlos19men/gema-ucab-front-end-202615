@@ -17,20 +17,6 @@ const MONTH_NAMES = [
   "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
 ];
 
-// Función para generar datos simulados de actividades por día
-const generateMockData = (day: number, month: number, year: number) => {
-    // Simulamos algunos días con actividades
-    const seed = day + month * 31 + year;
-    const random = Math.sin(seed) * 10000;
-    const value = Math.abs(random - Math.floor(random));
-    
-    if (value < 0.3) return {}; // Sin actividades
-    if (value < 0.6) return { icon: 'green' }; // Solo inspecciones
-    if (value < 0.8) return { icon: 'multi' }; // Mantenimientos e inspecciones
-    if (value < 0.9) return { icon: 'multi', hasBar: true }; // Con barra de colores
-    return {}; // Sin actividades
-};
-
 // Función para generar los días del calendario dinámicamente
 const generateCalendarDays = (date: Date) => {
     const year = date.getFullYear();
@@ -53,8 +39,7 @@ const generateCalendarDays = (date: Date) => {
         const day = daysInPrevMonth - i;
         days.push({
             dia: day,
-            actual: false,
-            ...generateMockData(day, month - 1, year)
+            actual: false
         });
     }
     
@@ -62,8 +47,7 @@ const generateCalendarDays = (date: Date) => {
     for (let day = 1; day <= daysInMonth; day++) {
         days.push({
             dia: day,
-            actual: true,
-            ...generateMockData(day, month, year)
+            actual: true
         });
     }
     
@@ -74,8 +58,7 @@ const generateCalendarDays = (date: Date) => {
     for (let day = 1; day <= remainingCells; day++) {
         days.push({
             dia: day,
-            actual: false,
-            ...generateMockData(day, month + 1, year)
+            actual: false
         });
     }
     
@@ -162,10 +145,8 @@ const MonthlyCalendar = ({ onDayClick }: MonthlyCalendarProps) => {
                                     ${item.actual ? 'bg-gema-lightgrey hover:bg-gray-50' : 'bg-gema-darkgrey cursor-default'}
                                 `}
                             >
-                                {/* Barra de colores (Ejemplo del día 3) */}
-                                {item.hasBar && (
-                                    <div className="absolute top-0 left-0 right-0 h-1.5 rounded-t-lg bg-linear-to-r from-gema-yellow via-gema-blue to-gema-green" />
-                                )}
+                                {/* Barra de colores */}
+                                {/* Se mostrará cuando tengamos datos del API con múltiples actividades */}
 
                                 {/* Número del día */}
                                 <span className={`text-sm font-bold text-gema-grey-text`}>
@@ -174,15 +155,7 @@ const MonthlyCalendar = ({ onDayClick }: MonthlyCalendarProps) => {
 
                                 {/* Iconos de contenido */}
                                 <div className="flex gap-1">
-                                    {/*Logica de filtrado */}
-                                    {(filtroActivo === 'todos' || filtroActivo === 'mantenimientos') && 
-                                    (item.icon === 'multi') && (
-                                        <FileCog className="h-7 w-7 text-gema-blue" />
-                                    )}
-                                    {(filtroActivo === 'todos' || filtroActivo === 'inspecciones') && 
-                                    (item.icon === 'green' || item.icon === 'multi') && (
-                                        <FileSearchCorner className="h-7 w-7 text-gema-green" />
-                                    )}
+                                    {/* Los iconos se mostrarán aquí cuando tengamos datos del API */}
                                 </div>
                             </div>
                         ))}
