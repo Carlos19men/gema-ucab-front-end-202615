@@ -84,8 +84,23 @@ const resumen = () => {
         setCurrentDate(newDate);
     };
 
-    // Formateo para la etiqueta
-    const labelHeader = `${MONTH_NAMES[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
+    // Función auxiliar para obtener el primer día de la semana (Lunes)
+    const getStartOfWeek = (date: Date) => {
+        const d = new Date(date);
+        const day = d.getDay();
+        const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Ajustar para que Lunes sea el primer día
+        return new Date(d.setDate(diff));
+    };
+
+    // Función para generar el texto del header
+    const getWeekHeader = (date: Date) => {
+        const start = getStartOfWeek(date);
+        const end = new Date(start);
+        end.setDate(start.getDate() + 6); // Sumar 6 días para obtener el domingo
+
+        // Formato: "DD de MMM - DD de MMM YYYY"
+        return `${start.getDate()} de ${MONTH_NAMES[start.getMonth()]} - ${end.getDate()} de ${MONTH_NAMES[end.getMonth()]} ${end.getFullYear()}`;
+    };
     
     // Función para alternar (toggle)
     const alternarVista = () => {
@@ -95,6 +110,51 @@ const resumen = () => {
             setVistaActual('mensual');
         }
     };
+
+    const handlePrev = () => {
+        const newDate = new Date(currentDate);
+        if (vistaActual === 'mensual') {
+            newDate.setMonth(newDate.getMonth() - 1);
+        } else {
+            // Si es semanal, restamos 7 días
+            newDate.setDate(newDate.getDate() - 7);
+        }
+        setCurrentDate(newDate);
+    };
+
+    const handleNext = () => {
+        const newDate = new Date(currentDate);
+        if (vistaActual === 'mensual') {
+            newDate.setMonth(newDate.getMonth() + 1);
+        } else {
+            // Si es semanal, sumamos 7 días
+            newDate.setDate(newDate.getDate() + 7);
+        }
+        setCurrentDate(newDate);
+    };
+
+    // --- HEADER DINÁMICO ---
+    // Esta es la parte clave que pediste
+    let labelHeader = '';
+    
+    if (vistaActual === 'mensual') {
+        labelHeader = `${MONTH_NAMES[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
+    } else {
+        // Lógica para vista semanal (calcular inicio y fin de semana)
+        const startOfWeek = new Date(currentDate);
+        // Ajustamos al lunes más cercano (opcional, depende si quieres que la semana empiece hoy o el lunes)
+        const day = startOfWeek.getDay();
+        const diff = startOfWeek.getDate() - day + (day === 0 ? -6 : 1); 
+        startOfWeek.setDate(diff);
+
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 6); // Fin de semana (Domingo)
+
+        // Verificamos si la semana cambia de año para mostrarlo correctamente
+        const yearStr = endOfWeek.getFullYear();
+        
+        labelHeader = `${startOfWeek.getDate()} de ${MONTH_NAMES[startOfWeek.getMonth()]} - ${endOfWeek.getDate()} de ${MONTH_NAMES[endOfWeek.getMonth()]} ${yearStr}`;
+    }
 
     //logica de filtrado
     const filteredTasks = tasks.filter((task) => {
