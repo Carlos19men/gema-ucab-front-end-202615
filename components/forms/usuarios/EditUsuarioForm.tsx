@@ -13,8 +13,8 @@ import { useEffect } from "react";
 
 const usuarioSchema = z.object({
     nombre: z.string().min(1, "El nombre es requerido"),
-    correo: z.string().email("Correo inválido").refine((val) => val.endsWith("@ucab.edu"), {
-        message: "El correo debe ser del dominio @ucab.edu"
+    correo: z.string().email("Correo inválido").refine((val) => val.includes("ucab.edu.ve") && val.includes("@"), {
+        message: "El correo debe ser del dominio @ucab.edu.ve"
     }),
     tipo: z.string().min(1, "El tipo es requerido"),
 });

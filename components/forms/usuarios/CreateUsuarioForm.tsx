@@ -77,7 +77,7 @@ export const CreateUsuarioForm: React.FC<CreateUsuarioFormProps> = ({
                                 <FormItem>
                                     <FormLabel>Correo Electrónico</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Ej: juan.perez@email.com" {...field} />
+                                        <Input placeholder="Ej: juan.perez@4cab.edu.ve" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
