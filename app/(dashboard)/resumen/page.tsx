@@ -3,11 +3,37 @@
 import { Button } from "@/components/ui/button";
 import DateNavigator from "@/components/ui/dateNavigator";
 import DropdownFilter from "@/components/ui/dropdownFilter";
+import Card from "@/components/resumen/card";
 import { 
     Calendar, 
     Upload
 } from "lucide-react";
 import { useState } from "react";
+
+// DATA SIMULADA
+const tasks = [
+    {
+      id: 1,
+      title: "Mantenimiento de Aire Acondicionado",
+      location: " M1-P01 Módulo 1 Piso 1",
+      date: "Martes 4 de Noviembre de 2025",
+      status: "No empezado"
+    },
+    {
+      id: 2,
+      title: "Instalación de Circuito Eléctrico",
+      location: " M2-P2 Módulo 2 Piso 2",
+      date: "Miercoles 5 de Noviembre de 2025",
+      status: "Reprogramado"
+    },
+     {
+      id: 3,
+      title: "Mantenimiento Preventivo HVAC",
+      location: " M2-P2 Módulo 2 Piso 1",
+      date: "Jueves 6 de Noviembre de 2025",
+      status: "En ejecucion"
+    },
+];
 
 /*Nombres de los meses */
 const MONTH_NAMES = [
@@ -80,7 +106,18 @@ const resumen = () => {
                 </span>
             </div>
             <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 w-full">
-                
+                {/*CARDS CON LOS DATOS */}
+                <div className="flex flex-col gap-2">
+                    {tasks.map((task) => (
+                    <Card
+                        key={task.id}
+                        title={task.title}
+                        location={task.location}
+                        date={task.date}
+                        status={task.status as any} // Casting simple si TypeScript se queja
+                    />
+                    ))}
+                </div>
             </div>
         </div>
     )
