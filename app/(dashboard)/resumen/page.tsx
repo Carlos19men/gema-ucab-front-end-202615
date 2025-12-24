@@ -52,6 +52,15 @@ const MONTH_NAMES = [
   "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
 ];
 
+/*Opciones del filtro */
+const opcionesFiltro = [
+    { id: 'todos', label: 'Todos', color: null},
+    { id: 'no-empezado', label: 'No empezado', color: 'bg-gema-darkgrey' },
+    { id: 'reprogramado', label: 'Reprogramado', color: 'bg-gema-yellow' },
+    { id: 'en-ejecucion', label: 'En ejecucion', color: 'bg-gema-blue' },
+    { id: 'culminado', label: 'Culminado', color: 'bg-gema-green' },
+];
+
 const resumen = () => {
     //Vista Actual (Mensual o Semanal) por defecto es mensual
     const [vistaActual, setVistaActual] = useState('mensual');
@@ -87,6 +96,16 @@ const resumen = () => {
         }
     };
 
+    //logica de filtrado
+    const filteredTasks = tasks.filter((task) => {
+        if (filtroActivo === 'todos') return true;
+
+        // Normalizar: minúsculas y reemplazamos espacios por guiones
+        const statusNormalizado = task.status.toLowerCase().replace(/\s+/g, '-');
+        
+        return statusNormalizado === filtroActivo;
+    });
+
     return(
         <div className="p-6 max-w-7.5xl">
             <div className="flex flex-col md:flex-row md:justify-between items-start md:items-center gap-4 mb-6">
@@ -104,6 +123,7 @@ const resumen = () => {
                 <DateNavigator label='Mes' onPrev={handlePrevMonth} onNext={handleNextMonth}></DateNavigator>
                 {/* Boton de filtro dinamico */}
                 <DropdownFilter 
+                    opciones={opcionesFiltro}
                     filtroActual={filtroActivo} 
                     onFiltroChange={setFiltroActivo} 
                 />
@@ -119,16 +139,23 @@ const resumen = () => {
             <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 w-full">
                 {/*CARDS CON LOS DATOS */}
                 <div className="flex flex-col gap-2">
-                    {tasks.map((task) => (
-                    <Card
-                        key={task.id}
-                        title={task.title}
-                        location={task.location}
-                        date={task.date}
-                        status={task.status as any} // Casting simple si TypeScript se queja
-                        type={task.type as any}
-                    />
-                    ))}
+                    {filteredTasks.length > 0 ? (
+                        filteredTasks.map((task) => (
+                            <Card
+                                key={task.id}
+                                title={task.title}
+                                location={task.location}
+                                date={task.date}
+                                status={task.status as any}
+                                type={task.type as any}
+                            />
+                        ))
+                    ) : (
+                        // Mensaje opcional cuando no hay resultados
+                        <div className="text-center py-10 text-gray-400">
+                            No hay tareas con el estado "{opcionesFiltro.find(o => o.id === filtroActivo)?.label}"
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { MonthlyCalendar } from "@/components/calendar/monthlyCalendar";
 import { WeeklyCalendar } from "@/components/calendar/weeklyCalendar";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogTrigger } from "@radix-ui/react-dialog";
 import { 
     CirclePlus, 
     FileText, 

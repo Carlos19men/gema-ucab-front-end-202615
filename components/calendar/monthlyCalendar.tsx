@@ -17,6 +17,13 @@ const MONTH_NAMES = [
   "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
 ];
 
+/*Opciones del filtro */
+const opcionesFiltro = [
+    { id: 'todos', label: 'Todos', color: null},
+    { id: 'mantenimientos', label: 'Mantenimientos Preventivo', color: 'bg-gema-blue' },
+    { id: 'inspecciones', label: 'Inspecciones', color: 'bg-gema-green' },
+];
+
 /*Array simulado */
 const diasSimulados = [
     // Mes anterior (Gris oscuro)
@@ -91,6 +98,7 @@ const MonthlyCalendar = () => {
                 <div className="flex flex-col md:flex-row md:justify-between gap-4">
                     {/* Boton de filtro dinamico */}
                     <DropdownFilter 
+                        opciones={opcionesFiltro}
                         filtroActual={filtroActivo} 
                         onFiltroChange={setFiltroActivo} 
                     />
