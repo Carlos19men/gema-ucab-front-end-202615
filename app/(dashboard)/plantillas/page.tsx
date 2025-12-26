@@ -61,14 +61,14 @@ const Plantillas = () => {
     );
   }
 
-  const plantillas = plantillasData?.data || [];
+  const plantillas = (plantillasData?.data || []).filter((p: Plantilla) => p.tipo === 'Checklist');
 
   return (
     <div className="p-6 max-w-6xl">
       <div className="flex flex-col md:flex-row md:justify-between items-start md:items-center gap-4 mb-6">
         <div>
           <h1 className="text-2xl font-bold">Plantillas</h1>
-          <p className="text-muted-foreground">Plantillas de Checklist y Mantenimientos por Condición</p>
+          <p className="text-muted-foreground">Plantillas de Checklist</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
