@@ -1,7 +1,6 @@
 'use client';
 
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -10,13 +9,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { useCreateGrupo } from "@/hooks/grupos-trabajo/useCreateGrupo";
 import { useSupervisores } from "@/hooks/usuarios/useUsuarios";
 import { Combobox } from "@/components/ui/combobox";
-
-const grupoTrabajoSchema = z.object({
-  codigo: z.string().min(1, "El código es requerido"), 
-  nombre: z.string().min(1, "El nombre es requerido"),
-  supervisor: z.string().min(1, "El supervisor es requerido"),
-  area: z.string().min(1, "El área es requerida"),
-});
+import { grupoTrabajoSchema, type GrupoTrabajoForm } from "@/lib/validations/grupoTrabajoSchema";
 
 interface CreateGrupoFormProps {
   open: boolean;
@@ -27,7 +20,7 @@ export const CreateGrupoForm: React.FC<CreateGrupoFormProps> = ({
   open,
   onOpenChange,
 }) => {
-  const form = useForm<z.infer<typeof grupoTrabajoSchema>>({
+  const form = useForm<GrupoTrabajoForm>({
     resolver: zodResolver(grupoTrabajoSchema),
     defaultValues: {
       codigo: "",
@@ -40,7 +33,7 @@ export const CreateGrupoForm: React.FC<CreateGrupoFormProps> = ({
   const createGrupoMutation = useCreateGrupo();
   const { supervisores, isLoading: isLoadingTecnicos } = useSupervisores();
 
-  const handleSubmit = (values: z.infer<typeof grupoTrabajoSchema>) => {
+  const handleSubmit = (values: GrupoTrabajoForm) => {
     createGrupoMutation.mutate({
       codigo: values.codigo,
       nombre: values.nombre,
