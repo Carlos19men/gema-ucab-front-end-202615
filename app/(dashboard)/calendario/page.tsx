@@ -103,7 +103,16 @@ const Calendario = () => {
                             </SelectContent>
                         </Select>
                     </div>
-                    {selectedType === 1 && <MaintenanceFormContent />}
+                    {selectedType === 1 && (
+                        <MaintenanceFormContent 
+                            onClose={handleCloseModal}
+                            onSuccess={() => {
+                                // Aquí puedes agregar lógica adicional después de crear el mantenimiento
+                                // Por ejemplo, refrescar el calendario o mostrar una notificación
+                                console.log('Mantenimiento creado exitosamente');
+                            }}
+                        />
+                    )}
                     {selectedType === 2 && <InspectionFormContent />}
                 </div>
             </Modal>
