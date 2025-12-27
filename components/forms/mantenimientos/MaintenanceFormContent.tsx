@@ -12,6 +12,7 @@ import { useCreateMantenimiento } from "@/hooks/mantenimientos/useCreateMantenim
 import { useUbicaciones } from "@/hooks/ubicaciones-tecnicas/useUbicaciones";
 import { ComboSelectInput } from "@/components/ui/comboSelectInput";
 import { useSupervisores } from "@/hooks/usuarios/useUsuarios";
+import { useGrupos } from "@/hooks/grupos-trabajo/useGrupoTrabajo";
 
 interface MaintenanceFormContentProps {
     initialValues?: Partial<MantenimientoFormData>;
@@ -26,7 +27,11 @@ export const MaintenanceFormContent: React.FC<MaintenanceFormContentProps> = ({
 }) => {
     const createMantenimientoMutation = useCreateMantenimiento();
     const { data: ubicaciones } = useUbicaciones();
+
+
+
     const { supervisores, isLoading: isLoadingSupervisores } = useSupervisores();
+    const { data: grupos, isLoading: isLoadingGrupos } = useGrupos();
 
     const form = useForm<MantenimientoFormData>({
         resolver: zodResolver(mantenimientoSchema),
@@ -57,6 +62,7 @@ export const MaintenanceFormContent: React.FC<MaintenanceFormContentProps> = ({
             fechaCreacion: new Date().toISOString(),
             idUbicacionTecnica: data.idUbicacionTecnica,
             idGrupo: data.idGrupo,
+            supervisorId: supervisores?.find(s => s.Nombre === data.supervisor)?.Id || 0, // Buscar ID del supervisor seleccionado
             prioridad: data.prioridad,
             fechaLimite: data.fechaFin,
             frecuencia: data.frecuencia || "Mensual",
@@ -138,6 +144,37 @@ export const MaintenanceFormContent: React.FC<MaintenanceFormContentProps> = ({
                                         <SelectItem value="Baja">Baja</SelectItem>
                                         <SelectItem value="Media">Media</SelectItem>
                                         <SelectItem value="Alta">Alta</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+
+
+                    {/* Grupo de Trabajo */}
+                    <FormField
+                        control={form.control}
+                        name="idGrupo"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Grupo de Trabajo</FormLabel>
+                                <Select
+                                    onValueChange={(val) => field.onChange(Number(val))}
+                                    defaultValue={field.value?.toString()}
+                                >
+                                    <FormControl>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Seleccionar grupo" />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        {grupos?.map((grupo: any) => (
+                                            <SelectItem key={grupo.id} value={grupo.id.toString()}>
+                                                {grupo.nombre} ({grupo.codigo})
+                                            </SelectItem>
+                                        ))}
                                     </SelectContent>
                                 </Select>
                                 <FormMessage />
