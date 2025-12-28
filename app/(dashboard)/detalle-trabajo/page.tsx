@@ -9,10 +9,11 @@ const ChecklistPage = () => {
   //Obtener el ID de la URL (asumiendo ruta dinámica [id])
   //const params = useParams();
   //const id = Number(params.id); // Convertir a número
-  const id = 1; // Temporalmente fijo para pruebas  
+  const id = 1; // Temporalmente fijo para pruebas 
+  const type = "mantenimientos"; // Temporalmente fijo para pruebas
 
   //Usar el hook para traer los datos del Backend
-  const { data: checklist, isLoading, isError } = useGetAllChecklistItem(id);
+  const { data: checklist, isLoading, isError } = useGetAllChecklistItem(type,id);
 
   // Estado para controlar qué vista mostrar
   // false = Muestra el detalle general
