@@ -2,9 +2,7 @@
 
 import ChecklistComponent from "@/components/checklist/checklist";
 import { useGetAllChecklistItem } from "@/hooks/checklist/useGetAllChecklistItem";
-import type { Checklist } from "@/types/checklist.types";
 import { Loader2 } from "lucide-react";
-import { useParams } from "next/navigation";
 import { useState } from "react";
 
 const ChecklistPage = () => {

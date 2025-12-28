@@ -42,5 +42,11 @@ export async function updateChecklistItem(checklistId: number, data: Actividad) 
     descripcion: data.descripcion
   };
 
+  // --- AGREGA ESTO PARA ESPIAR ---
+  console.log("INTENTANDO ACTUALIZAR:");
+  console.log("URL:", `/item-checklist/${checklistId}/${data.id}`);
+  console.log("Payload:", payload);
+  // -------------------------------
+
   return apiClient.put<Checklist>(`/item-checklist/${checklistId}/${data.id}`, payload);
 }
