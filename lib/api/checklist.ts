@@ -30,8 +30,16 @@ export async function createChecklistItem(checklistId: number, data: Actividad) 
 export async function updateChecklistItem(checklistId: number, data: Actividad) {
   const payload = {
     titulo: data.nombre,     
-    descripcion: data.descripcion
+    descripcion: data.descripcion,
+    estado: data.estado
   };
 
   return apiClient.patch<Actividad>(`/item-checklist/${checklistId}/${data.id}`, payload);
+}
+
+export async function exportChecklistPDF(checklistId: number) {
+  // responseType: 'blob' indica que esperamos un archivo binario
+  return apiClient.get<Blob>(`/pdf-checklists/${checklistId}/pdf`, {
+    responseType: 'blob'
+  });
 }

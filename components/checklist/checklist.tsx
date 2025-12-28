@@ -14,6 +14,8 @@ import { ArrowLeft,
     Share, 
     Trash2 
 } from "lucide-react";
+import { useUpdateChecklistItem } from "@/hooks/checklist/useUpdateChecklistItem";
+import { exportChecklistPDF } from "@/lib/api/checklist";
 
 interface ChecklistProps {
     checklist: Checklist;
@@ -39,13 +41,31 @@ const Checklist = ({ checklist, onBack }: ChecklistProps) => {
     const pendingTasks = totalTasks - completedTasks;
     const progressPercentage = totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
 
+    const { mutate: updateTask } = useUpdateChecklistItem();
+
+
     //Marcar o desmarcar tarea completada
     const toggleTask = (id:number) => {
+        // Encontramos la tarea actual para obtener sus datos
+        const taskToUpdate = tasks.find(t => t.id === id);
+        if (!taskToUpdate) return;
+
+        // Calculamos el nuevo estado
+        const newStatus = taskToUpdate.estado === "COMPLETADA" ? "PENDIENTE" : "COMPLETADA";
+
         setTasks(currentTasks => 
-        currentTasks.map(task => 
-            task.id === id ? { ...task, estado: task.estado === "COMPLETADA" ? "PENDIENTE" : "COMPLETADA" } : task
-        )
+            currentTasks.map(task => 
+                task.id === id ? { ...task, estado: newStatus } : task
+            )
         );
+
+        updateTask({
+            checklistId: checklist.id,
+            data: {
+                ...taskToUpdate,
+                estado: newStatus // Enviamos el nuevo estado
+            }
+        });
     };
 
     //Eliminar tarea
@@ -57,6 +77,31 @@ const Checklist = ({ checklist, onBack }: ChecklistProps) => {
     const handleEditClick = (task: Actividad) => {
         setActivityToEdit(task); // Guardamos la tarea seleccionada en el estado
         setIsEditModalOpen(true); // Abrimos el modal
+    };
+
+    const handleExport = async () => {
+        try {
+            console.log("Generando PDF..."); // Feedback visual opcional
+
+            // response SERÁ el objeto Blob directamente gracias al cambio en client.ts
+            const blob = await exportChecklistPDF(checklist.id); 
+            
+            // Crear URL y descargar
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `${checklist.titulo || 'Checklist'}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            
+            link.parentNode?.removeChild(link);
+            window.URL.revokeObjectURL(url);
+            
+            console.log("PDF descargado correctamente");
+        } catch (error) {
+            console.error("Error al exportar PDF:", error);
+            console.log("Error al descargar el PDF");
+        }
     };
 
     return (
@@ -73,7 +118,8 @@ const Checklist = ({ checklist, onBack }: ChecklistProps) => {
                     <p className="text-slate-500 ml-10 font-medium">{checklist.ubicacion}</p>
                 </div>
                 
-                <Button className="bg-sidebar-border text-black hover:bg-gray-300">
+                <Button className="bg-sidebar-border text-black hover:bg-gray-300"
+                onClick={handleExport}>
                     <Share size={18} />
                     <span>Exportar</span>
                 </Button>
