@@ -12,17 +12,15 @@ export const useUpdateChecklistItem = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: ({ checklistId, data }: UpdateParams) => updateChecklistItem(checklistId, data),
-        
+        mutationFn: ({ checklistId, data }: UpdateParams) => 
+            updateChecklistItem(checklistId, data),
+
         onSuccess: () => {
-            toast.success("Actividad actualizada correctamente");
-            // Hacer que la lista de actividades se recargue sola
-            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.CHECKLIST_ITEMS });
+            queryClient.invalidateQueries({ queryKey: ["checklistItems"] });
+            console.log("Item actualizado correctamente");
         },
-        
-        onError: (error: Error) => {
-            console.error("Error al actualizar la actividad:", error);
-            toast.error(error.message || "No se pudo actualizar la actividad");
+        onError: (error) => {
+            console.error("Error al actualizar:", error);
         }
     });
 }

@@ -64,19 +64,17 @@ export const EditarChecklistItemForm: React.FC<ChecklistProps> = ({
     const handleSubmit = form.handleSubmit((values) => {
         if (!actividad) return;
 
-        // 3. ACTUALIZA LA LLAMADA AL MUTATE
         updateMutation.mutate({
-            checklistId: checklistId, // Ahora pasamos el ID del padre
+            checklistId: checklistId, // ID Padre
             data: {
-                id: actividad.id,
+                ...actividad,     // Mantenemos ID y Estado originales
                 nombre: values.nombre,
-                descripcion: values.descripcion,
-                estado: actividad.estado
+                descripcion: values.descripcion
             }
         }, {
             onSuccess: () => {
-                if (onSuccess) onSuccess();
-                handleClose();
+                onClose();
+                form.reset();
             }
         });
     });

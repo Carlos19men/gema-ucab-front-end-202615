@@ -16,7 +16,7 @@ export async function getChecklistItems(checklistId: number) {
       id: item.idItemCheck,
       nombre: item.titulo,          
       descripcion: item.descripcion,
-      estado: "PENDIENTE"            // ⚠️ IMPORTANTE: Como la API no trae estado, forzamos uno por defecto
+      estado: "PENDIENTE"   // Valor por defecto
     }))
   };
 
@@ -36,5 +36,11 @@ export async function createChecklistItem(checklistId: number, data: Actividad) 
 }
 
 export async function updateChecklistItem(checklistId: number, data: Actividad) {
-  return apiClient.put<Checklist>(`/item-checklist/${checklistId}`, data);
+  const payload = {
+    idItemCheck: data.id,    // ID con el nombre que espera el backend
+    titulo: data.nombre,     // nombre -> titulo
+    descripcion: data.descripcion
+  };
+
+  return apiClient.put<Checklist>(`/item-checklist/${checklistId}/${data.id}`, payload);
 }
