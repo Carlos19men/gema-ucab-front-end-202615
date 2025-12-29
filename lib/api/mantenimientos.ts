@@ -28,5 +28,9 @@ export const mantenimientosAPI = {
 
     async getFiltros(date: string, filter: string): Promise<any> {
         return apiClient.get<any>(`/mantenimientos/filtros?date=${date}&filter=${filter}`);
+    },
+
+    async getResumen(id: number): Promise<any> {
+        return apiClient.get<any>(`/mantenimientos/${id}/resumen`);
     }
 }

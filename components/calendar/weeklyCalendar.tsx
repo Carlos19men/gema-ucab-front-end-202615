@@ -4,6 +4,7 @@ import DropdownFilter from "../ui/dropdownFilter";
 import { MaintenanceSummaryModal } from "@/components/forms/mantenimientos/MaintenanceSummaryModal";
 import { InspectionSummaryModal } from "@/components/forms/inspecciones/InspectionSummaryModal";
 import { useMantenimientosFiltros } from "@/hooks/mantenimientos/useMantenimientosFiltros";
+import { mantenimientosAPI } from "@/lib/api/mantenimientos";
 
 /*Nombres de los meses */
 const MONTH_NAMES = [
@@ -141,19 +142,37 @@ const WeeklyCalendar = ({ initialDate }: WeeklyCalendarProps) => {
   };
 
   // Función para manejar el click en una tarea
-  const handleTaskClick = (tarea: any, fecha: Date) => {
+  const handleTaskClick = async (tarea: any, fecha: Date) => {
     if (tarea.tipo === 'mantenimiento') {
-      // TODO: Generar datos reales del mantenimiento desde el API
-      const maintenanceData = {
-        estado: 'Programado',
-        prioridad: 'Alta',
-        frecuencia: 'Mensual',
-        repeticion: 'Sí',
-        ubicacion: tarea.area || 'Ubicación por definir',
-        fechaLimite: fecha.toLocaleDateString('es-ES')
-      };
-      setSelectedMaintenanceData(maintenanceData);
-      setIsMaintenanceModalOpen(true);
+      try {
+        // Obtener resumen completo del mantenimiento desde el API
+        const resumen = await mantenimientosAPI.getResumen(tarea.id);
+
+        const maintenanceData = {
+          estado: resumen.estado || 'No empezado',
+          prioridad: resumen.prioridad || 'Media',
+          frecuencia: 'Mensual', // No disponible en el API aún
+          repeticion: 'Sí', // No disponible en el API aún
+          ubicacion: resumen.ubicacion || 'Ubicación por definir',
+          fechaLimite: resumen.fechaLimite || fecha.toLocaleDateString('es-ES'),
+          titulo: resumen.titulo || 'Sin título'
+        };
+        setSelectedMaintenanceData(maintenanceData);
+        setIsMaintenanceModalOpen(true);
+      } catch (error) {
+        console.error('Error al obtener resumen de mantenimiento:', error);
+        // Fallback a datos básicos si falla la llamada
+        const maintenanceData = {
+          estado: tarea.estado || 'No empezado',
+          prioridad: 'Media',
+          frecuencia: 'Mensual',
+          repeticion: 'Sí',
+          ubicacion: tarea.area || 'Ubicación por definir',
+          fechaLimite: tarea.fechaLimite || fecha.toLocaleDateString('es-ES')
+        };
+        setSelectedMaintenanceData(maintenanceData);
+        setIsMaintenanceModalOpen(true);
+      }
     } else if (tarea.tipo === 'inspeccion') {
       // TODO: Generar datos reales de la inspección desde el API
       const inspectionData = {

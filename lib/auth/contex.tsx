@@ -43,7 +43,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Usar los datos del usuario que vienen en la respuesta del login
       setUser(response.data.usuario)
 
-      router.push('/ubicaciones-tecnicas')
+      router.push('/calendario')
 
     } catch (err: any) {
       const errorMessage = err.message || 'Error en el inicio de sesión'

@@ -1,3 +1,5 @@
+'use client'
+
 import React from "react";
 import type { UbicacionTecnica } from "@/types/models/ubicacionesTecnicas.types";
 import { UbicacionRow } from "./UbicacionRow";
