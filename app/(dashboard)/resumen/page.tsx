@@ -34,21 +34,22 @@ export const resumenData: resumen = {
   inspecciones: [
     {
       idInspeccion: 2,
-      // La data original era 'Instalación de Circuito', asumo área Electricidad
+      titulo: "Inspección de Extintores",
       areaEncargada: "Electricidad", 
       supervisor: "Ing. Carlos Pérez", // Dato generado para cumplir el type
       ubicacion: "M2-P2 Módulo 2 Piso 2",
       frecuencia: "Semestral", // Dato generado
-      estado: "REPROGRAMADO", // Nota: El type de inspección exige MAYÚSCULAS
+      estado: "Reprogramado", // Nota: El type de inspección exige MAYÚSCULAS
     },
     {
       idInspeccion: 4,
+      titulo: "Inspección de Sistemas de Seguridad",
       // La data original era 'Sistemas de Seguridad', asumo área Seguridad
       areaEncargada: "Seguridad Industrial",
       supervisor: "Lic. Ana Rodríguez", // Dato generado para cumplir el type
       ubicacion: "M1-P01 Módulo 1 Piso 3",
       frecuencia: "Mensual", // Dato generado
-      estado: "CULMINADO", // Nota: El type de inspección exige MAYÚSCULAS
+      estado: "Culminado", // Nota: El type de inspección exige MAYÚSCULAS
     },
   ],
 };
