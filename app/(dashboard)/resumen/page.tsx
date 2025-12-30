@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import DateNavigator from "@/components/ui/dateNavigator";
 import DropdownFilter from "@/components/ui/dropdownFilter";
-import Card from "@/components/resumen/card";
+import MaintenanceCard from "@/components/resumen/maintenanceCard";
 import { 
     Calendar, 
     Upload
@@ -201,7 +201,7 @@ const resumen = () => {
                 <div className="flex flex-col gap-2">
                     {filteredTasks.length > 0 ? (
                         filteredTasks.map((task) => (
-                            <Card
+                            <MaintenanceCard
                                 key={task.id}
                                 title={task.title}
                                 location={task.location}

@@ -14,7 +14,7 @@ interface MaintenanceCardProps {
   onClick?: () => void;
 }
 
-const Card = ({
+const MaintenanceCard = ({
     title, 
     location, 
     date, 
@@ -70,4 +70,4 @@ const Card = ({
     );
 }
 
-export default Card;
+export default MaintenanceCard;
