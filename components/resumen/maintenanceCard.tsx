@@ -3,7 +3,6 @@ import type { ResumenMantenimiento } from "@/types/resumenMantenimiento.type";
 import { 
     MapPin, 
     Calendar,
-    FileSearchCorner, 
     FileCog
 } from "lucide-react";
 
@@ -34,7 +33,6 @@ const MaintenanceCard = ({
                 <div className="flex justify-between gap-x-2">
                     <FileCog ></FileCog>
                     <h3 className="font-bold text-lg">{mantenimiento.titulo}</h3>
-                    <h4 className="font-semibold text-lg">{mantenimiento.ubicacion}</h4>
                 </div>
                 
                 <div className="flex flex-col gap-1 text-sm ml-6">

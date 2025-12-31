@@ -2,9 +2,10 @@ import type { ResumenInspeccion } from "@/types/resumenInspeccion.types";
 
 import { 
     MapPin, 
-    Calendar,
-    FileSearchCorner, 
-    FileCog
+    Warehouse,
+    FileSearchCorner,
+    UserRoundSearch,
+    Clock
 } from "lucide-react";
 
 interface InspeccionCardProps {
@@ -32,9 +33,8 @@ const InspeccionCard = ({
             {/* Columna Izquierda: Información */}
             <div className="flex flex-col gap-2">
                 <div className="flex justify-between gap-x-2">
-                    <FileCog ></FileCog>
+                    <FileSearchCorner ></FileSearchCorner>
                     <h3 className="font-bold text-lg">{inspeccion.titulo}</h3>
-                    <h4 className="font-semibold text-lg">{inspeccion.ubicacion}</h4>
                 </div>
                 
                 <div className="flex flex-col gap-1 text-sm ml-6">
@@ -44,10 +44,20 @@ const InspeccionCard = ({
                     <span className="font-medium ">{inspeccion.ubicacion}</span>
                 </div>
 
-                {/* Fila de Fecha */}
+                {/* Fila de Área Encargada */}
                 <div className="flex items-center gap-2">
-                    <Calendar size={16}></Calendar>
-                    {/*<span>{inspeccion.fechaLimite.toLocaleDateString()}</span>*/}
+                    <Warehouse size={16}></Warehouse>
+                    <span className="font-medium ">{inspeccion.areaEncargada}</span>
+                </div>
+                {/* Fila de Supervisor */}
+                <div className="flex items-center gap-2">
+                    <UserRoundSearch size={16}></UserRoundSearch>
+                    <span className="font-medium ">{inspeccion.supervisor}</span>
+                </div>
+                {/* Fila de frecuencia */}
+                <div className="flex items-center gap-2">
+                    <Clock size={16}></Clock>
+                    <span className="font-medium ">{inspeccion.frecuencia}</span>
                 </div>
                 </div>
             </div>

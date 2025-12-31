@@ -12,6 +12,7 @@ import {
     Upload
 } from "lucide-react";
 import { useState } from "react";
+import InspeccionCard from "@/components/resumen/inspeccionCard";
 
 //DATA SIMULADA DE MANTENIMIENTOS E INSPECCIONES
 export const resumenData: resumen = {
@@ -211,26 +212,26 @@ const resumen = () => {
             <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 w-full">
                 {/*CARDS CON LOS DATOS */}
                 <div className="flex flex-col gap-2">
-                    {/*{filteredTasks.length > 0 ? (
+                    {filteredTasks.length > 0 ? (
                         filteredTasks.map((task) => (
-                            {task typeof ResumenMantenimiento ? (
-                                <MaintenanceCard
-                                key={task.idMantenimiento}
-                                title={task.titulo}
-                                location={task.location}
-                                date={task.date}
-                                status={task.estado as any}
-                                type={task.tipo as any}
+                            "idMantenimiento" in task ? (
+                            <MaintenanceCard
+                            key={task.idMantenimiento}
+                            mantenimiento={task}
                             />
-                            ) : ()}
-                            
+                        ) : (
+                            <InspeccionCard
+                            key={(task as any).idInspeccion} 
+                            inspeccion={task as any}
+                            />
+                        )
                         ))
                     ) : (
                         // Mensaje opcional cuando no hay resultados
                         <div className="text-center py-10 text-gray-400">
                             No hay tareas con el estado "{opcionesFiltro.find(o => o.id === filtroActivo)?.label}"
                         </div>
-                    )}*/}
+                    )}
                 </div>
             </div>
         </div>
