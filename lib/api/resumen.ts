@@ -8,5 +8,7 @@ export async function getResumen(date: string, filter: "mensual" | "semanal"){
 } 
 
 export async function exportResumenPDF(date: string, filter: "mensual" | "semanal"){
-    return apiClient.get<Blob>(`/pdf-mantenimientos/pdf-ResumenMantenimientos?date=${date}&filter=${filter}`);
+    return apiClient.get<Blob>(`/pdf-mantenimientos/pdf-ResumenMantenimientos?date=${date}&filter=${filter}`, {
+        responseType: 'blob'
+    });
 }
