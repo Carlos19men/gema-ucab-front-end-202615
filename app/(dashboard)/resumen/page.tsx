@@ -11,50 +11,9 @@ import {
     Calendar, 
     Upload
 } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import InspeccionCard from "@/components/resumen/inspeccionCard";
 import { useGetResumen } from "@/hooks/resumen/useGetResumen";
-
-//DATA SIMULADA DE MANTENIMIENTOS E INSPECCIONES
-export const resumenData: resumen = {
-  mantenimientos: [
-    {
-      idMantenimiento: 1,
-      titulo: "Mantenimiento de Aire Acondicionado",
-      ubicacion: "M1-P01 Módulo 1 Piso 1",
-      fechaLimite: new Date("2025-11-04"), // Martes 4 de Noviembre de 2025
-      estado: "No Empezado",
-    },
-    {
-      idMantenimiento: 3,
-      titulo: "Mantenimiento Preventivo HVAC",
-      ubicacion: "M2-P2 Módulo 2 Piso 1",
-      fechaLimite: new Date("2025-11-06"), // Jueves 6 de Noviembre de 2025
-      estado: "En Ejecucion",
-    },
-  ],
-  inspecciones: [
-    {
-      idInspeccion: 2,
-      titulo: "Inspección de Extintores",
-      areaEncargada: "Electricidad", 
-      supervisor: "Ing. Carlos Pérez", // Dato generado para cumplir el type
-      ubicacion: "M2-P2 Módulo 2 Piso 2",
-      frecuencia: "Semestral", // Dato generado
-      estado: "Reprogramado", // Nota: El type de inspección exige MAYÚSCULAS
-    },
-    {
-      idInspeccion: 4,
-      titulo: "Inspección de Sistemas de Seguridad",
-      // La data original era 'Sistemas de Seguridad', asumo área Seguridad
-      areaEncargada: "Seguridad Industrial",
-      supervisor: "Lic. Ana Rodríguez", // Dato generado para cumplir el type
-      ubicacion: "M1-P01 Módulo 1 Piso 3",
-      frecuencia: "Mensual", // Dato generado
-      estado: "Culminado", // Nota: El type de inspección exige MAYÚSCULAS
-    },
-  ],
-};
 
 /*Nombres de los meses */
 const MONTH_NAMES = [
@@ -73,13 +32,37 @@ const opcionesFiltro = [
 
 const resumen = () => {
     //Vista Actual (Mensual o Semanal) por defecto es mensual
-    const [vistaActual, setVistaActual] = useState('mensual');
+    const [vistaActual, setVistaActual] = useState<'mensual' | 'semanal'>('mensual');
 
     // Estado para la fecha actual (mes y año)
     const [currentDate, setCurrentDate] = useState(new Date());
 
     // Este estado controla qué se mostrara en el resumen
     const [filtroActivo, setFiltroActivo] = useState('todos');
+
+    // Formatear la fecha para la API (YYYY-MM-DD)
+    const apiDateParams = useMemo(() => {
+        const year = currentDate.getFullYear();
+        // OJO: getMonth() devuelve 0-11, sumamos 1. padStart asegura "05" en vez de "5"
+        const month = String(currentDate.getMonth() + 1).padStart(2, '0'); 
+        
+        if (vistaActual === 'mensual') {
+            return `${year}-${month}-01`;
+        } else {
+            // Lógica para obtener el lunes de la semana actual
+            const d = new Date(currentDate);
+            const day = d.getDay();
+            const diff = d.getDate() - day + (day === 0 ? -6 : 1); 
+            d.setDate(diff);
+            
+            const weekMonth = String(d.getMonth() + 1).padStart(2, '0');
+            const weekDay = String(d.getDate()).padStart(2, '0');
+            return `${d.getFullYear()}-${weekMonth}-${weekDay}`;
+        }
+    }, [currentDate, vistaActual]);
+
+    //Usar el hook para traer los datos del Backend
+    const { data: resumenData, isLoading, isError } = useGetResumen(apiDateParams, vistaActual);
 
     // Lógica específica del MES: sumar/restar el mes
     const handlePrevMonth = () => {
@@ -145,16 +128,10 @@ const resumen = () => {
 
     // --- HEADER DINÁMICO ---
     let labelHeader = '';
-
-    let date = "";
     
     if (vistaActual === 'mensual') {
         labelHeader = `${MONTH_NAMES[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
-
-        date = `${currentDate.getFullYear()}-${MONTH_NAMES[currentDate.getMonth()]}-01`;
-
-        //Usar el hook para traer los datos del Backend
-        const { data: resumenData, isLoading, isError } = useGetResumen(date, vistaActual);
+        
     } else {
         // Lógica para vista semanal (calcular inicio y fin de semana)
         const startOfWeek = new Date(currentDate);
@@ -170,16 +147,16 @@ const resumen = () => {
         const yearStr = endOfWeek.getFullYear();
         
         labelHeader = `${startOfWeek.getDate()} de ${MONTH_NAMES[startOfWeek.getMonth()]} - ${endOfWeek.getDate()} de ${MONTH_NAMES[endOfWeek.getMonth()]} ${yearStr}`;
-        date = `${currentDate.getFullYear()}-${MONTH_NAMES[currentDate.getMonth()]}-${startOfWeek.getDate()}`;
-
-        //Usar el hook para traer los datos del Backend
-        const { data: resumenData, isLoading, isError } = useGetResumen(date, "semanal");
     }
 
-    const allTasks = [
-        ...resumenData.inspecciones, 
-        ...resumenData.mantenimientos
-    ];
+    //Unificacion de tareas para facilitar el filtrado
+    const allTasks = useMemo(() => {
+        if (!resumenData) return [];
+        return [
+            ...(resumenData.inspecciones || []), 
+            ...(resumenData.mantenimientos || [])
+        ];
+    }, [resumenData]);
 
     //logica de filtrado
     const filteredTasks = allTasks.filter((task) => {

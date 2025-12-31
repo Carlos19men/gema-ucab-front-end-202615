@@ -45,7 +45,7 @@ const MaintenanceCard = ({
                 {/* Fila de Fecha */}
                 <div className="flex items-center gap-2">
                     <Calendar size={16}></Calendar>
-                    <span>{mantenimiento.fechaLimite.toLocaleDateString()}</span>
+                    <span>{mantenimiento.fechaLimite}</span>
                 </div>
                 </div>
             </div>
