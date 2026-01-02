@@ -13,18 +13,18 @@ type mantenimientosReabiertosResponse = number;
 
 type mantenimientosReabiertosPorAreaResponse = {
     Grupo: string;
-    Total: number;  
+    total: number;  
 }[];
 
 type mantenimientosResumenMesActualResponse = {
-    Total: number;
-    Finalizados: number;
-    PorcentajeFinalizados: number;
+    completados: number;
+    porcentajeCompletados: number;
+    totalMantenimientos: number;
 };
 
 type mantenimientosActivosPorAreaResponse = {
-    Grupo: string;
-    Total: number;  
+    grupo: string;
+    total: number;  
 }[];
 
 export const normalizeMantenimientosReabiertosPorArea = (
@@ -33,10 +33,14 @@ export const normalizeMantenimientosReabiertosPorArea = (
     if (!data) {
         return null;
     }
-    return data.map(item => ({
+    return ( 
+        data.map(item => ({  
         Grupo: item.Grupo,
-        Total: item.Total
-    }));
+        Total: item.total,
+ 
+    } ))
+    
+       );
 }
 
 export const normalizeMantenimientosResumenMesActual = (
@@ -45,48 +49,49 @@ export const normalizeMantenimientosResumenMesActual = (
     if (!data) {
         return null;
     }
-    return {
-        Total: data.Total,
-        Finalizados: data.Finalizados,
-        PorcentajeFinalizados: data.PorcentajeFinalizados
-    };
+    return (
+        {
+        totalMantenimientos: data.totalMantenimientos,
+        completados: data.completados,
+        porcentajeCompletados: data.porcentajeCompletados
+    });
 }
 
 export const normalizeMantenimientosActivosPorArea = (
     data?: mantenimientosActivosPorAreaResponse | null
 ): mantenimientosActivosPorArea | null => {
+    
     if (!data) {
         return null;
     }
-    return data.map(item => ({
-        Grupo: item.Grupo,
-        Total: item.Total
-    }));
+    return (     
+
+        data.map(item => ({
+        Grupo: item.grupo,
+        Total: item.total,
+    })));
 }
 
 export async function getMantenimientosReabiertos(): Promise<mantenimientosReabiertos | null>  {
     const response = await apiClient.get<mantenimientosReabiertosResponse | null>(
         `/trabajos/reabiertos`
       );
-      console.log('Respuesta de mantenimientos reabiertos:', response);
       return response ?? null;
 
 }
 
 export async function getMantenimientosReabiertosPorArea(): Promise<mantenimientosReabiertosPorArea | null> {
     const response = await apiClient.get<mantenimientosReabiertosPorAreaResponse>('/trabajos/reabiertos/por-area');
-    console.log('Respuesta de mantenimientos reabiertos por área:', response);
-    return normalizeMantenimientosReabiertosPorArea(response);
+
+    return(normalizeMantenimientosReabiertosPorArea(response));
 }
 
 export async function getMantenimientosResumenMesActual(): Promise<mantenimientosResumenMesActual | null> {
     const response = await apiClient.get<mantenimientosResumenMesActualResponse>('/trabajos/resumen/mes-actual');
-    console.log('Respuesta de mantenimientos resumen mes actual:', response);
     return normalizeMantenimientosResumenMesActual(response);
 }
 
 export async function getMantenimientosActivosPorArea(): Promise<mantenimientosActivosPorArea | null> {
     const response = await apiClient.get<mantenimientosActivosPorAreaResponse>('/trabajos/activos/por-area');
-    console.log('Respuesta de mantenimientos activos por área:', response);
     return normalizeMantenimientosActivosPorArea(response);
 }

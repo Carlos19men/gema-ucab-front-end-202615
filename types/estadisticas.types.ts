@@ -6,9 +6,9 @@ export type mantenimientosReabiertosPorArea = {
 }[];
 
 export type mantenimientosResumenMesActual = {
-    Total: number;
-    Finalizados: number;
-    PorcentajeFinalizados: number;
+    completados: number;
+    porcentajeCompletados: number;
+    totalMantenimientos: number;
 };
 
 export type mantenimientosActivosPorArea = {
