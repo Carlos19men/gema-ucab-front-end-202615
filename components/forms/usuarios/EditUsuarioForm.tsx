@@ -8,8 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { useEditUsuario } from "@/hooks/usuarios/useEditUsuario";
+import { useUpdateUsuario } from "@/hooks/usuarios/useUpdateUsuario";
 import { useEffect } from "react";
+import { Usuario } from "@/types/usuarios.types";
 
 const usuarioSchema = z.object({
     nombre: z.string().min(1, "El nombre es requerido"),
@@ -17,20 +18,18 @@ const usuarioSchema = z.object({
         message: "El correo debe ser del dominio @ucab.edu.ve"
     }),
     tipo: z.string().min(1, "El tipo es requerido"),
+    contraseña: z.string().optional(),
 });
 
 interface EditUsuarioFormProps {
-    usuario: any;
-    setUsuario: (usuario: any | null) => void;
+    usuario: Usuario;
+    setUsuario: (usuario: Usuario | null) => void;
 }
 
 export const EditUsuarioForm: React.FC<EditUsuarioFormProps> = ({
     usuario,
     setUsuario,
 }) => {
-
-    console.log(usuario);
-
 
     const form = useForm<z.infer<typeof usuarioSchema>>({
         resolver: zodResolver(usuarioSchema),
@@ -41,20 +40,14 @@ export const EditUsuarioForm: React.FC<EditUsuarioFormProps> = ({
         },
     });
 
-    const editUsuarioMutation = useEditUsuario();
+    const editUsuarioMutation = useUpdateUsuario();
 
     useEffect(() => {
         if (usuario) {
-            const rawTipo = usuario.tipo || usuario.Tipo || "";
-            const normalizedTipo = rawTipo
-                .normalize("NFD")
-                .replace(/[\u0300-\u036f]/g, "")
-                .toUpperCase();
-
             form.reset({
-                nombre: usuario.nombre || usuario.Nombre,
-                correo: usuario.correo || usuario.Correo,
-                tipo: normalizedTipo,
+                nombre: usuario.nombre,
+                correo: usuario.correo,
+                tipo: usuario.tipo,
             });
         }
     }, [usuario, form]);
@@ -62,10 +55,13 @@ export const EditUsuarioForm: React.FC<EditUsuarioFormProps> = ({
     const handleSubmit = (values: z.infer<typeof usuarioSchema>) => {
         if (!usuario) return;
         editUsuarioMutation.mutate({
-            id: usuario.id || usuario.Id,
-            nombre: values.nombre,
-            correo: values.correo,
-            tipo: values.tipo,
+            id: usuario.id,
+            user: {
+                nombre: values.nombre,
+                correo: values.correo,
+                tipo: values.tipo as "SUPERVISOR" | "COORDINADOR" | "DIRECTOR",
+                contraseña: values.contraseña || usuario.contraseña || "defaultPassword123"
+            }
         }, {
             onSuccess: () => {
                 setUsuario(null);
@@ -105,7 +101,7 @@ export const EditUsuarioForm: React.FC<EditUsuarioFormProps> = ({
                                 <FormItem>
                                     <FormLabel>Correo Electrónico</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Ej: juan.perez@email.com" {...field} />
+                                        <Input placeholder="Ej: juan.perez@ucab.edu.ve" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -124,10 +120,24 @@ export const EditUsuarioForm: React.FC<EditUsuarioFormProps> = ({
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
-                                            <SelectItem value="TECNICO">Técnico</SelectItem>
+                                            <SelectItem value="SUPERVISOR">Supervisor</SelectItem>
                                             <SelectItem value="COORDINADOR">Coordinador</SelectItem>
+                                            <SelectItem value="DIRECTOR">Director</SelectItem>
                                         </SelectContent>
                                     </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="contraseña"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Contraseña (Opcional)</FormLabel>
+                                    <FormControl>
+                                        <Input type="password" placeholder="Nueva contraseña" {...field} />
+                                    </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
@@ -153,4 +163,4 @@ export const EditUsuarioForm: React.FC<EditUsuarioFormProps> = ({
             </DialogContent>
         </Dialog>
     );
-};
+}

@@ -12,7 +12,10 @@ import { useCreateUsuario } from "@/hooks/usuarios/useCreateUsuario";
 
 const usuarioSchema = z.object({
     nombre: z.string().min(1, "El nombre es requerido"),
-    correo: z.string().email("Correo inválido"),
+    correo: z.string().email("Correo inválido").refine((val) => val.includes("ucab.edu.ve") && val.includes("@"), {
+        message: "El correo debe ser del dominio @ucab.edu.ve"
+    }),
+    contraseña: z.string().min(8, "La contraseña debe tener al menos 8 caracteres"),
     tipo: z.string().min(1, "El tipo es requerido"),
 });
 
@@ -31,6 +34,7 @@ export const CreateUsuarioForm: React.FC<CreateUsuarioFormProps> = ({
             nombre: "",
             correo: "",
             tipo: "",
+            contraseña: "defaultPassword123",
         },
     });
 
@@ -40,7 +44,8 @@ export const CreateUsuarioForm: React.FC<CreateUsuarioFormProps> = ({
         createUsuarioMutation.mutate({
             nombre: values.nombre,
             correo: values.correo,
-            tipo: values.tipo,
+            tipo: values.tipo as "SUPERVISOR" | "COORDINADOR" | "DIRECTOR",
+            contraseña: values.contraseña,
         }, {
             onSuccess: () => {
                 form.reset();
@@ -77,7 +82,7 @@ export const CreateUsuarioForm: React.FC<CreateUsuarioFormProps> = ({
                                 <FormItem>
                                     <FormLabel>Correo Electrónico</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Ej: juan.perez@4cab.edu.ve" {...field} />
+                                        <Input placeholder="Ej: juan.perez@ucab.edu.ve" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -88,16 +93,17 @@ export const CreateUsuarioForm: React.FC<CreateUsuarioFormProps> = ({
                             name="tipo"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Tipo de Usuario</FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormLabel>Rol</FormLabel>
+                                    <Select onValueChange={field.onChange} value={field.value}>
                                         <FormControl>
                                             <SelectTrigger>
-                                                <SelectValue placeholder="Seleccione un tipo" />
+                                                <SelectValue placeholder="Seleccione un rol" />
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
-                                            <SelectItem value="TECNICO">Técnico</SelectItem>
+                                            <SelectItem value="SUPERVISOR">Supervisor</SelectItem>
                                             <SelectItem value="COORDINADOR">Coordinador</SelectItem>
+                                            <SelectItem value="DIRECTOR">Director</SelectItem>
                                         </SelectContent>
                                     </Select>
                                     <FormMessage />
