@@ -438,7 +438,7 @@ export default function UbicacionesTecnicasContent() {
               <Button
                 className="bg-gema-blue hover:bg-blue-500 text-black w-full sm:w-auto"
                 onClick={handleExportExcel}
-                disabled={isExporting || deleteMutation.isPending}
+              //disabled={isExporting || deleteMutation.isPending}
               >
                 {isExporting ? (
                   <LoaderCircle className="animate-spin mr-2 h-4 w-4" />
@@ -452,7 +452,7 @@ export default function UbicacionesTecnicasContent() {
                 <Button
                   variant="outline"
                   onClick={() => setBorrarUbicacion(null)}
-                  disabled={deleteMutation.isPending}
+                  //disabled={deleteMutation.isPending}
                   className="w-full sm:w-auto"
                 >
                   Cancelar
@@ -463,11 +463,11 @@ export default function UbicacionesTecnicasContent() {
                   onClick={handleDeleteUbicacion}
                   disabled={deleteMutation.isPending}
                 >
-                  {deleteMutation.isPending ? (
+                  {/* deleteMutation.isPending ? (
                     <LoaderCircle className="animate-spin mr-2 h-4 w-4" />
                   ) : (
                     <Trash className="mr-2 h-4 w-4" />
-                  )}
+                  )*/}
                   Eliminar
                 </Button>
               </div>
