@@ -28,19 +28,15 @@ import { UbicacionHierarchy } from "./components/UbicacionHierarchy";
 import { UbicacionesFilters } from "./components/UbicacionesFilters";
 import { NIVELES, type Filters } from "./components/constants";
 
-// ✅ Imports de hooks organizados
+// Imports de hooks organizados
 import {
   useUbicaciones,
   useUbicacionPadres,
   useUbicacionDependientes
 } from "@/hooks/ubicaciones-tecnicas/useUbicaciones";
-import { useCreateUbicacion } from "@/hooks/ubicaciones-tecnicas/useCreateUbicacion";
-import { useUpdateUbicacion } from "@/hooks/ubicaciones-tecnicas/useUpdateUbicacion";
 import { useDeleteUbicacion } from "@/hooks/ubicaciones-tecnicas/useDeleteUbicacion";
 
-export default function UbicacionesTecnicasContent() {
-  // =================== HOOKS DE ESTADO LOCAL ===================
-
+function UbicacionesTecnicasContent() {
   // Estados para modales
   const [ubicacionParaEditar, setUbicacionParaEditar] = useState<UbicacionTecnica | null>(null);
   const [open, setOpen] = useState(false);
@@ -74,13 +70,13 @@ export default function UbicacionesTecnicasContent() {
 
   const [displayedLevels, setDisplayedLevels] = useState<number>(1);
 
-  // ✅ localStorage en useEffect
+  // localStorage en useEffect
   useEffect(() => {
     const hasLoaded = localStorage.getItem("haCargadoUbicaciones");
     setManualOpen(!hasLoaded);
   }, []);
 
-  // ✅ Manejo del manual
+  // Manejo del manual
   const handleManualClose = (isOpen: boolean) => {
     if (!isOpen) {
       try {
@@ -94,19 +90,11 @@ export default function UbicacionesTecnicasContent() {
     }
   };
 
-  // =================== HOOKS DE API ===================
-
-  // ✅ Usando hooks organizados
+  // Hooks de API
   const { data, error, isLoading } = useUbicaciones();
   const { data: padresData, isLoading: isLoadingPadres } = useUbicacionPadres(verDetalle?.idUbicacion);
   const dependencias = useUbicacionDependientes(borrarUbicacion?.idUbicacion);
-
-  // ✅ Hooks de mutación
-  // const createMutation = useCreateUbicacion(); // Se usa dentro del formulario, pero aquí importamos para coherencia si se necesitara
-  // const updateMutation = useUpdateUbicacion(); // Idem
   const deleteMutation = useDeleteUbicacion();
-
-  // =================== HOOKS DE LÓGICA LOCAL ===================
 
   const initializeFormValues = (codigo: string) => {
     console.log("🔧 Inicializando formulario desde código:", codigo);
@@ -183,8 +171,6 @@ export default function UbicacionesTecnicasContent() {
     return { flatUbicaciones, filteredData };
   }, [data, filters]);
 
-
-
   const countChildren = (node: UbicacionTecnica): number => {
     if (!node.children || node.children.length === 0) return 0;
     return (
@@ -193,13 +179,11 @@ export default function UbicacionesTecnicasContent() {
     );
   };
 
-  // ✅ Exportación simplificada
+  // Exportación simplificada
   const handleExportExcel = async () => {
     setIsExporting(true);
     try {
       const baseUrl = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
-
-      // ⚠️ TEMPORAL: Esto se refactorizará en FASE 2
       const token = typeof window !== 'undefined' ? localStorage.getItem("authToken") : null;
 
       if (!baseUrl) {
@@ -251,15 +235,13 @@ export default function UbicacionesTecnicasContent() {
     }
   };
 
-  // =================== HANDLERS ===================
-
+  // Handlers
   const handleEditarClick = (detalle: UbicacionTecnica | null) => {
     setUbicacionParaEditar(detalle);
   };
 
   const handleCerrarEditar = () => {
     setUbicacionParaEditar(null);
-    // Los hooks ya manejan la invalidación automáticamente
   };
 
   const handleDeleteUbicacion = () => {
@@ -296,13 +278,11 @@ export default function UbicacionesTecnicasContent() {
             <Button
               className="bg-gema-green/80 hover:bg-gema-green"
               onClick={() => {
-                // Limpiar formulario para nueva ubicación desde cero
                 setFormValues({
                   modulo: "", planta: "", espacio: "", tipo: "",
                   subtipo: "", numero: "", pieza: "", descripcion: ""
                 });
                 setDisplayedLevels(1);
-                console.log("🆕 Creando nueva ubicación desde cero");
               }}
             >
               <CirclePlus className="mr-2 h-4 w-4" />
@@ -438,7 +418,6 @@ export default function UbicacionesTecnicasContent() {
               <Button
                 className="bg-gema-blue hover:bg-blue-500 text-black w-full sm:w-auto"
                 onClick={handleExportExcel}
-              //disabled={isExporting || deleteMutation.isPending}
               >
                 {isExporting ? (
                   <LoaderCircle className="animate-spin mr-2 h-4 w-4" />
@@ -452,7 +431,6 @@ export default function UbicacionesTecnicasContent() {
                 <Button
                   variant="outline"
                   onClick={() => setBorrarUbicacion(null)}
-                  //disabled={deleteMutation.isPending}
                   className="w-full sm:w-auto"
                 >
                   Cancelar
@@ -463,11 +441,6 @@ export default function UbicacionesTecnicasContent() {
                   onClick={handleDeleteUbicacion}
                   disabled={deleteMutation.isPending}
                 >
-                  {/* deleteMutation.isPending ? (
-                    <LoaderCircle className="animate-spin mr-2 h-4 w-4" />
-                  ) : (
-                    <Trash className="mr-2 h-4 w-4" />
-                  )*/}
                   Eliminar
                 </Button>
               </div>
@@ -542,3 +515,5 @@ export default function UbicacionesTecnicasContent() {
     </div>
   );
 }
+
+export default UbicacionesTecnicasContent;
