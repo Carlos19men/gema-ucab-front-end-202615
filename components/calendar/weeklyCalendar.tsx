@@ -3,8 +3,8 @@ import DateNavigator from "../ui/dateNavigator";
 import DropdownFilter from "../ui/dropdownFilter";
 import { MaintenanceSummaryModal } from "@/components/forms/mantenimientos/MaintenanceSummaryModal";
 import { InspectionSummaryModal } from "@/components/forms/inspecciones/InspectionSummaryModal";
-import { useMantenimientosFiltros } from "@/hooks/mantenimientos/useMantenimientosFiltros";
-import { mantenimientosAPI } from "@/lib/api/mantenimientos";
+import { useCalendarioSemanal } from "@/hooks/calendario/useCalendario";
+import { useResumenMantenimiento } from "@/hooks/mantenimientos/useResumenMantenimiento";
 
 /*Nombres de los meses */
 const MONTH_NAMES = [
@@ -95,41 +95,21 @@ const WeeklyCalendar = ({ initialDate }: WeeklyCalendarProps) => {
   const formattedDate = currentDate.toISOString().split('T')[0];
 
   // Fetch de eventos del calendario (mantenimientos e inspecciones) con filtro semanal
-  const { data: datosCalendario, isLoading, error } = useMantenimientosFiltros(formattedDate, "semanal");
+  const { data: datosCalendario, isLoading, error } = useCalendarioSemanal(formattedDate); 
+
+  console.log("creo que ahora sí",datosCalendario); 
+
 
   // Extraer arrays separados
   const inspecciones = datosCalendario?.inspecciones || [];
   const mantenimientos = datosCalendario?.mantenimientos || [];
   const eventos = datosCalendario?.eventos || []; // Para compatibilidad
 
-  // Logs para depuración
-  console.log("🔍 [CALENDARIO SEMANAL] Estado de la consulta:", {
-    formattedDate,
-    isLoading,
-    error,
-    datosCalendario,
-    cantidadInspecciones: inspecciones.length,
-    cantidadMantenimientos: mantenimientos.length,
-    cantidadEventosTotal: eventos.length,
-    endpointUsado: `/calendario?date=${formattedDate}&filter=semanal`
-  });
-
   // Generar datos de la semana basándose en la fecha actual
   const semanaDataBase = generateWeekData(currentDate);
 
   // Distribuir eventos a los días correspondientes
   const semanaData = useMemo(() => {
-    console.log("🔄 [CALENDARIO SEMANAL] Procesando eventos para la semana:", {
-      eventos,
-      cantidadEventos: eventos?.length || 0,
-      semanaDataBase: semanaDataBase.map(d => ({ dia: d.dia, fecha: d.fullDate.toISOString().split('T')[0] }))
-    });
-
-
-    if (!eventos || eventos.length === 0) {
-      console.log("⚠️ [CALENDARIO SEMANAL] No hay eventos para mostrar");
-      return semanaDataBase;
-    }
 
     return semanaDataBase.map(dia => {
       const diaDateStr = dia.fullDate.toISOString().split('T')[0];
@@ -137,20 +117,11 @@ const WeeklyCalendar = ({ initialDate }: WeeklyCalendarProps) => {
       // Filtrar eventos para este día con estructura adaptada
       const tareasDelDia = eventos
         .filter((evento: any) => {
-          // Adaptar a la estructura real de los datos
-          let fechaEvento = '';
-          
-          // Buscar la fecha en diferentes campos posibles
-          fechaEvento = evento.fechaLimite || evento.fecha || '';
+          // Usar el campo 'fecha' unificado del hook
+          let fechaEvento = evento.fecha || '';
           
           const coincide = fechaEvento === diaDateStr;
-          if (coincide) {
-            console.log(`📅 [CALENDARIO SEMANAL] Evento encontrado para ${diaDateStr}:`, {
-              evento,
-              fechaEvento,
-              estructuraDetectada: evento.idMantenimiento ? 'mantenimiento' : evento.idInspeccion ? 'inspeccion' : 'genérica'
-            });
-          }
+
           return coincide;
         })
         .map((evento: any) => {
@@ -183,11 +154,8 @@ const WeeklyCalendar = ({ initialDate }: WeeklyCalendarProps) => {
             fechaLimite: evento.fechaLimite || evento.fecha || diaDateStr
           };
           
-          console.log(`🔄 [CALENDARIO SEMANAL] Tarea mapeada:`, tareaMappeada);
           return tareaMappeada;
         });
-
-      console.log(`📊 [CALENDARIO SEMANAL] Día ${diaDateStr}: ${tareasDelDia.length} tareas`);
 
       return {
         ...dia,
@@ -198,10 +166,6 @@ const WeeklyCalendar = ({ initialDate }: WeeklyCalendarProps) => {
 
   // Función para filtrar tareas según el filtro activo
   const filtrarTareas = (tareas: any[]) => {
-    console.log(`🔍 [CALENDARIO SEMANAL] Filtrando tareas con filtro: ${filtroActivo}`, {
-      tareasOriginales: tareas,
-      cantidadOriginal: tareas.length
-    });
 
     let tareasFiltradas;
     if (filtroActivo === 'todos') {
@@ -214,46 +178,31 @@ const WeeklyCalendar = ({ initialDate }: WeeklyCalendarProps) => {
       tareasFiltradas = tareas;
     }
 
-    console.log(`✅ [CALENDARIO SEMANAL] Tareas filtradas:`, {
-      cantidadFiltrada: tareasFiltradas.length,
-      tareasFiltradas
-    });
+
 
     return tareasFiltradas;
   };
 
   // Función para manejar el click en una tarea
-  const handleTaskClick = async (tarea: any, fecha: Date) => {
+  const handleTaskClick = (tarea: any, fecha: Date) => {
     if (tarea.tipo === 'mantenimiento') {
-      try {
-        // Obtener resumen completo del mantenimiento desde el API
-        const resumen = await mantenimientosAPI.getResumen(tarea.id);
-
-        const maintenanceData = {
-          estado: resumen.estado || 'No empezado',
-          prioridad: resumen.prioridad || 'Media',
-          frecuencia: 'Mensual', // No disponible en el API aún
-          repeticion: 'Sí', // No disponible en el API aún
-          ubicacion: resumen.ubicacion || 'Ubicación por definir',
-          fechaLimite: resumen.fechaLimite || fecha.toLocaleDateString('es-ES'),
-          titulo: resumen.titulo || 'Sin título'
-        };
-        setSelectedMaintenanceData(maintenanceData);
-        setIsMaintenanceModalOpen(true);
-      } catch (error) {
-        console.error('Error al obtener resumen de mantenimiento:', error);
-        // Fallback a datos básicos si falla la llamada
-        const maintenanceData = {
-          estado: tarea.estado || 'No empezado',
-          prioridad: 'Media',
-          frecuencia: 'Mensual',
-          repeticion: 'Sí',
-          ubicacion: tarea.area || 'Ubicación por definir',
-          fechaLimite: tarea.fechaLimite || fecha.toLocaleDateString('es-ES')
-        };
-        setSelectedMaintenanceData(maintenanceData);
-        setIsMaintenanceModalOpen(true);
-      }
+      // Usar datos básicos de la tarea mientras se carga el resumen
+      const basicMaintenanceData = {
+        estado: tarea.estado || 'No empezado',
+        prioridad: 'Media',
+        frecuencia: 'Mensual',
+        repeticion: 'Sí',
+        ubicacion: tarea.area || 'Ubicación por definir',
+        fechaLimite: fecha.toLocaleDateString('es-ES'),
+        titulo: tarea.titulo || 'Sin título',
+        id: tarea.id // Agregar el ID para el enlace
+      };
+      
+      setSelectedMaintenanceData(basicMaintenanceData);
+      setIsMaintenanceModalOpen(true);
+      
+      // El hook se encargará de obtener los datos detallados
+      // El modal puede mostrar un estado de carga si es necesario
     } else if (tarea.tipo === 'inspeccion') {
       // TODO: Generar datos reales de la inspección desde el API
       const inspectionData = {
@@ -432,6 +381,7 @@ const WeeklyCalendar = ({ initialDate }: WeeklyCalendarProps) => {
         open={isMaintenanceModalOpen}
         onClose={() => setIsMaintenanceModalOpen(false)}
         data={selectedMaintenanceData}
+        mantenimientoId={selectedMaintenanceData?.id} // Pasar el ID del mantenimiento
       />
 
       {/* Modal de Resumen de Inspección */}

@@ -36,6 +36,13 @@ export default function MantenimientoDetalle() {
         console.log("🔍 [MANTENIMIENTO DETALLE] Loading:", isLoading);
         console.log("🔍 [MANTENIMIENTO DETALLE] Error:", error);
         console.log("🔍 [MANTENIMIENTO DETALLE] ID:", id);
+        console.log("🔍 [MANTENIMIENTO DETALLE] Error completo:", {
+            error,
+            errorMessage: error?.message,
+            errorStack: error?.stack,
+            hasData: !!maintenanceData,
+            dataType: typeof maintenanceData
+        });
     }, [maintenanceData, isLoading, error, id]);
 
     // Estados de carga y error
@@ -58,7 +65,7 @@ export default function MantenimientoDetalle() {
                         <ArrowLeft className="w-6 h-6 text-slate-600" />
                     </Link>
                     <div>
-                        <h1 className="text-2xl font-bold text-slate-900">{data.title}</h1>
+                        <h1 className="text-2xl font-bold text-slate-900">{data.titulo}</h1>
                         <p className="text-slate-500 font-medium">{data.code}</p>
                     </div>
                 </div>

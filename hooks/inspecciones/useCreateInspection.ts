@@ -61,8 +61,7 @@ export const useCreateInspection = () => {
         }
       });
       
-      console.log("✅ [INSPECCIÓN] Queries invalidadas correctamente");
-    },
+      },
     onError: (error: any) => {
       console.error("💥 [INSPECCIÓN] Error al crear inspección:", error);
       console.error("📋 [INSPECCIÓN] Detalles del error:", {

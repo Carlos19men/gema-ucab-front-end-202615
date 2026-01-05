@@ -42,13 +42,7 @@ export const calendarioAPI = {
    * @param filter - Tipo de filtro: "mensual" o "semanal"
    */
   async getEventos(date: string, filter: FiltroCalendario): Promise<CalendarioResponse> {
-    try {
-      const endpoint = `/calendario?date=${date}&filter=${filter}`;
-      const response = await apiClient.get<CalendarioResponse>(endpoint);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return apiClient.get<CalendarioResponse>(`/calendario?date=${date}&filter=${filter}`);
   },
 
   /**
