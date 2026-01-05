@@ -112,7 +112,7 @@ const Plantillas = () => {
               plantillas.map((plantilla) => (
                 <tr key={plantilla.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    <Link href="/detalle-trabajo" className="flex items-center border-2 border-gray-500 rounded-lg px-3 py-2 bg-gray-100">
+                    <Link href={`/detalle-trabajo?id=${plantilla.id}`} className="flex items-center border-2 border-gray-500 rounded-lg px-3 py-2 bg-gray-100">
                       {plantilla.plantilla}
                     </Link>
                   </td>
@@ -174,9 +174,9 @@ const Plantillas = () => {
                 <div className="space-y-2 flex-1">
                   <div>
                     <p className="text-xs text-gray-500 uppercase">Plantilla</p>
-                    <div className="border-2 border-gray-500 rounded-lg px-3 py-2 mt-1 bg-gray-100">
+                    <Link href={`/detalle-trabajo?id=${plantilla.id}`} className="block border-2 border-gray-500 rounded-lg px-3 py-2 mt-1 bg-gray-100">
                       <p className="font-medium text-gray-900">{plantilla.plantilla}</p>
-                    </div>
+                    </Link>
                   </div>
                   <div>
                     <p className="text-xs text-gray-500 uppercase">Tipo</p>
