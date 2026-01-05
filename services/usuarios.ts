@@ -2,7 +2,7 @@
 import { apiClient } from '@/lib/api/client';
 import { Usuarios, Usuario } from '@/types/usuarios.types';
 
-export type UsuarioResponse = {
+export interface UsuarioResponse {
   id?: number;
   nombre: string;
   correo: string;
