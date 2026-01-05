@@ -1,5 +1,6 @@
 export type Mantenimiento = {
     Id: number;
+    Titulo?: string; 
     FechaCreacion: Date;
     FechaLimite: Date;
     Ubicacion: string;
