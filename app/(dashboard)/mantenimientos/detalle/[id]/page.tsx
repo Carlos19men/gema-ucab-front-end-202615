@@ -36,13 +36,6 @@ export default function MantenimientoDetalle() {
         console.log("🔍 [MANTENIMIENTO DETALLE] Loading:", isLoading);
         console.log("🔍 [MANTENIMIENTO DETALLE] Error:", error);
         console.log("🔍 [MANTENIMIENTO DETALLE] ID:", id);
-        console.log("🔍 [MANTENIMIENTO DETALLE] Error completo:", {
-            error,
-            errorMessage: error?.message,
-            errorStack: error?.stack,
-            hasData: !!maintenanceData,
-            dataType: typeof maintenanceData
-        });
     }, [maintenanceData, isLoading, error, id]);
 
     // Estados de carga y error

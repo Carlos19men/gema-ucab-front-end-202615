@@ -97,13 +97,10 @@ const WeeklyCalendar = ({ initialDate }: WeeklyCalendarProps) => {
   // Fetch de eventos del calendario (mantenimientos e inspecciones) con filtro semanal
   const { data: datosCalendario, isLoading, error } = useCalendarioSemanal(formattedDate); 
 
-  console.log("creo que ahora sí",datosCalendario); 
-
-
   // Extraer arrays separados
   const inspecciones = datosCalendario?.inspecciones || [];
   const mantenimientos = datosCalendario?.mantenimientos || [];
-  const eventos = datosCalendario?.eventos || []; // Para compatibilidad
+  const eventos = [...inspecciones,...mantenimientos]; // Para compatibilidad 
 
   // Generar datos de la semana basándose en la fecha actual
   const semanaDataBase = generateWeekData(currentDate);
@@ -117,12 +114,18 @@ const WeeklyCalendar = ({ initialDate }: WeeklyCalendarProps) => {
       // Filtrar eventos para este día con estructura adaptada
       const tareasDelDia = eventos
         .filter((evento: any) => {
-          // Usar el campo 'fecha' unificado del hook
-          let fechaEvento = evento.fecha || '';
+          // Usar el campo correcto según el tipo de evento
+          let fechaEvento = '';
           
-          const coincide = fechaEvento === diaDateStr;
-
-          return coincide;
+          if (evento.idInspeccion) {
+            fechaEvento = evento.fechaCreacion; // ← Para inspecciones
+          } else if (evento.idMantenimiento) {
+            fechaEvento = evento.fechaLimite; // ← Para mantenimientos
+          } else {
+            fechaEvento = evento.fecha || '';
+          }
+          
+          return fechaEvento === diaDateStr;
         })
         .map((evento: any) => {
           // Adaptar la estructura del evento a la estructura esperada
@@ -130,15 +133,20 @@ const WeeklyCalendar = ({ initialDate }: WeeklyCalendarProps) => {
           let id = '';
           let titulo = '';
           
-          if (evento.idMantenimiento) {
-            tipo = 'mantenimiento';
-            id = evento.idMantenimiento;
-            titulo = evento.titulo || evento.nombre || `Mantenimiento ${evento.idMantenimiento}`;
-          } else if (evento.idInspeccion) {
+          // Para inspecciones
+          if (evento.idInspeccion) {
             tipo = 'inspeccion';
             id = evento.idInspeccion;
             titulo = evento.titulo || evento.nombre || `Inspección ${evento.idInspeccion}`;
-          } else if (evento.tipo) {
+          }
+          // Para mantenimientos
+          else if (evento.idMantenimiento) {
+            tipo = 'mantenimiento';
+            id = evento.idMantenimiento;
+            titulo = evento.titulo || evento.nombre || `Mantenimiento ${evento.idMantenimiento}`;
+          }
+          // Para eventos con tipo explícito
+          else if (evento.tipo) {
             tipo = evento.tipo.toLowerCase();
             id = evento.id || evento.idMantenimiento || evento.idInspeccion;
             titulo = evento.titulo || evento.nombre || `${evento.tipo} ${id}`;
