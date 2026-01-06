@@ -1,47 +1,44 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { EditMaintenanceModal } from "@/components/forms/mantenimientos/EditMaintenanceModal";
-import { DeleteMaintenanceModal } from "@/components/forms/mantenimientos/DeleteMaintenanceModal";
-import { useMantenimientoDetalle } from "@/hooks/mantenimientos/useMantenimiento";
+// import { Badge } from "@/components/ui/badge";
+import { EditInspectionModal } from "@/components/forms/inspecciones/EditInspectionModal";
+import { DeleteInspectionModal } from "@/components/forms/inspecciones/DeleteInspectionModal";
+import { DeriveMaintenanceModal } from "@/components/forms/inspecciones/DeriveMaintenanceModal";
+import { useParams } from 'next/navigation';
 import {
-    Clock,
-    AlertCircle,
-    Wrench,
-    RotateCcw, // For 'Reabierto' icon similar to the image
+    Check,
     Pencil,
     Trash2,
     Plus,
-    CheckSquare,
-    ArrowLeft
+    ArrowLeft,
+    CornerUpRight
 } from "lucide-react";
 import Link from 'next/link';
+import { useInspeccionDetalle } from '@/hooks/inspecciones/useInspecciones';
+import { InspeccionAPI } from '@/lib/api/inspecciones';
 
-export default function MantenimientoDetalle() {
+export default function InspeccionDetalle() {
     const [editModalOpen, setEditModalOpen] = useState(false);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [deriveModalOpen, setDeriveModalOpen] = useState(false);
 
     // Obtener el ID de la URL
     const params = useParams();
     const id = parseInt(params.id as string);
 
     // Usar el hook para obtener datos del mantenimiento
-    const { data: maintenanceData, isLoading, error } = useMantenimientoDetalle(id);
+    const { data, isLoading, error } = useInspeccionDetalle(id);
 
+    if (isLoading) {
+        return (
+            <div>Esperando...</div>
+        )
+    }
 
-    // Estados de carga y error
-    if (isLoading) return <div className="p-8">Cargando mantenimiento...</div>;
-    if (error) return <div className="p-8">Error: {error.message}</div>;
-    if (!maintenanceData) return <div className="p-8">Mantenimiento no encontrado</div>;
-
-    // Usar datos reales cuando estén disponibles, sino mock data
-    const data = maintenanceData;
-
-    console.log(data);
     return (
-        <div className="p-8 space-y-6 min-h-screen">
+        <div className="p-8 space-y-6  min-h-screen">
             {/* Top Navigation / Header */}
             <div className="flex justify-between items-start mb-6">
                 <div className="flex items-center gap-4">
@@ -49,13 +46,20 @@ export default function MantenimientoDetalle() {
                         <ArrowLeft className="w-6 h-6 text-slate-600" />
                     </Link>
                     <div>
-                        <h1 className="text-2xl font-bold text-slate-900">{data.titulo}</h1>
-                        <p className="text-slate-500 font-medium">{data.codigoVerificacion}</p>
+                        <h1 className="text-2xl font-bold text-slate-900">{data?.titulo}</h1>
+                        <p className="text-slate-500 font-medium">{data?.codigoVerificacion}</p>
                     </div>
                 </div>
                 <div className="flex gap-3">
                     <Button
-                        className="bg-[#0EA5E9] hover:bg-[#0284C7] text-white gap-2" // Custom blue from image
+                        className="bg-[#FBBF24] hover:bg-[#F59E0B] text-slate-900 gap-2 font-medium" // Yellow for Derivar
+                        onClick={() => setDeriveModalOpen(true)}
+                    >
+                        <CornerUpRight className="w-4 h-4" />
+                        Derivar Mantenimiento
+                    </Button>
+                    <Button
+                        className="bg-[#0EA5E9] hover:bg-[#0284C7] text-white gap-2" // Blue for Edit
                         onClick={() => setEditModalOpen(true)}
                     >
                         <Pencil className="w-4 h-4" />
@@ -63,7 +67,7 @@ export default function MantenimientoDetalle() {
                     </Button>
                     <Button
                         variant="destructive"
-                        className="bg-[#EF4444] hover:bg-[#DC2626] gap-2" // Custom red from image
+                        className="bg-[#EF4444] hover:bg-[#DC2626] gap-2" // Red for Delete
                         onClick={() => setDeleteModalOpen(true)}
                     >
                         Eliminar
@@ -74,52 +78,33 @@ export default function MantenimientoDetalle() {
             {/* Main Content Card */}
             <div className="bg-white p-8 rounded-xl shadow-sm border border-slate-200">
 
-                {/* Status Row */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                {/* Status & Supervisor Row */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 w-full md:w-2/3">
                     {/* Estado */}
                     <div className="space-y-2">
                         <h3 className="font-bold text-lg">Estado</h3>
-                        <div className="flex items-center gap-2 px-4 py-2 bg-sky-100 text-sky-700 rounded-md border border-sky-200 w-fit font-medium">
-                            <Clock className="w-5 h-5" />
-                            {data.estado}
+                        <div className="flex items-center gap-2 px-4 py-2 bg-sky-300 text-slate-900 rounded-md border border-sky-400 w-fit font-medium">
+                            <Check className="w-4 h-4" />
+                            {data?.estado}
                         </div>
                     </div>
 
-                    {/* Prioridad */}
+                    {/* Supervisor */}
                     <div className="space-y-2">
-                        <h3 className="font-bold text-lg">Prioridad</h3>
-                        <div className="flex items-center gap-2 px-4 py-2 bg-red-100 text-red-700 rounded-md border border-red-200 w-fit font-medium">
-                            <AlertCircle className="w-5 h-5" />
-                            {data.prioridad}
-                        </div>
-                    </div>
-
-                    {/* Tipo */}
-                    <div className="space-y-2">
-                        <h3 className="font-bold text-lg">Tipo</h3>
-                        <div className="flex items-center gap-2 px-4 py-2 bg-slate-200 text-slate-700 rounded-md border border-slate-300 w-fit font-medium">
-                            <Wrench className="w-5 h-5" />
-                            {data.tipo}
-                        </div>
-                    </div>
-
-                    {/* Instancia */}
-                    <div className="space-y-2">
-                        <h3 className="font-bold text-lg">Instancia</h3>
-                        <div className="flex items-center gap-2 px-4 py-2 bg-white text-slate-700 rounded-md border border-slate-300 w-fit font-medium shadow-sm">
-                            <RotateCcw className="w-5 h-5" />
-                            {data.instancia}
+                        <h3 className="font-bold text-lg">Supervisor</h3>
+                        <div className="p-2 bg-slate-200/50 rounded-md border border-slate-300 font-medium text-slate-700 min-w-[200px]">
+                            {data.supervisor}
                         </div>
                     </div>
                 </div>
 
                 <hr className="border-slate-100 my-8" />
 
-                {/* Resumen */}
+                {/* Observacion */}
                 <div className="mb-8">
-                    <h3 className="font-bold text-lg mb-3">Resumen</h3>
-                    <div className="p-4 border border-slate-300 rounded-lg text-slate-700">
-                        {data.resumen}
+                    <h3 className="font-bold text-lg mb-3">Observación</h3>
+                    <div className="p-4 border border-slate-300 rounded-lg text-slate-700 min-h-[60px]">
+                        {data?.observacion}
                     </div>
                 </div>
 
@@ -130,14 +115,15 @@ export default function MantenimientoDetalle() {
                     <div className="space-y-2">
                         <h3 className="font-bold text-lg">Ubicación técnica</h3>
                         <div className="p-4 bg-slate-200/50 rounded-lg border border-slate-300 min-h-[80px]">
-                            <p className="font-semibold">{data.ubicacion.split('\n')[0]}</p>
+                            <p className="font-semibold">{data?.ubicacion}</p>
                             <p className="text-sm text-slate-600">{data.abreviacion}</p>
                         </div>
                     </div>
                     <div className="space-y-2">
                         <h3 className="font-bold text-lg">Área encargada</h3>
                         <div className="p-4 bg-slate-200/50 rounded-lg border border-slate-300 min-h-[80px]">
-                            <p className="text-slate-700">{data.area}</p>
+                            <p className=" font-semibold">{data?.areaEncargada}</p>
+                            <p className="text-slate-700">{data?.codigoArea}</p>
                         </div>
                     </div>
                 </div>
@@ -146,18 +132,18 @@ export default function MantenimientoDetalle() {
 
                 {/* Programacion */}
                 <div className="mb-8">
-                    <h3 className="font-bold text-lg mb-4">Programación del mantenimiento</h3>
+                    <h3 className="font-bold text-lg mb-4">Programación de Inspección</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div className="space-y-2">
                             <span className="font-bold">Fecha de creación</span>
                             <div className="p-3 border border-slate-300 rounded-md text-slate-700 font-medium">
-                                {data.fechaCreacion}
+                                {data?.fechaCreacion}
                             </div>
                         </div>
                         <div className="space-y-2">
-                            <span className="font-bold">Fecha límite</span>
+                            <span className="font-bold">Frecuencia</span>
                             <div className="p-3 border border-slate-300 rounded-md text-slate-700 font-medium">
-                                {data.fechaLimite}
+                                {data?.frecuencia}
                             </div>
                         </div>
                     </div>
@@ -170,13 +156,12 @@ export default function MantenimientoDetalle() {
                     <h3 className="font-bold text-lg mb-4">Actividades</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         {/* Checklist Item */}
-                        {data.tituloChecklist && (
+                        {data.checklist && (
                             <div className="flex items-center justify-between p-3 border border-slate-300 rounded-lg hover:border-slate-400 transition-colors">
                                 <span className="font-medium text-slate-900">{data.tituloChecklist}</span>
 
                             </div>
                         )}
-
 
                         {/* Add Button */}
                         <Button variant="outline" className="w-full h-full min-h-[50px] border-dashed border-2 text-slate-600 hover:text-slate-900 hover:border-slate-400">
@@ -188,20 +173,28 @@ export default function MantenimientoDetalle() {
 
             </div>
 
+            {/* Derive Maintenance Modal */}
+            <DeriveMaintenanceModal
+                open={deriveModalOpen}
+                onClose={() => setDeriveModalOpen(false)}
+                onConfirm={(name) => { alert(`Derivado a: ${name}`); setDeriveModalOpen(false); }}
+            />
+
             {/* Edit Modal */}
-            <EditMaintenanceModal
+            <EditInspectionModal
                 open={editModalOpen}
                 onClose={() => setEditModalOpen(false)}
-                data={data}
+                onConfirm={() => { alert('Editando...'); setEditModalOpen(false); }}
+                inspectionName={"fata"}
             />
 
             {/* Delete Modal */}
-            <DeleteMaintenanceModal
+            <DeleteInspectionModal
                 open={deleteModalOpen}
                 onClose={() => setDeleteModalOpen(false)}
                 onConfirm={() => { alert('Eliminado'); setDeleteModalOpen(false); }}
-                maintenanceName={data.title}
+                inspectionName={"diri"}
             />
-        </div >
+        </div>
     );
 }

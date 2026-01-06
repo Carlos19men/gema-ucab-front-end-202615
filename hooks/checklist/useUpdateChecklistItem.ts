@@ -23,4 +23,4 @@ export const useUpdateChecklistItem = () => {
             console.error("Error al actualizar:", error);
         }
     });
-}
+};
