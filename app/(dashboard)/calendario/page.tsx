@@ -22,6 +22,7 @@ const Calendario = () => {
     const searchParams = useSearchParams();
     const router = useRouter();
     const hasShownToast = useRef(false);
+    const hasShownInspectionToast = useRef(false);
 
     useEffect(() => {
         if (searchParams.get('deleted') === 'true' && !hasShownToast.current) {
@@ -30,6 +31,17 @@ const Calendario = () => {
             // Limpiar el parámetro de la URL
             const newParams = new URLSearchParams(searchParams.toString());
             newParams.delete('deleted');
+            router.replace(`/calendario?${newParams.toString()}`);
+        }
+    }, [searchParams, router]);
+
+    useEffect(() => {
+        if (searchParams.get('deletedInspection') === 'true' && !hasShownInspectionToast.current) {
+            hasShownInspectionToast.current = true;
+            toast.success('Inspección eliminada con éxito');
+            // Limpiar el parámetro de la URL
+            const newParams = new URLSearchParams(searchParams.toString());
+            newParams.delete('deletedInspection');
             router.replace(`/calendario?${newParams.toString()}`);
         }
     }, [searchParams, router]);
