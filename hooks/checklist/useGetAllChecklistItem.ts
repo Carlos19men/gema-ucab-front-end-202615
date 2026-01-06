@@ -6,4 +6,4 @@ export const useGetAllChecklistItem = (type: string,checklistId: number) => {
         queryKey: ["checklistItems",type,checklistId],      
         queryFn: () => getChecklistItems(type,checklistId),
     });
-};  
+};
