@@ -101,7 +101,7 @@ export default function InspeccionDetalle() {
                     <div className="space-y-2">
                         <h3 className="font-bold text-lg">Supervisor</h3>
                         <div className="p-2 bg-slate-200/50 rounded-md border border-slate-300 font-medium text-slate-700 min-w-[200px]">
-                            {"hola"}
+                            {data.supervisor}
                         </div>
                     </div>
                 </div>
@@ -123,14 +123,15 @@ export default function InspeccionDetalle() {
                     <div className="space-y-2">
                         <h3 className="font-bold text-lg">Ubicación técnica</h3>
                         <div className="p-4 bg-slate-200/50 rounded-lg border border-slate-300 min-h-[80px]">
-                            <p className="font-semibold">{"asdf"}</p>
-                            <p className="text-sm text-slate-600">{data?.ubicacion}</p>
+                            <p className="font-semibold">{data?.ubicacion}</p>
+                            <p className="text-sm text-slate-600">{data.abreviacion}</p>
                         </div>
                     </div>
                     <div className="space-y-2">
                         <h3 className="font-bold text-lg">Área encargada</h3>
                         <div className="p-4 bg-slate-200/50 rounded-lg border border-slate-300 min-h-[80px]">
-                            <p className="text-slate-700">{data?.areaEncargada}</p>
+                            <p className=" font-semibold">{data?.areaEncargada}</p>
+                            <p className="text-slate-700">{data?.codigoArea}</p>
                         </div>
                     </div>
                 </div>
@@ -163,17 +164,12 @@ export default function InspeccionDetalle() {
                     <h3 className="font-bold text-lg mb-4">Actividades</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         {/* Checklist Item */}
-                        <div className="flex items-center justify-between p-3 border border-slate-300 rounded-lg hover:border-slate-400 transition-colors">
-                            <span className="font-medium text-slate-900">Checklist de revisión</span>
-                            <div className="flex gap-2">
-                                <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-500 hover:text-slate-900">
-                                    <Pencil className="w-4 h-4" />
-                                </Button>
-                                <Button size="icon" variant="ghost" className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50">
-                                    <Trash2 className="w-4 h-4" />
-                                </Button>
+                        {data.checklist && (
+                            <div className="flex items-center justify-between p-3 border border-slate-300 rounded-lg hover:border-slate-400 transition-colors">
+                                <span className="font-medium text-slate-900">{data.tituloChecklist}</span>
+
                             </div>
-                        </div>
+                        )}
 
                         {/* Add Button */}
                         <Button variant="outline" className="w-full h-full min-h-[50px] border-dashed border-2 text-slate-600 hover:text-slate-900 hover:border-slate-400">

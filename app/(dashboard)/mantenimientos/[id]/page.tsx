@@ -137,7 +137,8 @@ export default function MantenimientoDetalle() {
                     <div className="space-y-2">
                         <h3 className="font-bold text-lg">Área encargada</h3>
                         <div className="p-4 bg-slate-200/50 rounded-lg border border-slate-300 min-h-[80px]">
-                            <p className="text-slate-700">{data.area}</p>
+                            <p className="font-semibold">{data.areaEncargada}</p>
+                            <p className="text-sm text-slate-600">{data.codigoArea}</p>
                         </div>
                     </div>
                 </div>
