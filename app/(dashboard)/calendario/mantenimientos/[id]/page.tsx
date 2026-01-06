@@ -18,6 +18,7 @@ import {
     ArrowLeft
 } from "lucide-react";
 import Link from 'next/link';
+import { toast } from 'sonner';
 
 export default function MantenimientoDetalle() {
     const [editModalOpen, setEditModalOpen] = useState(false);
@@ -200,8 +201,9 @@ export default function MantenimientoDetalle() {
             <DeleteMaintenanceModal
                 open={deleteModalOpen}
                 onClose={() => setDeleteModalOpen(false)}
-                onConfirm={() => { alert('Eliminado'); setDeleteModalOpen(false); }}
+                onConfirm={() => { toast.success("Mantenimiento eliminado con éxito"); setDeleteModalOpen(false); }}
                 maintenanceName={data.title}
+                maintenanceId={data.idMantenimiento}
             />
         </div >
     );
