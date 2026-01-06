@@ -170,17 +170,20 @@ export default function MantenimientoDetalle() {
                     <h3 className="font-bold text-lg mb-4">Actividades</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         {/* Checklist Item */}
-                        <div className="flex items-center justify-between p-3 border border-slate-300 rounded-lg hover:border-slate-400 transition-colors">
-                            <span className="font-medium text-slate-900">Checklist de revisión</span>
-                            <div className="flex gap-2">
-                                <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-500 hover:text-slate-900">
-                                    <Pencil className="w-4 h-4" />
-                                </Button>
-                                <Button size="icon" variant="ghost" className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50">
-                                    <Trash2 className="w-4 h-4" />
-                                </Button>
+                        {data.tituloChecklist && (
+                            <div className="flex items-center justify-between p-3 border border-slate-300 rounded-lg hover:border-slate-400 transition-colors">
+                                <span className="font-medium text-slate-900">{data.tituloChecklist}</span>
+                                <div className="flex gap-2">
+                                    <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-500 hover:text-slate-900">
+                                        <Pencil className="w-4 h-4" />
+                                    </Button>
+                                    <Button size="icon" variant="ghost" className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50">
+                                        <Trash2 className="w-4 h-4" />
+                                    </Button>
+                                </div>
                             </div>
-                        </div>
+                        )}
+
 
                         {/* Add Button */}
                         <Button variant="outline" className="w-full h-full min-h-[50px] border-dashed border-2 text-slate-600 hover:text-slate-900 hover:border-slate-400">
@@ -206,6 +209,6 @@ export default function MantenimientoDetalle() {
                 onConfirm={() => { alert('Eliminado'); setDeleteModalOpen(false); }}
                 maintenanceName={data.title}
             />
-        </div>
+        </div >
     );
 }
