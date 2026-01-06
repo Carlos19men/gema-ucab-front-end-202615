@@ -20,6 +20,7 @@ import {
     FormControl,
     FormMessage,
 } from "../form";
+import { useGetPlantillas } from "@/hooks/plantillas/useGetPlantillas";
 
 // Define the schema
 const checklistSchema = z.object({
@@ -93,6 +94,9 @@ export const AgregarChecklistForm: React.FC<AgregarChecklistFormProps> = ({
         onClose();
     };
 
+    //Usar el hook para obtener las plantillas
+    const { data: plantillas, isLoading, isError } = useGetPlantillas();
+
     return (
         <Dialog open={open} onOpenChange={handleClose}>
             <DialogContent className="sm:max-w-[700px] w-full">
@@ -150,9 +154,19 @@ export const AgregarChecklistForm: React.FC<AgregarChecklistFormProps> = ({
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>
-                                                    <SelectItem value="Plantilla 1">Plantilla 1</SelectItem>
-                                                    <SelectItem value="Plantilla 2">Plantilla 2</SelectItem>
-                                                    <SelectItem value="Plantilla 3">Plantilla 3</SelectItem>
+                                                    {isLoading ? (
+                                                        <SelectItem value="loading" disabled>Cargando plantillas...</SelectItem>
+                                                    ) : isError ? (
+                                                        <SelectItem value="error" disabled>Error al cargar</SelectItem>
+                                                    ) : plantillas && plantillas.length > 0 ? (
+                                                        plantillas.map((plantilla: any) => (
+                                                            <SelectItem key={plantilla.idPlantilla} value={plantilla.idPlantilla.toString()}>
+                                                                {plantilla.nombre}
+                                                            </SelectItem>
+                                                        ))
+                                                    ) : (
+                                                        <SelectItem value="empty" disabled>No hay plantillas disponibles</SelectItem>
+                                                    )}
                                                 </SelectContent>
                                             </Select>
                                             <FormMessage />
@@ -163,23 +177,25 @@ export const AgregarChecklistForm: React.FC<AgregarChecklistFormProps> = ({
                         </div>
 
                         {/* Input Nombre de Checklist */}
-                        <FormField
-                            control={form.control}
-                            name="nombre"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="font-bold text-black">Nombre de Checklist</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            {...field}
-                                            placeholder=""
-                                            className="border-gray-300 rounded-md"
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                        {opcion !== "Plantilla" && (
+                            <FormField
+                                control={form.control}
+                                name="nombre"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="font-bold text-black">Nombre de Checklist</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                {...field}
+                                                placeholder=""
+                                                className="border-gray-300 rounded-md"
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        )}
 
                         <div className="flex justify-end pt-4">
                             <Button
