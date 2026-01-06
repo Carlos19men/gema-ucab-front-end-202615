@@ -31,7 +31,7 @@ export const DeleteMaintenanceModal: React.FC<DeleteMaintenanceModalProps> = ({
             onSuccess: () => {
                 onClose(); //cerrar el modal 
                 onConfirm();
-                router.push("/calendario");
+                router.push("/calendario?deleted=true");
             }
         });
     }
