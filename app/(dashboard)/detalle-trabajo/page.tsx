@@ -3,17 +3,14 @@
 import ChecklistComponent from "@/components/checklist/checklist";
 import { useGetAllChecklistItem } from "@/hooks/checklist/useGetAllChecklistItem";
 import { Loader2 } from "lucide-react";
-import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 const ChecklistPage = () => {
-  //Obtener el ID de la URL. Ejemplo: /detalle-trabajo?id=1&type=mantenimientos
-  const searchParams = useSearchParams();
-  const idParam = searchParams.get('id');
-  const typeParam = searchParams.get('type') as string;
-
-  const id = idParam ? Number(idParam) : 0; 
-  const type = typeParam || "mantenimientos"; 
+  //Obtener el ID de la URL (asumiendo ruta dinámica [id])
+  //const params = useParams();
+  //const id = Number(params.id); // Convertir a número
+  const id = 1; // Temporalmente fijo para pruebas 
+  const type = "mantenimientos"; // Temporalmente fijo para pruebas
 
   //Usar el hook para traer los datos del Backend
   const { data: checklist, isLoading, isError } = useGetAllChecklistItem(type,id);
@@ -32,11 +29,11 @@ const ChecklistPage = () => {
     );
   }
 
-  // Si hay error o si la data llegó vacía (undefined) o si el id es invalido
-  if (isError || !checklist || id === 0) { // [!code ++]
+  // Si hay error o si la data llegó vacía (undefined)
+  if (isError || !checklist) {
     return (
       <div className="flex justify-center items-center h-screen text-red-500">
-        <p>No se pudo cargar la información del checklist o el ID es inválido.</p>
+        <p>No se pudo cargar la información del checklist.</p>
       </div>
     );
   }

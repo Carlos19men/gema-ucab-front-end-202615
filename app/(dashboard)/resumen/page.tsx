@@ -5,17 +5,16 @@ import DateNavigator from "@/components/ui/dateNavigator";
 import DropdownFilter from "@/components/ui/dropdownFilter";
 import MaintenanceCard from "@/components/resumen/maintenanceCard";
 import type { resumen } from "@/types/resume.types";
+import type { ResumenInspeccion } from "@/types/resumenInspeccion.types";
+import type { ResumenMantenimiento } from "@/types/resumenMantenimiento.type";
 import { 
     Calendar, 
-    Upload,
-    Loader2,
-    Share
+    Upload
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import InspeccionCard from "@/components/resumen/inspeccionCard";
 import { useGetResumen } from "@/hooks/resumen/useGetResumen";
 import { exportResumenPDF } from "@/lib/api/resumen";
-import { fa } from "zod/v4/locales";
 
 /*Nombres de los meses */
 const MONTH_NAMES = [
@@ -41,8 +40,6 @@ const resumen = () => {
 
     // Este estado controla qué se mostrara en el resumen
     const [filtroActivo, setFiltroActivo] = useState('todos');
-
-    const [isExporting, setIsExporting] = useState(false);
 
     // Formatear la fecha para la API (YYYY-MM-DD)
     const apiDateParams = useMemo(() => {
@@ -174,7 +171,6 @@ const resumen = () => {
 
     const handleExport = async () => {
         try {
-            setIsExporting(true);
             console.log("Generando PDF..."); // Feedback visual opcional
 
             // response SERÁ el objeto Blob directamente gracias al cambio en client.ts
@@ -195,8 +191,6 @@ const resumen = () => {
         } catch (error) {
             console.error("Error al exportar PDF:", error);
             console.log("Error al descargar el PDF");
-        } finally{
-            setIsExporting(false);
         }
     };
 
@@ -208,20 +202,9 @@ const resumen = () => {
                     <h2 className="text-lg text-gray-500">{labelHeader}</h2>
                 </div>
                 <Button className="bg-sidebar-border text-black hover:bg-gray-300"
-                onClick={handleExport}
-                disabled={isExporting}>
-                    {isExporting ? (
-                        <>
-                            {/* Icono girando */}
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" /> 
-                            Generando PDF...
-                        </>
-                    ) : (
-                        <>
-                            <Share size={18} />
-                            <span>Exportar</span>
-                        </>
-                    )}
+                onClick={handleExport}>
+                    <Upload className="mr-2 h-4 w-4" />
+                    Exportar
                 </Button>
             </div>
             <div className="w-full flex justify-end items-center gap-4 mb-4">
