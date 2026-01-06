@@ -241,8 +241,9 @@ export const AgregarChecklistForm: React.FC<AgregarChecklistFormProps> = ({
                             <Button
                                 type="submit"
                                 className="bg-gema-green hover:bg-gema-green/90 text-primary-foreground px-8 font-semibold"
+                                disabled={createNewChecklist.isPending || createFromPlantilla.isPending}
                             >
-                                Guardar
+                                {createNewChecklist.isPending || createFromPlantilla.isPending ? "Cargando..." : "Guardar"}
                             </Button>
                         </div>
                     </form>
