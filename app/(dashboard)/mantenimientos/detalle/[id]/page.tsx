@@ -185,8 +185,14 @@ export default function MantenimientoDetalle() {
                     <h3 className="font-bold text-lg mb-4">Actividades</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         {/* Checklist Item */}
-                        <div className="flex items-center justify-between p-3 border border-slate-300 rounded-lg hover:border-slate-400 transition-colors">
-                            <span className="font-medium text-slate-900">Checklist de revisión</span>
+                        <div className="flex items-center justify-between p-3 border border-slate-300 rounded-lg hover:border-slate-400 transition-colors bg-slate-50">
+                            <Link 
+                                href={`/detalle-trabajo?id=${id}&type=mantenimientos`} 
+                                className="flex-1 hover:underline cursor-pointer"
+                            >
+                                <span className="font-medium text-slate-900">Checklist de revisión</span>
+                            </Link>
+
                             <div className="flex gap-2">
                                 <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-500 hover:text-slate-900">
                                     <Pencil className="w-4 h-4" />
@@ -196,8 +202,7 @@ export default function MantenimientoDetalle() {
                                 </Button>
                             </div>
                         </div>
-
-                        {/* Add Button */}
+                        
                         <Button variant="outline" className="w-full h-full min-h-[50px] border-dashed border-2 text-slate-600 hover:text-slate-900 hover:border-slate-400">
                             <Plus className="w-5 h-5 mr-2" />
                             Agregar Checklist
