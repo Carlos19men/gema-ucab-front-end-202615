@@ -4,6 +4,14 @@ import { z } from "zod";
  * Schema para validar los datos de un mantenimiento preventivo
  * @description Utiliza Zod para definir las reglas de validación basadas en los tipos del backend.
  */
+const AREA_OPTIONS = [
+  "Electricidad",
+  "Infraestructura",
+  "Mecanica",
+  "Refrigeracion",
+  "Logistica"
+] as const;
+
 export const mantenimientoSchema = z.object({
   nombre: z
     .string()
@@ -14,6 +22,14 @@ export const mantenimientoSchema = z.object({
     .enum(["Alta", "Media", "Baja"])
     .refine((val) => ["Alta", "Media", "Baja"].includes(val), {
       message: "Selecciona una prioridad válida"
+    }),
+
+  areaEncargada: z
+    .string({ required_error: "El área encargada es requerida" })
+    .trim()
+    .min(1, "El área encargada es requerida")
+    .refine((val) => (AREA_OPTIONS as readonly string[]).includes(val), {
+      message: "El área encargada es requerida"
     }),
   
   estado: z

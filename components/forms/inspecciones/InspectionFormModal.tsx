@@ -14,6 +14,8 @@ import { useGrupos } from "@/hooks/grupos-trabajo/useGrupoTrabajo";
 import { useCreateInspection } from "@/hooks/inspecciones/useCreateInspection";
 import { inspeccionSchema, type InspeccionFormData } from "@/lib/validations/inspeccionSchema";
 
+const AREA_OPTIONS = ["Electricidad", "Infraestructura", "Mecanica", "Refrigeracion", "Logistica"] as const;
+
 interface InspectionFormModalProps {
     open: boolean;
     onClose: () => void;
@@ -36,6 +38,7 @@ export const InspectionFormContent: React.FC<{
         defaultValues: {
             estado: initialValues?.estado || 'programado',
             supervisor: initialValues?.supervisor || '',
+            areaEncargada: initialValues?.areaEncargada || (initialValues as any)?.AreaEncargada || '',
             idUbicacionTecnica: initialValues?.idUbicacionTecnica || 0,
             frecuencia: initialValues?.frecuencia || '',
             cadaCuanto: initialValues?.cadaCuanto || 1,
@@ -79,6 +82,7 @@ export const InspectionFormContent: React.FC<{
             idUbicacionTecnica: data.idUbicacionTecnica,
             idGrupo: data.idGrupo,
             supervisorId: supervisores?.find(s => s.Nombre === data.supervisor)?.Id || 0,
+            areaEncargada: data.areaEncargada,
             prioridad: data.prioridad,
             fechaLimite: data.fechaLimite,
             frecuencia: data.frecuencia,
@@ -140,7 +144,7 @@ export const InspectionFormContent: React.FC<{
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Estado</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <Select onValueChange={field.onChange} value={field.value}>
                                     <FormControl>
                                         <SelectTrigger>
                                             <SelectValue placeholder="Seleccionar estado" />
@@ -176,6 +180,32 @@ export const InspectionFormContent: React.FC<{
                                         {prioridades.map((prioridad) => (
                                             <SelectItem key={prioridad.value} value={prioridad.value}>
                                                 {prioridad.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    {/* Área encargada */}
+                    <FormField
+                        control={form.control}
+                        name="areaEncargada"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Área encargada</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Seleccionar área encargada" />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        {AREA_OPTIONS.map((area) => (
+                                            <SelectItem key={area} value={area}>
+                                                {area}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>

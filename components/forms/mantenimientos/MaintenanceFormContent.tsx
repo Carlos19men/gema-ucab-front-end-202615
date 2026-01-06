@@ -13,6 +13,8 @@ import { Combobox } from "@/components/ui/combobox";
 import { useSupervisores } from "@/hooks/usuarios/useUsuarios";
 import { useGrupos } from "@/hooks/grupos-trabajo/useGrupoTrabajo";
 
+const AREA_OPTIONS = ["Electricidad", "Infraestructura", "Mecanica", "Refrigeracion", "Logistica"] as const;
+
 interface MaintenanceFormContentProps {
     initialValues?: Partial<MantenimientoFormData>;
     onClose?: () => void;
@@ -43,6 +45,7 @@ export const MaintenanceFormContent: React.FC<MaintenanceFormContentProps> = ({
             frecuencia: initialValues?.frecuencia,
             idUbicacionTecnica: initialValues?.idUbicacionTecnica || 0, // 0 as empty/initial
             idGrupo: initialValues?.idGrupo || 1,
+            areaEncargada: initialValues?.areaEncargada || (initialValues as any)?.AreaEncargada || '',
             especificacion: initialValues?.especificacion || ''
         }
     });
@@ -60,6 +63,7 @@ export const MaintenanceFormContent: React.FC<MaintenanceFormContentProps> = ({
             idGrupo: data.idGrupo,
             supervisorId: supervisores?.find(s => s.Nombre === data.supervisor)?.Id || 0, // Buscar ID del supervisor seleccionado
             prioridad: data.prioridad,
+            areaEncargada: data.areaEncargada,
             fechaLimite: data.fechaFin,
             frecuencia: data.frecuencia || "Mensual",
             tipoMantenimiento: data.tipoMantenimiento,
@@ -133,7 +137,7 @@ export const MaintenanceFormContent: React.FC<MaintenanceFormContentProps> = ({
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Prioridad</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <Select onValueChange={field.onChange} value={field.value}>
                                     <FormControl>
                                         <SelectTrigger>
                                             <SelectValue placeholder="Seleccionar prioridad" />
@@ -143,6 +147,32 @@ export const MaintenanceFormContent: React.FC<MaintenanceFormContentProps> = ({
                                         <SelectItem value="Baja">Baja</SelectItem>
                                         <SelectItem value="Media">Media</SelectItem>
                                         <SelectItem value="Alta">Alta</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    {/* Área encargada */}
+                    <FormField
+                        control={form.control}
+                        name="areaEncargada"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Área encargada</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Seleccionar área encargada" />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        {AREA_OPTIONS.map((area) => (
+                                            <SelectItem key={area} value={area}>
+                                                {area}
+                                            </SelectItem>
+                                        ))}
                                     </SelectContent>
                                 </Select>
                                 <FormMessage />

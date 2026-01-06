@@ -6,6 +6,7 @@ interface CreateMantenimientoRequest {
     fechaCreacion: string;
     idUbicacionTecnica: number;
     idGrupo: number;
+    areaEncargada: "Electricidad" | "Infraestructura" | "Mecanica" | "Refrigeracion" | "Logistica";
     prioridad: "Alta" | "Media" | "Baja";
     fechaLimite: string;
     frecuencia: "Diaria" | "Semanal" | "Mensual" | "Bimestral" | "Trimestral" | "Semestral" | "Anual";
