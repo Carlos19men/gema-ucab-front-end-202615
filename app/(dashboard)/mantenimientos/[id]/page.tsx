@@ -173,14 +173,7 @@ export default function MantenimientoDetalle() {
                         {data.tituloChecklist && (
                             <div className="flex items-center justify-between p-3 border border-slate-300 rounded-lg hover:border-slate-400 transition-colors">
                                 <span className="font-medium text-slate-900">{data.tituloChecklist}</span>
-                                <div className="flex gap-2">
-                                    <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-500 hover:text-slate-900">
-                                        <Pencil className="w-4 h-4" />
-                                    </Button>
-                                    <Button size="icon" variant="ghost" className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50">
-                                        <Trash2 className="w-4 h-4" />
-                                    </Button>
-                                </div>
+
                             </div>
                         )}
 
