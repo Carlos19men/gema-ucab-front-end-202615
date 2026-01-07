@@ -13,7 +13,6 @@ import {
     ArrowLeft,
     Check,
     CirclePlus,
-    Edit,
     Pencil,
     Share,
     Trash2
