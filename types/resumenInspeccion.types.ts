@@ -6,4 +6,5 @@ export type ResumenInspeccion = {
     estado: "No Empezado" | "En Ejecucion" | "Reprogramado" | "Culminado";
     ubicacion: string;
     frecuencia: string;
+    checklist: string;
 };

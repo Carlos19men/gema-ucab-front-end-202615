@@ -160,27 +160,25 @@ export default function InspeccionDetalle() {
                     <h3 className="font-bold text-lg mb-4">Actividades</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         {/* Checklist Item */}
-                        {data.checklist && (
+                        {data.checklist ? (
                             <div className="flex items-center justify-between p-3 border border-slate-300 rounded-lg hover:border-slate-400 transition-colors">
                                 <Link
                                     href={`/detalle-trabajo/inspecciones/${id}`}
                                     className="flex-1 hover:underline cursor-pointer"
                                 >
-                                    <span className="font-medium text-slate-900">{data.tituloChecklist}</span>
+                                    <span className="font-medium text-slate-900">{data.checklist}</span>
                                 </Link>
-
                             </div>
+                        ) : (
+                            <Button
+                                variant="outline"
+                                className="w-full h-full min-h-[50px] border-dashed border-2 text-slate-600 hover:text-slate-900 hover:border-slate-400"
+                                onClick={() => setAddChecklistModalOpen(true)}
+                            >
+                                <Plus className="w-5 h-5 mr-2" />
+                                Agregar Checklist
+                            </Button>
                         )}
-
-                        {/* Add Button */}
-                        <Button
-                            variant="outline"
-                            className="w-full h-full min-h-[50px] border-dashed border-2 text-slate-600 hover:text-slate-900 hover:border-slate-400"
-                            onClick={() => setAddChecklistModalOpen(true)}
-                        >
-                            <Plus className="w-5 h-5 mr-2" />
-                            Agregar Checklist
-                        </Button>
                     </div>
                 </div>
 
