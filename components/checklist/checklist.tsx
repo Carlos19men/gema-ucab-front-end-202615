@@ -32,9 +32,6 @@ const ChecklistComp = ({ checklist, onBack }: ChecklistProps) => {
     const [activityToEdit, setActivityToEdit] = useState<Actividad | null>(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
-    // Inicializamos el hook para actualizar el estado
-    const { mutate: updateTask } = useUpdateStatus();
-
     // Actualizar tareas si el checklist cambia
     useEffect(() => {
         console.log("Datos actualizados recibidos:", checklist.tareas); // Debug
@@ -46,6 +43,8 @@ const ChecklistComp = ({ checklist, onBack }: ChecklistProps) => {
     const completedTasks = safeTasks.filter(t => t.estado == "COMPLETADA").length;
     const pendingTasks = totalTasks - completedTasks;
     const progressPercentage = totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
+
+    const { mutate: updateTask } = useUpdateStatus();
 
     // Función para exportar como documento
     const handleExport = () => {
@@ -283,7 +282,7 @@ const ChecklistComp = ({ checklist, onBack }: ChecklistProps) => {
                     console.log("Elemento eliminado:", id);
                 }}
             />
-        </div>
+        </div >
     )
 }
 

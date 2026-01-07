@@ -1,13 +1,13 @@
+import { ResumenInspeccion } from "@/types/resumenInspeccion.types";
 import apiClient from "./client";
-import type { Inspeccion } from "@/types/inspecciones.types";
 
 interface inspeccionRequest {
-    data: Inspeccion[]
+    data: ResumenInspeccion[]
 }
 
 export const InspeccionAPI = {
     async getDetalle(id: number): Promise<any> {
-        return apiClient.get<Inspeccion>(`/inspecciones/${id}`);
+        return apiClient.get<ResumenInspeccion>(`/inspecciones/${id}`);
     },
 
     async delete(id: number): Promise<any> {
