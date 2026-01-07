@@ -145,12 +145,6 @@ const FormNuevaPlantilla: React.FC<Props> = ({ open, onClose, initialData }) => 
                     </FormControl>
                     <SelectContent>
                       <SelectItem value="Checklist">Checklist</SelectItem>
-                      <SelectItem value="Mantenimiento por Condición">
-                        Mantenimiento por Condición
-                      </SelectItem>
-                      <SelectItem value="Mantenimiento por Inspección">
-                        Mantenimiento por Inspección
-                      </SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />

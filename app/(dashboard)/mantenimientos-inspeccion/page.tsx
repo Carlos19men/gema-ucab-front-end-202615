@@ -21,37 +21,13 @@ const MantenimientosInspeccion = () => {
 
   const mantenimientos = mantenimientosData?.data || [];
 
-  const getEstadoColor = (estado: string) => {
-    switch (estado) {
-      case "culminado":
-        return "border-green-600 bg-green-100";
-      case "no_empezado":
-        return "border-gray-500 bg-gray-100";
-      case "reprogramado":
-        return "border-yellow-500 bg-yellow-100";
-      default:
-        return "border-gray-300 bg-white";
-    }
-  };
+
 
   return (
     <div className="p-6 max-w-6xl">
       <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6">
         <h1 className="text-2xl font-bold">Mantenimientos por Inspección</h1>
-        <div className="flex flex-col gap-2 text-sm text-gray-600 mt-2 md:mt-0">
-          <div className="flex items-center gap-1.5">
-            <div className="w-4 h-4 bg-green-500 rounded"></div>
-            <span>Culminado</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className="w-4 h-4 bg-gray-400 rounded"></div>
-            <span>No empezado</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className="w-4 h-4 bg-yellow-400 rounded"></div>
-            <span>Reprogramado</span>
-          </div>
-        </div>
+
       </div>
 
       {/* Tabla para desktop */}
@@ -72,7 +48,7 @@ const MantenimientosInspeccion = () => {
               mantenimientos.map((mantenimiento) => (
                 <tr key={mantenimiento.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                    <div className={`flex flex-col border-2 rounded-lg px-3 py-2 ${getEstadoColor(mantenimiento.estado)}`}>
+                    <div className="flex flex-col border-2 rounded-lg px-3 py-2 border-gray-300 bg-sky-50">
                       <div className="font-medium">{mantenimiento.mantenimientoGenerado}</div>
                       <div className="flex items-center gap-1.5 mt-2 text-xs text-gray-700">
                         <MapPin className="w-4 h-4" />
@@ -109,7 +85,7 @@ const MantenimientosInspeccion = () => {
               <div className="space-y-2">
                 <div>
                   <p className="text-xs text-gray-500 uppercase">Mantenimiento generado</p>
-                  <div className={`flex flex-col border-2 rounded-lg px-3 py-2 mt-1 ${getEstadoColor(mantenimiento.estado)}`}>
+                  <div className="flex flex-col border-2 rounded-lg px-3 py-2 mt-1 border-gray-300 bg-sky-50">
                     <p className="font-medium text-gray-900">{mantenimiento.mantenimientoGenerado}</p>
                     <div className="flex items-center gap-1.5 mt-2 text-xs text-gray-700">
                       <MapPin className="w-4 h-4" />
