@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useRouter } from "next/navigation";
 import {
     Select,
     SelectContent,
@@ -54,13 +55,15 @@ interface AgregarChecklistFormProps {
     onClose: () => void;
     onSuccess?: (data: any) => void;
     maintenanceId: number;
+    type: "mantenimientos" | "inspecciones";
 }
 
 export const AgregarChecklistForm: React.FC<AgregarChecklistFormProps> = ({
     open,
     onClose,
     onSuccess,
-    maintenanceId
+    maintenanceId,
+    type
 }) => {
     const form = useForm<ChecklistFormValues>({
         resolver: zodResolver(checklistSchema),
@@ -85,6 +88,8 @@ export const AgregarChecklistForm: React.FC<AgregarChecklistFormProps> = ({
         }
     }, [open, reset]);
 
+    const router = useRouter();
+
     // Hooks for creating checklist
     const createNewChecklist = useCreateChecklist();
     const createFromPlantilla = useCreateChecklisfromPlantilla();
@@ -96,6 +101,7 @@ export const AgregarChecklistForm: React.FC<AgregarChecklistFormProps> = ({
                     console.log("Checklist created successfully");
                     if (onSuccess) onSuccess(data);
                     handleClose();
+                    router.push(`/detalle-trabajo/${type}/${maintenanceId}`);
                 },
                 onError: (error) => {
                     console.error("Error creating checklist:", error);
@@ -111,6 +117,7 @@ export const AgregarChecklistForm: React.FC<AgregarChecklistFormProps> = ({
                         console.log("Checklist created from template successfully");
                         if (onSuccess) onSuccess(data);
                         handleClose();
+                        router.push(`/detalle-trabajo/${type}/${maintenanceId}`);
                     },
                     onError: (error) => {
                         console.error("Error creating checklist from template:", error);

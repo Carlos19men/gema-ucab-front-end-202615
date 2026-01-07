@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { EditInspectionModal } from "@/components/forms/inspecciones/EditInspectionModal";
 import { DeleteInspectionModal } from "@/components/forms/inspecciones/DeleteInspectionModal";
 import { DeriveMaintenanceModal } from "@/components/forms/inspecciones/DeriveMaintenanceModal";
+import { AgregarChecklistForm } from "@/components/forms/checklist/AgregarChecklistForm";
 import { useParams } from 'next/navigation';
 import {
     Check,
@@ -23,6 +24,7 @@ export default function InspeccionDetalle() {
     const [editModalOpen, setEditModalOpen] = useState(false);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [deriveModalOpen, setDeriveModalOpen] = useState(false);
+    const [addChecklistModalOpen, setAddChecklistModalOpen] = useState(false);
 
     // Obtener el ID de la URL
     const params = useParams();
@@ -161,7 +163,7 @@ export default function InspeccionDetalle() {
                         {data.checklist && (
                             <div className="flex items-center justify-between p-3 border border-slate-300 rounded-lg hover:border-slate-400 transition-colors">
                                 <Link
-                                    href={`/detalle-trabajo?id=${id}&type=inspecciones`}
+                                    href={`/detalle-trabajo/inspecciones/${id}`}
                                     className="flex-1 hover:underline cursor-pointer"
                                 >
                                     <span className="font-medium text-slate-900">{data.tituloChecklist}</span>
@@ -171,7 +173,11 @@ export default function InspeccionDetalle() {
                         )}
 
                         {/* Add Button */}
-                        <Button variant="outline" className="w-full h-full min-h-[50px] border-dashed border-2 text-slate-600 hover:text-slate-900 hover:border-slate-400">
+                        <Button
+                            variant="outline"
+                            className="w-full h-full min-h-[50px] border-dashed border-2 text-slate-600 hover:text-slate-900 hover:border-slate-400"
+                            onClick={() => setAddChecklistModalOpen(true)}
+                        >
                             <Plus className="w-5 h-5 mr-2" />
                             Agregar Checklist
                         </Button>
@@ -202,6 +208,18 @@ export default function InspeccionDetalle() {
                 onConfirm={() => { toast.success("Inspección eliminada con éxito"); setDeleteModalOpen(false); }}
                 inspectionName={data.titulo}
                 idInspeccion={data.idInspeccion}
+            />
+
+            {/* Add Checklist Modal */}
+            <AgregarChecklistForm
+                open={addChecklistModalOpen}
+                onClose={() => setAddChecklistModalOpen(false)}
+                onSuccess={(data) => {
+                    console.log("Checklist added:", data);
+                    setAddChecklistModalOpen(false);
+                }}
+                maintenanceId={id}
+                type="inspecciones"
             />
         </div>
     );

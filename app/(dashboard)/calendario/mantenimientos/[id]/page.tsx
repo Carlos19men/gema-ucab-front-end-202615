@@ -221,6 +221,7 @@ export default function MantenimientoDetalle() {
                     setAddChecklistModalOpen(false);
                 }}
                 maintenanceId={id}
+                type="mantenimientos"
             />
         </div>
     );
