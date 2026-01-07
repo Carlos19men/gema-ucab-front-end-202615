@@ -15,7 +15,6 @@ import {
     Pencil,
     Trash2,
     Plus,
-    CheckSquare,
     ArrowLeft
 } from "lucide-react";
 import Link from 'next/link';

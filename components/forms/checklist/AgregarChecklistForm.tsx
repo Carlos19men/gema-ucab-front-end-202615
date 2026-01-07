@@ -96,7 +96,11 @@ export const AgregarChecklistForm: React.FC<AgregarChecklistFormProps> = ({
 
     const onSubmit = (data: ChecklistFormValues) => {
         if (data.opcion === "Nuevo") {
-            createNewChecklist.mutate(data.nombre!, {
+            createNewChecklist.mutate({
+                idInspeccion: type === "inspecciones" ? maintenanceId : undefined,
+                idMantenimiento: type === "mantenimientos" ? maintenanceId : undefined,
+                nombre: data.nombre!
+            }, {
                 onSuccess: () => {
                     console.log("Checklist created successfully");
                     if (onSuccess) onSuccess(data);
@@ -110,8 +114,9 @@ export const AgregarChecklistForm: React.FC<AgregarChecklistFormProps> = ({
         } else {
             if (data.plantilla) {
                 createFromPlantilla.mutate({
-                    idTrabajo: maintenanceId,
-                    idPlantilla: parseInt(data.plantilla)
+                    idMantenimiento: type === "mantenimientos" ? maintenanceId : undefined,
+                    idInspeccion: type === "inspecciones" ? maintenanceId : undefined,
+                    idPlantilla: data.plantilla
                 }, {
                     onSuccess: () => {
                         console.log("Checklist created from template successfully");

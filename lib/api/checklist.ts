@@ -13,8 +13,8 @@ export async function deleteChecklistItem(checklistId: number, checklistItemId: 
 
 export async function createChecklistItem(checklistId: number, data: Actividad) {
   const payload = {
-    idChecklist: checklistId, 
-    titulo: data.nombre,      
+    idChecklist: checklistId,
+    titulo: data.nombre,
     descripcion: data.descripcion
   };
 
@@ -25,7 +25,7 @@ export async function createChecklistItem(checklistId: number, data: Actividad) 
 
 export async function updateChecklistItem(checklistId: number, data: Actividad) {
   const payload = {
-    titulo: data.nombre,     
+    titulo: data.nombre,
     descripcion: data.descripcion,
     estado: data.estado
   };
@@ -40,14 +40,14 @@ export async function exportChecklistPDF(checklistId: number) {
   });
 }
 
-export async function updateChecklistStatus(idTrabajo: number,checklistId: number, itemId: number) {
-  return apiClient.patch(`/estado-item/${idTrabajo}/${checklistId}/${itemId}`,undefined);
+export async function updateChecklistStatus(idTrabajo: number, checklistId: number, itemId: number) {
+  return apiClient.patch(`/estado-item/${idTrabajo}/${checklistId}/${itemId}`, undefined);
 }
 
-export async function createChecklistfromPlantilla(idInspeccion: number | null,idMantenimiento: number | null, idPlantilla: number) {
-    return apiClient.post(`/work-creation/checklist-template`, { idInspeccion, idMantenimiento, idPlantilla });
+export async function createChecklistfromPlantilla(idInspeccion?: string, idMantenimiento?: string, idPlantilla?: string) {
+  return apiClient.post(`/work-creation/checklist-template`, { idInspeccion, idMantenimiento, idPlantilla });
 }
 
-export async function createChecklist(idInspeccion: number | null,idMantenimiento: number | null,nombre: string) {
-    return apiClient.post(`/checklists`, { idInspeccion, idMantenimiento, nombre });
+export async function createChecklist(nombre: string, idInspeccion?: string, idMantenimiento?: string,) {
+  return apiClient.post(`/checklists`, { nombre, idInspeccion, idMantenimiento });
 }

@@ -1,9 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createChecklist} from "@/lib/api/checklist";
+import { createChecklist } from "@/lib/api/checklist";
 
 type CreateParams = {
-    idInspeccion: number | null;
-    idMantenimiento: number | null;
+    idInspeccion?: number;
+    idMantenimiento?: number;
     nombre: string;
 };
 
@@ -11,11 +11,15 @@ export const useCreateChecklist = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (params: CreateParams) => 
-            createChecklist(params.idInspeccion, params.idMantenimiento, params.nombre),    
+        mutationFn: (params: CreateParams) =>
+            createChecklist(
+                params.nombre,
+                params.idMantenimiento?.toString(),
+                params.idInspeccion?.toString()
+            ),
         onSuccess: async () => {
             // Usamos await para asegurar que se dispare la recarga
-            await queryClient.invalidateQueries({ 
+            await queryClient.invalidateQueries({
                 queryKey: ["checklists"],
                 refetchType: 'active' // Fuerza la recarga inmediata de las consultas activas en pantalla
             });
