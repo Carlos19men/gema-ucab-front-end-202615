@@ -1,12 +1,18 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createChecklist} from "@/lib/api/checklist";
 
+type CreateParams = {
+    idInspeccion: number | null;
+    idMantenimiento: number | null;
+    nombre: string;
+};
+
 export const useCreateChecklist = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (nombre: string) => 
-            createChecklist(nombre),    
+        mutationFn: (params: CreateParams) => 
+            createChecklist(params.idInspeccion, params.idMantenimiento, params.nombre),    
         onSuccess: async () => {
             // Usamos await para asegurar que se dispare la recarga
             await queryClient.invalidateQueries({ 

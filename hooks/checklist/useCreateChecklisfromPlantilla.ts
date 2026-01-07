@@ -2,7 +2,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createChecklistfromPlantilla } from "@/lib/api/checklist";
 
 type CreateParams = {
-    idTrabajo: number;
+    idInspeccion: number | null;
+    idMantenimiento: number | null;
     idPlantilla: number;
 };
 
@@ -11,7 +12,7 @@ export const useCreateChecklisfromPlantilla = () => {
    
     return useMutation({
         mutationFn: (params: CreateParams) => 
-            createChecklistfromPlantilla(params.idTrabajo, params.idPlantilla),    
+            createChecklistfromPlantilla(params.idInspeccion, params.idMantenimiento, params.idPlantilla),    
         onSuccess: async () => {
             // Usamos await para asegurar que se dispare la recarga
             await queryClient.invalidateQueries({ 
