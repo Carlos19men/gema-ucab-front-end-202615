@@ -5,6 +5,7 @@ import { AgregarChecklistItemForm } from "../forms/checklist/AgregarChecklistIte
 import { exportChecklistPDF } from "@/lib/api/checklist";
 import { EditarChecklistItemForm } from "../forms/checklist/EditarChecklistItemForm";
 import { useUpdateStatus } from "@/hooks/checklist/useUpdateStatusChecklistItem";
+import { useUpdatePlantillaItem } from "@/hooks/plantillas/useUpdatePlantillaItem";
 import { Button } from "../ui/button";
 
 import { useEffect, useState } from "react";
@@ -22,9 +23,10 @@ interface ChecklistProps {
     idTrabajo: number;
     checklist: Checklist;
     onBack: () => void;
+    isTemplate?: boolean;
 }
 
-const ChecklistComp = ({ checklist, onBack }: ChecklistProps) => {
+const ChecklistComp = ({ checklist, onBack, isTemplate = false }: ChecklistProps) => {
     const [tasks, setTasks] = useState(checklist.tareas);
     const [activityToDelete, setActivityToDelete] = useState<Actividad | null>(null);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -43,6 +45,7 @@ const ChecklistComp = ({ checklist, onBack }: ChecklistProps) => {
     const progressPercentage = totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
 
     const { mutate: updateTask } = useUpdateStatus();
+    const updatePlantillaMutation = useUpdatePlantillaItem();
 
     // Función para exportar como documento
     const handleExport = () => {
@@ -131,20 +134,31 @@ const ChecklistComp = ({ checklist, onBack }: ChecklistProps) => {
     };
 
     //Marcar o desmarcar tarea completada
+    //Marcar o desmarcar tarea completada
     const toggleTask = (id: number) => {
+        const taskToUpdate = tasks.find(t => t.id === id);
+        if (!taskToUpdate) return;
+
+        const newStatus = taskToUpdate.estado === "COMPLETADA" ? "PENDIENTE" : "COMPLETADA";
+
         setTasks(currentTasks =>
             currentTasks.map(task =>
-                task.id === id ? { ...task, estado: task.estado === "COMPLETADA" ? "PENDIENTE" : "COMPLETADA" } : task
+                task.id === id ? { ...task, estado: newStatus } : task
             )
         );
 
-        // PASO B: Llamada a la API (Segundo plano)
-        // Solo enviamos el estado, el ID del checklist y el ID del item
-        updateTask({
-            trabajoId: checklist.idTrabajo,
-            checklistId: checklist.id,
-            itemId: id,
-        });
+        if (isTemplate) {
+            updatePlantillaMutation.mutate({
+                plantillaId: checklist.id,
+                data: { ...taskToUpdate, estado: newStatus }
+            });
+        } else {
+            updateTask({
+                trabajoId: checklist.idTrabajo,
+                checklistId: checklist.id,
+                itemId: id,
+            });
+        }
     };
 
     //Eliminar tarea
@@ -263,6 +277,7 @@ const ChecklistComp = ({ checklist, onBack }: ChecklistProps) => {
                 open={isAddModalOpen}
                 onClose={() => setIsAddModalOpen(false)}
                 checklistId={checklist.id}
+                isTemplate={isTemplate}
             />
 
             <EditarChecklistItemForm
@@ -270,6 +285,7 @@ const ChecklistComp = ({ checklist, onBack }: ChecklistProps) => {
                 onClose={() => setIsEditModalOpen(false)}
                 actividad={activityToEdit}
                 checklistId={checklist.id}
+                isTemplate={isTemplate}
             />
 
             <EliminarChecklistItem
@@ -278,6 +294,7 @@ const ChecklistComp = ({ checklist, onBack }: ChecklistProps) => {
                 checklistId={checklist.id}
                 onDelete={(id) => {
                 }}
+                isTemplate={isTemplate}
             />
         </div >
     )

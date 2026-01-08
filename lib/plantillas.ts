@@ -1,91 +1,84 @@
 'use client'
 
-import type { Plantilla } from "@/types/models/plantillas.types";
+import apiClient from "@/lib/api/client";
+import type {
+  Plantilla,
+  BackendPlantilla,
+  BackendPlantillaWithItems
+} from "@/types/models/plantillas.types";
+
+/**
+ * Mapea una plantilla del backend al formato del frontend
+ */
+function mapBackendToFrontend(backend: BackendPlantilla): Plantilla {
+  return {
+    id: backend.idPlantilla,
+    plantilla: backend.nombre,
+    tipo: "Checklist", // Todas las plantillas son de tipo Checklist
+  };
+}
+
+/**
+ * Mapea una plantilla con items del backend al formato del frontend
+ */
+function mapBackendWithItemsToFrontend(backend: BackendPlantillaWithItems): Plantilla {
+  return {
+    id: backend.idPlantilla,
+    plantilla: backend.nombre,
+    tipo: "Checklist",
+    actividades: backend.items.map(item => ({
+      id: item.idItemPlantilla,
+      nombre: item.titulo,
+      descripcion: item.descripcion,
+      estado: item.estado || 'PENDIENTE',
+    })),
+  };
+}
 
 /**
  * Obtiene listado de plantillas
  */
 export async function getPlantillas() {
-  // Datos de ejemplo -  Reemplazar con llamada al backend cuando esté disponible
-  return Promise.resolve({
-    data: [
-      {
-        id: 1,
-        plantilla: "Plantilla de Checklist - Sistema Eléctrico",
-        tipo: "Checklist"
-      },
-      {
-        id: 2,
-        plantilla: "Plantilla de Mantenimiento - Equipos HVAC",
-        tipo: "Mantenimientos por Condición"
-      },
-      {
-        id: 3,
-        plantilla: "Plantilla de Checklist - Seguridad",
-        tipo: "Checklist"
-      }
-    ]
-  });
+  const plantillas = await apiClient.get<BackendPlantilla[]>("/plantillas");
+  return {
+    data: plantillas.map(mapBackendToFrontend)
+  };
+}
 
-  /* Codigo para cuando el backend este disponible:
-  const token = localStorage.getItem("authToken");
-  if (!token) {
-    throw new Error("No se encontró el token de autenticación");
+/**
+ * Obtiene una plantilla por su ID con sus items
+ */
+export async function getPlantillaById(id: number): Promise<Plantilla | null> {
+  try {
+    const plantilla = await apiClient.get<BackendPlantillaWithItems>(`/plantillas/${id}`);
+    return mapBackendWithItemsToFrontend(plantilla);
+  } catch (error) {
+    console.error(`Error al obtener plantilla ${id}:`, error);
+    return null;
   }
-  
-  const resp = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/plantillas`,
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
-  
-  if (!resp.ok) {
-    const data = await resp.json();
-    throw new Error(data.error || "Error al obtener las plantillas.");
-  }
-  
-  const data = (await resp.json()) as { data: Plantilla[] };
-  return data;
-  */
 }
 
 /**
  * Crea una nueva plantilla
  */
 export async function createPlantilla(data: Omit<Plantilla, "id">) {
-  // Simulando llamada al API
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({ id: Date.now(), ...data });
-    }, 1000);
-  });
+  const backendPayload = { nombre: data.plantilla };
+  const result = await apiClient.post<BackendPlantilla>("/plantillas", backendPayload);
+  return mapBackendToFrontend(result);
 }
 
 /**
  * Actualiza una plantilla existente
  */
 export async function updatePlantilla(id: number, data: Partial<Plantilla>) {
-  // Simulando llamada al API
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({ id, ...data });
-    }, 1000);
-  });
+  const backendPayload = { nombre: data.plantilla };
+  const result = await apiClient.put<BackendPlantilla>(`/plantillas/${id}`, backendPayload);
+  return mapBackendToFrontend(result);
 }
 
 /**
  * Elimina una plantilla
  */
 export async function deletePlantilla(id: number) {
-  // Simulando llamada al API
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({ success: true, id });
-    }, 1000);
-  });
+  return apiClient.delete<{ message: string }>(`/plantillas/${id}`);
 }

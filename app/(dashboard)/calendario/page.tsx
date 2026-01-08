@@ -91,7 +91,10 @@ const Calendario = () => {
                         <Calendar className="mr-2 h-4 w-4" />
                         {vistaActual === 'mensual' ? 'Vista Semanal' : 'Vista Mensual'}
                     </Button>
-                    <Button className="bg-gema-blue hover:bg-blue-700 text-white">
+                    <Button
+                        onClick={() => router.push(`/resumen?view=${vistaActual}`)}
+                        className="bg-gema-blue hover:bg-blue-700 text-white"
+                    >
                         <FileText className="mr-2 h-4 w-4" />
                         {vistaActual === 'mensual' ? "Resumen Mensual" : "Resumen Semanal"}
                     </Button>
