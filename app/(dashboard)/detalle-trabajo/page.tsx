@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import ChecklistComponent from "@/components/checklist/checklist";
 import type { Checklist } from "@/types/checklist.types";
-import { getPlantillaById } from "@/lib/plantillas";
 import { LoaderCircle } from "lucide-react";
+
+import { getPlantillaById } from "@/lib/plantillas";
 
 const ChecklistPage = () => {
   const router = useRouter();
@@ -38,7 +39,8 @@ const ChecklistPage = () => {
           id: plantilla.id,
           titulo: plantilla.plantilla,
           ubicacion: "Ubicación por definir",
-          tareas: plantilla.actividades || []
+          tareas: plantilla.actividades || [],
+          idTrabajo: 0
         };
 
         setChecklist(checklistData);
@@ -81,7 +83,7 @@ const ChecklistPage = () => {
 
   return (
     <div>
-      <ChecklistComponent checklist={checklist} onBack={handleBack} />
+      <ChecklistComponent checklist={checklist} onBack={handleBack} idTrabajo={0} />
     </div>
   )
 }
