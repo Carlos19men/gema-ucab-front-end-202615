@@ -5,10 +5,9 @@ import DateNavigator from "@/components/ui/dateNavigator";
 import DropdownFilter from "@/components/ui/dropdownFilter";
 import MaintenanceCard from "@/components/resumen/maintenanceCard";
 import type { resumen } from "@/types/resume.types";
-import type { ResumenInspeccion } from "@/types/resumenInspeccion.types";
-import type { ResumenMantenimiento } from "@/types/resumenMantenimiento.type";
-import { 
-    Calendar, 
+import { useSearchParams } from "next/navigation";
+import {
+    Calendar,
     Upload
 } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -18,13 +17,13 @@ import { exportResumenPDF } from "@/lib/api/resumen";
 
 /*Nombres de los meses */
 const MONTH_NAMES = [
-  "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-  "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
 ];
 
 /*Opciones del filtro */
 const opcionesFiltro = [
-    { id: 'todos', label: 'Todos', color: null},
+    { id: 'todos', label: 'Todos', color: null },
     { id: 'no-empezado', label: 'No empezado', color: 'bg-gema-darkgrey' },
     { id: 'reprogramado', label: 'Reprogramado', color: 'bg-gema-yellow' },
     { id: 'en-ejecucion', label: 'En ejecucion', color: 'bg-gema-blue' },
@@ -32,8 +31,11 @@ const opcionesFiltro = [
 ];
 
 const resumen = () => {
-    //Vista Actual (Mensual o Semanal) por defecto es mensual
-    const [vistaActual, setVistaActual] = useState<'mensual' | 'semanal'>('mensual');
+    const searchParams = useSearchParams();
+    const defaultView = searchParams.get('view') === 'semanal' ? 'semanal' : 'mensual';
+
+    //Vista Actual (Mensual o Semanal) por defecto viene del parametro o es mensual
+    const [vistaActual, setVistaActual] = useState<'mensual' | 'semanal'>(defaultView);
 
     // Estado para la fecha actual (mes y año)
     const [currentDate, setCurrentDate] = useState(new Date());
@@ -45,17 +47,17 @@ const resumen = () => {
     const apiDateParams = useMemo(() => {
         const year = currentDate.getFullYear();
         // OJO: getMonth() devuelve 0-11, sumamos 1. padStart asegura "05" en vez de "5"
-        const month = String(currentDate.getMonth() + 1).padStart(2, '0'); 
-        
+        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+
         if (vistaActual === 'mensual') {
             return `${year}-${month}-01`;
         } else {
             // Lógica para obtener el lunes de la semana actual
             const d = new Date(currentDate);
             const day = d.getDay();
-            const diff = d.getDate() - day + (day === 0 ? -6 : 1); 
+            const diff = d.getDate() - day + (day === 0 ? -6 : 1);
             d.setDate(diff);
-            
+
             const weekMonth = String(d.getMonth() + 1).padStart(2, '0');
             const weekDay = String(d.getDate()).padStart(2, '0');
             return `${d.getFullYear()}-${weekMonth}-${weekDay}`;
@@ -95,7 +97,7 @@ const resumen = () => {
         // Formato: "DD de MMM - DD de MMM YYYY"
         return `${start.getDate()} de ${MONTH_NAMES[start.getMonth()]} - ${end.getDate()} de ${MONTH_NAMES[end.getMonth()]} ${end.getFullYear()}`;
     };
-    
+
     // Función para alternar (toggle)
     const alternarVista = () => {
         if (vistaActual === 'mensual') {
@@ -129,16 +131,16 @@ const resumen = () => {
 
     // --- HEADER DINÁMICO ---
     let labelHeader = '';
-    
+
     if (vistaActual === 'mensual') {
         labelHeader = `${MONTH_NAMES[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
-        
+
     } else {
         // Lógica para vista semanal (calcular inicio y fin de semana)
         const startOfWeek = new Date(currentDate);
         // Ajustamos al lunes más cercano (opcional, depende si quieres que la semana empiece hoy o el lunes)
         const day = startOfWeek.getDay();
-        const diff = startOfWeek.getDate() - day + (day === 0 ? -6 : 1); 
+        const diff = startOfWeek.getDate() - day + (day === 0 ? -6 : 1);
         startOfWeek.setDate(diff);
 
         const endOfWeek = new Date(startOfWeek);
@@ -146,7 +148,7 @@ const resumen = () => {
 
         // Verificamos si la semana cambia de año para mostrarlo correctamente
         const yearStr = endOfWeek.getFullYear();
-        
+
         labelHeader = `${startOfWeek.getDate()} de ${MONTH_NAMES[startOfWeek.getMonth()]} - ${endOfWeek.getDate()} de ${MONTH_NAMES[endOfWeek.getMonth()]} ${yearStr}`;
     }
 
@@ -154,7 +156,7 @@ const resumen = () => {
     const allTasks = useMemo(() => {
         if (!resumenData) return [];
         return [
-            ...(resumenData.inspecciones || []), 
+            ...(resumenData.inspecciones || []),
             ...(resumenData.mantenimientos || [])
         ];
     }, [resumenData]);
@@ -165,7 +167,7 @@ const resumen = () => {
 
         // Normalizar: minúsculas y reemplazamos espacios por guiones
         const statusNormalizado = task.estado.toLowerCase().replace(/\s+/g, '-');
-        
+
         return statusNormalizado === filtroActivo;
     });
 
@@ -175,7 +177,7 @@ const resumen = () => {
 
             // response SERÁ el objeto Blob directamente gracias al cambio en client.ts
             const blob = await exportResumenPDF(apiDateParams, vistaActual);
-            
+
             // Crear URL y descargar
             const url = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
@@ -183,10 +185,10 @@ const resumen = () => {
             link.setAttribute('download', `pdf`);
             document.body.appendChild(link);
             link.click();
-            
+
             link.parentNode?.removeChild(link);
             window.URL.revokeObjectURL(url);
-            
+
             console.log("PDF descargado correctamente");
         } catch (error) {
             console.error("Error al exportar PDF:", error);
@@ -194,7 +196,7 @@ const resumen = () => {
         }
     };
 
-    return(
+    return (
         <div className="p-6 max-w-7.5xl">
             <div className="flex flex-col md:flex-row md:justify-between items-start md:items-center gap-4 mb-6">
                 <div className="items-center gap-1">
@@ -202,7 +204,7 @@ const resumen = () => {
                     <h2 className="text-lg text-gray-500">{labelHeader}</h2>
                 </div>
                 <Button className="bg-sidebar-border text-black hover:bg-gray-300"
-                onClick={handleExport}>
+                    onClick={handleExport}>
                     <Upload className="mr-2 h-4 w-4" />
                     Exportar
                 </Button>
@@ -211,10 +213,10 @@ const resumen = () => {
                 {/* Navegación de Meses */}
                 <DateNavigator label={vistaActual === 'mensual' ? 'Mes' : 'Semana'} onPrev={handlePrev} onNext={handleNext}></DateNavigator>
                 {/* Boton de filtro dinamico */}
-                <DropdownFilter 
+                <DropdownFilter
                     opciones={opcionesFiltro}
-                    filtroActual={filtroActivo} 
-                    onFiltroChange={setFiltroActivo} 
+                    filtroActual={filtroActivo}
+                    onFiltroChange={setFiltroActivo}
                 />
                 <Button onClick={alternarVista} className="bg-sidebar-border text-black hover:bg-gray-300">
                     <Calendar className="mr-2 h-4 w-4" />
@@ -231,16 +233,16 @@ const resumen = () => {
                     {filteredTasks.length > 0 ? (
                         filteredTasks.map((task) => (
                             "idMantenimiento" in task ? (
-                            <MaintenanceCard
-                            key={task.idMantenimiento}
-                            mantenimiento={task}
-                            />
-                        ) : (
-                            <InspeccionCard
-                            key={(task as any).idInspeccion} 
-                            inspeccion={task as any}
-                            />
-                        )
+                                <MaintenanceCard
+                                    key={task.idMantenimiento}
+                                    mantenimiento={task}
+                                />
+                            ) : (
+                                <InspeccionCard
+                                    key={(task as any).idInspeccion}
+                                    inspeccion={task as any}
+                                />
+                            )
                         ))
                     ) : (
                         // Mensaje opcional cuando no hay resultados
