@@ -7,3 +7,20 @@ export type Plantilla = {
   actividades?: Actividad[];
 };
 
+// Backend response types
+export type BackendPlantilla = {
+  idPlantilla: number;
+  nombre: string;
+};
+
+export type BackendItem = {
+  idItemPlantilla: number;
+  idPlantilla: number;
+  titulo: string;
+  descripcion: string;
+  estado?: 'COMPLETADA' | 'PENDIENTE';
+};
+
+export type BackendPlantillaWithItems = BackendPlantilla & {
+  items: BackendItem[];
+};
