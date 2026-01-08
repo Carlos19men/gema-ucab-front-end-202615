@@ -117,6 +117,21 @@ export const InspectionFormContent: React.FC<{
     console.log('Initial Values:', initialValues);
     console.log('Form Values:', form.getValues());
 
+    const supervisorOptions = React.useMemo(
+        () =>
+            Array.from(
+                new Map(
+                    (supervisores ?? [])
+                        .filter((s: any) => s && (s.id ?? s.Id) != null && (s.nombre ?? s.Nombre))
+                        .map((s: any) => [
+                            String(s.id ?? s.Id),
+                            { id: String(s.id ?? s.Id), nombre: s.nombre ?? s.Nombre },
+                        ])
+                ).values()
+            ),
+        [supervisores]
+    );
+
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 text-left">
@@ -241,9 +256,9 @@ export const InspectionFormContent: React.FC<{
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
-                                        {supervisores?.map((supervisor: any) => (
-                                            <SelectItem key={supervisor.id} value={supervisor.nombre}>
-                                            
+                                        {supervisorOptions.map((sup) => (
+                                            <SelectItem key={`sup-${sup.id}`} value={sup.nombre}>
+                                                {sup.nombre}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
