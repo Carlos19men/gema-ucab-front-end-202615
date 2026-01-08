@@ -30,7 +30,7 @@ function mapBackendWithItemsToFrontend(backend: BackendPlantillaWithItems): Plan
       id: item.idItemPlantilla,
       nombre: item.titulo,
       descripcion: item.descripcion,
-      estado: 'PENDIENTE' as const,
+      estado: item.estado || 'PENDIENTE',
     })),
   };
 }

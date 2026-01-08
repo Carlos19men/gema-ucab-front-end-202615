@@ -18,6 +18,7 @@ export type BackendItem = {
   idPlantilla: number;
   titulo: string;
   descripcion: string;
+  estado?: 'COMPLETADA' | 'PENDIENTE';
 };
 
 export type BackendPlantillaWithItems = BackendPlantilla & {
