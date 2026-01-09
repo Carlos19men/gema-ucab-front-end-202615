@@ -18,7 +18,6 @@ import {
 } from "lucide-react";
 import Link from 'next/link';
 import { useInspeccionDetalle } from '@/hooks/inspecciones/useInspecciones';
-import { derivarMantenimiento } from '@/lib/mantenimientosInspeccion';
 import { toast } from 'react-hot-toast';
 
 export default function InspeccionDetalle() {
@@ -189,17 +188,8 @@ export default function InspeccionDetalle() {
             }
             <DeriveMaintenanceModal
                 open={deriveModalOpen}
+                idInsp={id}
                 onClose={() => setDeriveModalOpen(false)}
-                onConfirm={async (name) => {
-                    try {
-                        await derivarMantenimiento(id, name);
-                        toast.success("Mantenimiento derivado exitosamente");
-                        setDeriveModalOpen(false);
-                    } catch (error) {
-                        toast.error("Error al derivar el mantenimiento");
-                        console.error(error);
-                    }
-                }}
             />
 
             {/* Edit Modal */}

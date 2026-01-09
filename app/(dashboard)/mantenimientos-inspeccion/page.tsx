@@ -1,15 +1,12 @@
 'use client'
 
-import { useQuery } from "@tanstack/react-query";
-import { getMantenimientosInspeccion } from "@/lib/mantenimientosInspeccion";
+import { useMantenimientosConInspeccion } from "@/hooks/mantenimientos-por-inspeccion/useMantenimientosConInspeccion";
 import { LoaderCircle, MapPin } from "lucide-react";
-import type { MantenimientoInspeccion } from "@/types/models/mantenimientosInspeccion.types";
 
 const MantenimientosInspeccion = () => {
-  const { data: mantenimientosData, isLoading } = useQuery({
-    queryKey: ["mantenimientosInspeccion"],
-    queryFn: getMantenimientosInspeccion,
-  });
+
+  const { data, isLoading, error } = useMantenimientosConInspeccion();
+
 
   if (isLoading) {
     return (
@@ -19,9 +16,7 @@ const MantenimientosInspeccion = () => {
     );
   }
 
-  const mantenimientos = mantenimientosData?.data || [];
-
-
+  const mantenimientos = data ?? [];
 
   return (
     <div className="p-6 max-w-6xl">
@@ -46,21 +41,21 @@ const MantenimientosInspeccion = () => {
           <tbody className="divide-y divide-gray-200">
             {mantenimientos.length > 0 ? (
               mantenimientos.map((mantenimiento) => (
-                <tr key={mantenimiento.id} className="hover:bg-gray-50">
+                <tr key={mantenimiento.idMantenimiento} className="hover:bg-gray-50">
                   <td className="px-6 py-4 text-sm font-medium text-gray-900">
                     <div className="flex flex-col border-2 rounded-lg px-3 py-2 border-gray-300 bg-sky-50">
-                      <div className="font-medium">{mantenimiento.mantenimientoGenerado}</div>
+                      <div className="font-medium">{mantenimiento.nombre}</div>
                       <div className="flex items-center gap-1.5 mt-2 text-xs text-gray-700">
                         <MapPin className="w-4 h-4" />
-                        <span>{mantenimiento.ubicacion}</span>
+                        <span>{mantenimiento.uTabreviacion + " - " + mantenimiento.uTDescripcion}</span>
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-900">
                     <div className="flex flex-col border-2 border-gray-300 rounded-lg px-3 py-2">
-                      <div className="font-medium">{mantenimiento.inspeccionAsociada}</div>
+                      <div className="font-medium">{mantenimiento.trabajo}</div>
                       <div className="text-xs text-gray-700 mt-2">
-                        {mantenimiento.nota}
+                        {mantenimiento.inspeccionObservacion}
                       </div>
                     </div>
                   </td>
@@ -81,24 +76,24 @@ const MantenimientosInspeccion = () => {
       <div className="md:hidden space-y-4">
         {mantenimientos.length > 0 ? (
           mantenimientos.map((mantenimiento) => (
-            <div key={mantenimiento.id} className="bg-white p-4 rounded-lg border border-gray-200">
+            <div key={mantenimiento.idMantenimiento} className="bg-white p-4 rounded-lg border border-gray-200">
               <div className="space-y-2">
                 <div>
                   <p className="text-xs text-gray-500 uppercase">Mantenimiento generado</p>
                   <div className="flex flex-col border-2 rounded-lg px-3 py-2 mt-1 border-gray-300 bg-sky-50">
-                    <p className="font-medium text-gray-900">{mantenimiento.mantenimientoGenerado}</p>
+                    <p className="font-medium text-gray-900">{mantenimiento.nombre}</p>
                     <div className="flex items-center gap-1.5 mt-2 text-xs text-gray-700">
                       <MapPin className="w-4 h-4" />
-                      <span>{mantenimiento.ubicacion}</span>
+                      <span>{mantenimiento.uTabreviacion + " - " + mantenimiento.uTDescripcion}</span>
                     </div>
                   </div>
                 </div>
                 <div>
                   <p className="text-xs text-gray-500 uppercase">Inspección asociada</p>
                   <div className="flex flex-col border-2 border-gray-300 rounded-lg px-3 py-2 mt-1">
-                    <p className="text-sm font-medium text-gray-900">{mantenimiento.inspeccionAsociada}</p>
+                    <p className="text-sm font-medium text-gray-900">{mantenimiento.trabajo}</p>
                     <p className="text-xs text-gray-700 mt-2">
-                      {mantenimiento.nota}
+                      {mantenimiento.inspeccionObservacion}
                     </p>
                   </div>
                 </div>
