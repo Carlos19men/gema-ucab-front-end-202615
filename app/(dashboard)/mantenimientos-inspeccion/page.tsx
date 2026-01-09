@@ -17,7 +17,6 @@ const MantenimientosInspeccion = () => {
   }
 
   const mantenimientos = data ?? [];
-  console.log(mantenimientos);
 
   return (
     <div className="p-6 max-w-6xl">

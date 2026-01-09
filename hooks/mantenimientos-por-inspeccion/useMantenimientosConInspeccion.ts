@@ -7,7 +7,7 @@ import { mantenimientoInspecionAPI } from "@/lib/api/mantenimientosInspeccion";
  */
 export const useMantenimientosConInspeccion = () => {
     const query = useQuery({
-        queryKey: ["mantenimiento-inspeccion"],
+        queryKey: ["mantenimientos-inspeccion"],
         queryFn: mantenimientoInspecionAPI.getAll,
         select: (data) => data ?? [],
     });
