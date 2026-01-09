@@ -232,8 +232,8 @@ export const InspectionFormContent: React.FC<{
                                     onValueChange={(value) => field.onChange(value || "")}
                                     placeholder={isLoadingUbicaciones ? "Cargando ubicaciones..." : "Seleccionar ubicación técnica"}
                                     searchPlaceholder="Buscar ubicación..."
-                                    triggerClassName="w-full"
-                                    contentClassName="w-full"
+                                    triggerClassName="w-full !border-2 !border-gray-200 !rounded-lg focus:!border-gray-200"
+                                    contentClassName="w-full border border-gray-200 rounded-lg"
                                 />
                             </FormControl>
                             <FormMessage />
@@ -249,13 +249,18 @@ export const InspectionFormContent: React.FC<{
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Supervisor Asignado</FormLabel>
-                                <Select onValueChange={field.onChange} value={field.value}>
+                                <Select 
+                                    onValueChange={field.onChange} 
+                                    value={field.value}
+                                >
                                     <FormControl>
-                                        <SelectTrigger>
+                                        <SelectTrigger className="w-44">
                                             <SelectValue placeholder="Seleccionar supervisor" />
                                         </SelectTrigger>
                                     </FormControl>
-                                    <SelectContent>
+                                    <SelectContent 
+                                        className='w-full'
+                                    >
                                         {supervisorOptions.map((sup) => (
                                             <SelectItem key={`sup-${sup.id}`} value={sup.nombre}>
                                                 {sup.nombre}
