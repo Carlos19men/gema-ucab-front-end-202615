@@ -134,6 +134,19 @@ const Tecnicos = () => {
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <div className="inline-block p-1 border-2 border-gray-200 rounded-sm">
+                        <ClipboardPen
+                          className="h-5 w-5 text-blue-500 cursor-pointer"
+                          onClick={() => setTecnicoEditar(tecnico)}
+                        />
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <span>Editar usuario</span>
+                    </TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="inline-block p-1 border-2 border-gray-200 rounded-sm">
                         <Trash2
                           className="h-5 w-5 text-red-500 cursor-pointer"
                           onClick={() => setTecnico(tecnico)}
