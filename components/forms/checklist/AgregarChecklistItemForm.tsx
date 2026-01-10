@@ -1,5 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useCreateChecklistItem } from "@/hooks/checklist/useCreateChecklistItem";
+import { useCreatePlantillaItem } from "@/hooks/plantillas/useCreatePlantillaItem";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
@@ -13,6 +14,7 @@ interface ChecklistProps {
     onClose: () => void;
     onSuccess?: () => void;
     checklistId: number;
+    isTemplate?: boolean;
 }
 
 //Esquema de validacion
@@ -21,7 +23,7 @@ const actividadSchema = z.object({
         .string()
         .min(5, "El nombre de la actividad debe ser más descriptivo (mínimo 5 letras)")
         .max(100, "El nombre es demasiado largo"),
-    
+
     descripcion: z
         .string()
         .max(500, "La descripción no puede exceder los 500 caracteres")
@@ -31,10 +33,14 @@ export const AgregarChecklistItemForm: React.FC<ChecklistProps> = ({
     open,
     onClose,
     onSuccess,
-    checklistId
+    checklistId,
+    isTemplate = false
 }) => {
     const queryClient = useQueryClient();
-    const createMutation = useCreateChecklistItem();
+    const createChecklistMutation = useCreateChecklistItem();
+    const createPlantillaMutation = useCreatePlantillaItem();
+
+    const activeMutation = isTemplate ? createPlantillaMutation : createChecklistMutation;
 
     type FormValues = z.infer<typeof actividadSchema>;
 
@@ -42,23 +48,45 @@ export const AgregarChecklistItemForm: React.FC<ChecklistProps> = ({
         resolver: zodResolver(actividadSchema),
         defaultValues: {
             nombre: "",
-            descripcion: ""},
+            descripcion: ""
+        },
         mode: "onChange", // Validación en cada cambio    
     });
 
     const handleSubmit = form.handleSubmit((values) => {
-        createMutation.mutate({
-            id: checklistId,
-            nombre: values.nombre,
-            descripcion: values.descripcion || "",
-            estado: "PENDIENTE"
-        }, {
-            onSuccess: () => {
-                form.reset();
-                onClose();
-            }
+        if (isTemplate) {
+            createPlantillaMutation.mutate({
+                plantillaId: checklistId,
+                data: {
+                    id: 0,
+                    nombre: values.nombre,
+                    descripcion: values.descripcion || "",
+                    estado: "PENDIENTE"
+                }
+            }, {
+                onSuccess: () => {
+                    form.reset();
+                    onClose();
+                    if (onSuccess) onSuccess();
+                }
+            });
+        } else {
+            createChecklistMutation.mutate({
+                checklistId: checklistId,
+                data: {
+                    id: 0, // No importa, es nuevo
+                    nombre: values.nombre,
+                    descripcion: values.descripcion || "",
+                    estado: "PENDIENTE"
+                }
+            }, {
+                onSuccess: () => {
+                    form.reset();
+                    onClose();
+                    if (onSuccess) onSuccess();
+                }
+            });
         }
-        );
     });
 
     const handleClose = () => {
@@ -70,67 +98,67 @@ export const AgregarChecklistItemForm: React.FC<ChecklistProps> = ({
         <Dialog open={open} onOpenChange={handleClose}>
             <DialogContent className="max-w-md w-full space-y-2">
                 <DialogHeader>
-                <DialogTitle>Nueva Actividad</DialogTitle>
+                    <DialogTitle>Nueva Actividad</DialogTitle>
                 </DialogHeader>
 
                 <Form {...form}>
-                <form onSubmit={handleSubmit} className="space-y-4 pt-2">
-                    <FormField
-                    control={form.control}
-                    name="nombre"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>Nombre de la Actividad</FormLabel>
-                        <FormControl>
-                            <Input
-                            placeholder="Ej: Revisar filtros de aires acondicionados"
-                            autoComplete="name"
-                            {...field}
-                            disabled={createMutation.isPending}
-                            />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                    />
+                    <form onSubmit={handleSubmit} className="space-y-4 pt-2">
+                        <FormField
+                            control={form.control}
+                            name="nombre"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Nombre de la Actividad</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            placeholder="Ej: Revisar filtros de aires acondicionados"
+                                            autoComplete="name"
+                                            {...field}
+                                            disabled={activeMutation.isPending}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
 
-                    <FormField
-                    control={form.control}
-                    name="descripcion"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>Descripción</FormLabel>
-                        <FormControl>
-                            <Input
-                            placeholder="Ej: Verificar que los filtros estén limpios y en buen estado"
-                            autoComplete="name"
-                            {...field}
-                            disabled={createMutation.isPending}
-                            />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                    />
+                        <FormField
+                            control={form.control}
+                            name="descripcion"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Descripción</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            placeholder="Ej: Verificar que los filtros estén limpios y en buen estado"
+                                            autoComplete="name"
+                                            {...field}
+                                            disabled={activeMutation.isPending}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
 
-                    <div className="flex justify-end gap-2 pt-4">
-                    <Button
-                        type="button"
-                        variant="outline"
-                        onClick={handleClose}
-                        disabled={createMutation.isPending}
-                    >
-                        Cancelar
-                    </Button>
-                    <Button
-                        type="submit"
-                        className="bg-gema-green/80 hover:bg-gema-green text-primary-foreground"
-                        disabled={createMutation.isPending || !form.formState.isValid}
-                    >
-                        {createMutation.isPending ? "Creando..." : "Guardar"}
-                    </Button>
-                    </div>
-                </form>
+                        <div className="flex justify-end gap-2 pt-4">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={handleClose}
+                                disabled={activeMutation.isPending}
+                            >
+                                Cancelar
+                            </Button>
+                            <Button
+                                type="submit"
+                                className="bg-gema-green/80 hover:bg-gema-green text-primary-foreground"
+                                disabled={activeMutation.isPending || !form.formState.isValid}
+                            >
+                                {activeMutation.isPending ? "Creando..." : "Guardar"}
+                            </Button>
+                        </div>
+                    </form>
                 </Form>
             </DialogContent>
         </Dialog>

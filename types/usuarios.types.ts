@@ -1,7 +1,15 @@
+export type Usuarios = {
+  id: number;
+  nombre: string;
+  correo: string;
+  tipo: 'SUPERVISOR' | 'COORDINADOR' | 'DIRECTOR';
+  contraseña: string;
+}[];
+
 export type Usuario = {
-  Id: number;
-  Nombre: string;
-  Correo: string;
-  Tipo: "TECNICO" | "COORDINADOR";
-  Contraseña: string | undefined;
+  id: number;
+  nombre: string;
+  correo: string;
+  tipo: 'SUPERVISOR' | 'COORDINADOR' | 'DIRECTOR';
+  contraseña: string;
 };

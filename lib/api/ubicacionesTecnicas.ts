@@ -12,7 +12,6 @@ export interface CreateUbicacionTecnicaRequest {
   padres?: Array<{
     idPadre: number;
     esUbicacionFisica?: boolean;
-    estaHabilitado?: boolean;
   }>;
 }
 
@@ -89,5 +88,12 @@ export const ubicacionesTecnicasAPI = {
    */
   async getByNivel(nivel: number): Promise<UbicacionesTecnicasResponse> {
     return apiClient.get<UbicacionesTecnicasResponse>(`/ubicaciones-tecnicas/nivel/${nivel}`);
+  },
+
+  /**
+   * Obtiene una lista plana de todas las ubicaciones técnicas.
+   */
+  async getLista(): Promise<UbicacionesTecnicasResponse> {
+    return apiClient.get<UbicacionesTecnicasResponse>('/ubicaciones-tecnicas/lista');
   },
 };

@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "../form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useUpdateChecklistItem } from "@/hooks/checklist/useUpdateChecklistItem";
+import { useUpdatePlantillaItem } from "@/hooks/plantillas/useUpdatePlantillaItem";
 import { Actividad } from "@/types/checklist.types";
 
 interface ChecklistProps {
@@ -15,6 +16,8 @@ interface ChecklistProps {
     onClose: () => void;
     onSuccess?: () => void;
     actividad: Actividad | null;
+    checklistId: number;
+    isTemplate?: boolean;
 }
 
 //Esquema de validacion
@@ -23,7 +26,7 @@ const actividadSchema = z.object({
         .string()
         .min(5, "El nombre de la actividad debe ser más descriptivo (mínimo 5 letras)")
         .max(100, "El nombre es demasiado largo"),
-    
+
     descripcion: z
         .string()
         .max(500, "La descripción no puede exceder los 500 caracteres")
@@ -34,9 +37,15 @@ export const EditarChecklistItemForm: React.FC<ChecklistProps> = ({
     onClose,
     onSuccess,
     actividad,
+    checklistId,
+    isTemplate = false
 }) => {
     const queryClient = useQueryClient();
-    const updateMutation = useUpdateChecklistItem();
+    const updateChecklistMutation = useUpdateChecklistItem();
+    const updatePlantillaMutation = useUpdatePlantillaItem();
+
+    const updateMutation = isTemplate ? updatePlantillaMutation : updateChecklistMutation;
+
 
     type FormValues = z.infer<typeof actividadSchema>;
 
@@ -59,13 +68,38 @@ export const EditarChecklistItemForm: React.FC<ChecklistProps> = ({
         }
     }, [actividad, form]); //se ejecuta cuando cambia la actividad
 
-    const handleSubmit = form.handleSubmit(() => {
-        updateMutation.mutate({
-            id: actividad?.id || 0,
-            nombre: actividad?.nombre || "", 
-            descripcion: actividad?.descripcion || "",
-            estado: actividad?.estado || "PENDIENTE"
-        });
+    const handleSubmit = form.handleSubmit((values) => {
+        if (!actividad) return;
+
+        if (isTemplate) {
+            updatePlantillaMutation.mutate({
+                plantillaId: checklistId,
+                data: {
+                    ...actividad,
+                    nombre: values.nombre,
+                    descripcion: values.descripcion
+                }
+            }, {
+                onSuccess: () => {
+                    onClose();
+                    form.reset();
+                }
+            });
+        } else {
+            updateChecklistMutation.mutate({
+                checklistId: checklistId,
+                data: {
+                    ...actividad,
+                    nombre: values.nombre,
+                    descripcion: values.descripcion
+                }
+            }, {
+                onSuccess: () => {
+                    onClose();
+                    form.reset();
+                }
+            });
+        }
     });
 
     const handleClose = () => {
@@ -77,65 +111,65 @@ export const EditarChecklistItemForm: React.FC<ChecklistProps> = ({
         <Dialog open={open} onOpenChange={handleClose}>
             <DialogContent className="max-w-md w-full space-y-2">
                 <DialogHeader>
-                <DialogTitle>Nueva Actividad</DialogTitle>
+                    <DialogTitle>Nueva Actividad</DialogTitle>
                 </DialogHeader>
 
                 <Form {...form}>
-                <form onSubmit={handleSubmit} className="space-y-4 pt-2">
-                    <FormField
-                    control={form.control}
-                    name="nombre"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>Nombre de la Actividad</FormLabel>
-                        <FormControl>
-                            <Input
-                            autoComplete="name"
-                            {...field}
-                            disabled={updateMutation.isPending}
-                            />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                    />
+                    <form onSubmit={handleSubmit} className="space-y-4 pt-2">
+                        <FormField
+                            control={form.control}
+                            name="nombre"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Nombre de la Actividad</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            autoComplete="name"
+                                            {...field}
+                                            disabled={updateMutation.isPending}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
 
-                    <FormField
-                    control={form.control}
-                    name="descripcion"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>Descripción</FormLabel>
-                        <FormControl>
-                            <Input
-                            autoComplete="name"
-                            {...field}
-                            disabled={updateMutation.isPending}
-                            />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                    />
+                        <FormField
+                            control={form.control}
+                            name="descripcion"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Descripción</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            autoComplete="name"
+                                            {...field}
+                                            disabled={updateMutation.isPending}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
 
-                    <div className="flex justify-end gap-2 pt-4">
-                    <Button
-                        type="button"
-                        variant="outline"
-                        onClick={handleClose}
-                        disabled={updateMutation.isPending}
-                    >
-                        Cancelar
-                    </Button>
-                    <Button
-                        type="submit"
-                        className="bg-gema-green/80 hover:bg-gema-green text-primary-foreground"
-                        disabled={updateMutation.isPending || !form.formState.isValid}
-                    >
-                        {updateMutation.isPending ? "Actualizando..." : "Guardar"}
-                    </Button>
-                    </div>
-                </form>
+                        <div className="flex justify-end gap-2 pt-4">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={handleClose}
+                                disabled={updateMutation.isPending}
+                            >
+                                Cancelar
+                            </Button>
+                            <Button
+                                type="submit"
+                                className="bg-gema-green/80 hover:bg-gema-green text-primary-foreground"
+                                disabled={updateMutation.isPending || !form.formState.isValid}
+                            >
+                                {updateMutation.isPending ? "Actualizando..." : "Guardar"}
+                            </Button>
+                        </div>
+                    </form>
                 </Form>
             </DialogContent>
         </Dialog>

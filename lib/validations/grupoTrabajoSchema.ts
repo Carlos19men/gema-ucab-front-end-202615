@@ -5,16 +5,20 @@ export const grupoTrabajoSchema = z.object({
   codigo: z
     .string()
     .min(1, "El código es requerido")
-    .min(3, "El código debe tener al menos 3 caracteres"),
+    .min(3, "El código debe tener al menos 3 caracteres")
+    .max(10, "El código debe tener máximo 10 caracteres"),
   
   nombre: z
     .string()
     .min(1, "El nombre es requerido"),
   
-  supervisor: z.coerce
-    .number({ message: "El supervisor es requerido" }) // ← CORREGIDO
-    .int("El supervisor debe ser un número entero")
-    .positive("El supervisor debe ser un ID válido"),
+  supervisor: z
+    .string()
+    .min(1, "El supervisor es requerido"),
+    
+  area: z
+    .string()
+    .min(1, "El área es requerida"),
 });
 
 export type GrupoTrabajoForm = z.infer<typeof grupoTrabajoSchema>;

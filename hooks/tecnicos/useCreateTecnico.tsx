@@ -1,15 +1,20 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { tecnicosAPI } from "@/lib/api/tecnicos";
+import { CreateTecnicoRequest, tecnicosAPI } from "@/lib/api/tecnicos";
+import { toast } from "sonner";
 
 export const useCreateTecnico = () => {
     const queryClient = useQueryClient()
 
     return useMutation({
-        mutationFn: tecnicosAPI.create,
+        mutationFn: async (data: CreateTecnicoRequest) => tecnicosAPI.create(data),
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: ['tecnicos']
             })
+            toast.success("Tecnico creado exitosamente!");
+        },
+        onError: () => {
+            toast.error("Error al crear el tecnico");
         }
     })
 }

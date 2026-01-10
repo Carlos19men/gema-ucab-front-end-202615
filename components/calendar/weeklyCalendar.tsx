@@ -1,5 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import DateNavigator from "../ui/dateNavigator";
+import DropdownFilter from "../ui/dropdownFilter";
+import { MaintenanceSummaryModal } from "@/components/forms/mantenimientos/MaintenanceSummaryModal";
+import { InspectionSummaryModal } from "@/components/forms/inspecciones/InspectionSummaryModal";
+import { useCalendarioSemanal } from "@/hooks/calendario/useCalendario";
 
 /*Nombres de los meses */
 const MONTH_NAMES = [
@@ -7,44 +11,48 @@ const MONTH_NAMES = [
   "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
 ];
 
-/* Data Simulada */
-const semanaData = [
-  { 
-    dia: "Lun", fecha: 3, 
-    tareas: [
-      { id: 1, titulo: "Revisión Grama", area: "Áreas Verdes", color: "grey" },
-      { id: 2, titulo: "Revisión Baño", area: "Mod. 4 Piso 2", color: "grey" }
-    ] 
-  },
-  { 
-    dia: "Mar", fecha: 4, 
-    tareas: [
-      { id: 3, titulo: "Revisión Poste", area: "Esc. Ing Industrial", color: "blue" }
-    ] 
-  },
-  { 
-    dia: "Mié", fecha: 5, 
-    tareas: [
-      { id: 4, titulo: "Revisión Poste", area: "Esc. Ing Industrial", color: "yellow" },
-      { id: 5, titulo: "Revisión A/A", area: "", color: "green" }, // Tarjeta pequeña
-      { id: 6, titulo: "Revisión Grama", area: "Áreas Verdes", color: "green" }
-    ] 
-  },
-  { 
-    dia: "Jue", fecha: 6, 
-    tareas: [
-      { id: 7, titulo: "Revisión Grama", area: "", color: "green" }
-    ] 
-  },
-  { 
-    dia: "Vie", fecha: 7, 
-    tareas: [
-      { id: 8, titulo: "Revisión Grama", area: "Áreas Verdes", color: "green" }
-    ] 
-  },
-  { dia: "Sab", fecha: 8, tareas: [] },
-  { dia: "Dom", fecha: 9, tareas: [] },
-];
+// Nombres de los días de la semana
+const DAYS_OF_WEEK = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+
+// Función para mapear estado a color
+const getColorFromEstado = (estado: string): 'grey' | 'blue' | 'yellow' | 'green' => {
+  const estadoLower = estado.toLowerCase();
+  if (estadoLower.includes('no empezado')) return 'grey';
+  if (estadoLower.includes('ejecución') || estadoLower.includes('ejecutando')) return 'blue';
+  if (estadoLower.includes('reprogramado')) return 'yellow';
+  if (estadoLower.includes('culminado') || estadoLower.includes('completado')) return 'green';
+  return 'grey';
+};
+
+// Función para generar los datos de la semana dinámicamente
+const generateWeekData = (currentDate: Date) => {
+  // Calcular el inicio de la semana (lunes)
+  const startOfWeek = new Date(currentDate);
+  const currentDay = currentDate.getDay();
+  const diffToMonday = currentDay === 0 ? 6 : currentDay - 1;
+  startOfWeek.setDate(currentDate.getDate() - diffToMonday);
+
+  const weekData = [];
+
+  // Generar datos para cada día de la semana (Lun-Dom)
+  for (let i = 0; i < 7; i++) {
+    const dayDate = new Date(startOfWeek);
+    dayDate.setDate(startOfWeek.getDate() + i);
+
+    // Ajustar el orden para que empiece en Lunes
+    const dayIndex = (i + 1) % 7; // 1,2,3,4,5,6,0 -> Lun,Mar,Mié,Jue,Vie,Sáb,Dom
+    const dayName = dayIndex === 0 ? "Dom" : DAYS_OF_WEEK[dayIndex];
+
+    weekData.push({
+      dia: dayName,
+      fecha: dayDate.getDate(),
+      fullDate: new Date(dayDate), // Guardar fecha completa para comparación
+      tareas: []
+    });
+  }
+
+  return weekData;
+};
 
 //Tipos de colores para las tarjetas
 const cardColors = {
@@ -54,87 +62,277 @@ const cardColors = {
   green: "border-l-gema-green bg-gema-green/20",
 };
 
-const WeeklyCalendar = () => {
-    // Estado para la fecha actual (mes y semana)
-    const [currentDate, setCurrentDate] = useState(new Date());
+interface WeeklyCalendarProps {
+  initialDate?: Date | null;
+}
 
-    // Lógica específica de la SEMANA: sumar/restar 7 días
-    const handlePrevWeek = () => {
-      const newDate = new Date(currentDate);
-      newDate.setDate(newDate.getDate() - 7);
-      setCurrentDate(newDate);
-    };
+const WeeklyCalendar = ({ initialDate }: WeeklyCalendarProps) => {
+  // Estado para la fecha actual (usar initialDate si se proporciona)
+  const [currentDate, setCurrentDate] = useState(() => {
+    return initialDate || new Date();
+  });
 
-    const handleNextWeek = () => {
-      const newDate = new Date(currentDate);
-      newDate.setDate(newDate.getDate() + 7);
-      setCurrentDate(newDate);
-    };
+  // Estado para el filtro activo
+  const [filtroActivo, setFiltroActivo] = useState('todos');
 
-    // Formateo para mostrar rango de semana (simplificado)
-    const startOfWeek = new Date(currentDate);
-    
-    // Asumiendo LUNES como inicio de semana
-    const currentDay = currentDate.getDay(); // 0 es Domingo, 1 es Lunes...
-    // Si es domingo (0), queremos restar 6 días para llegar al lunes anterior.
-    // Si es cualquier otro día, restamos (día - 1).
-    const diffToMonday = currentDay === 0 ? 6 : currentDay - 1;
-    
-    startOfWeek.setDate(currentDate.getDate() - diffToMonday);
-    
-    const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(startOfWeek.getDate() + 6); // Sumamos 6 días para llegar al domingo
+  // Estados para el modal de resumen de mantenimiento
+  const [isMaintenanceModalOpen, setIsMaintenanceModalOpen] = useState(false);
+  const [selectedMaintenanceData, setSelectedMaintenanceData] = useState<any>(null);
 
-    const label = `Semana ${startOfWeek.getDate()} - ${endOfWeek.getDate()} ${MONTH_NAMES[endOfWeek.getMonth()]}`;
+  // Estados para el modal de resumen de inspección
+  const [isInspectionModalOpen, setIsInspectionModalOpen] = useState(false);
+  const [selectedInspectionData, setSelectedInspectionData] = useState<any>(null);
 
-    return(
-        <div>
-            {/*--- CABECERA DEL CALENDARIO SEMANAL ---*/}
-            <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-                <h2 className="text-xl font-bold text-gray-900">{label}</h2>
-                
-                {/* Navegación de Semanas */}
-                <DateNavigator label='Semana' onPrev={handlePrevWeek} onNext={handleNextWeek}></DateNavigator>
-            </div>
+  // Actualizar currentDate cuando cambie initialDate
+  useEffect(() => {
+    if (initialDate) {
+      setCurrentDate(initialDate);
+    }
+  }, [initialDate]);
 
-            {/* --- GRID DE LA SEMANA --- */}
-            <div className="grid grid-cols-1 md:grid-cols-7 gap-4 min-w-[1000px] md:min-w-0 overflow-x-auto">
-              {semanaData.map((diaItem, index) => (
-                <div key={index} className="flex flex-col h-full">
-                    
-                  {/* Cabecera de la Columna (Día y Número) */}
-                  <div className="text-center mb-4">
-                    <span className="block text-sm font-bold text-gray-400 uppercase tracking-wide">
-                      {diaItem.dia}
-                    </span>
-                    <span className="block text-3xl font-bold text-gray-900 mt-1">
-                      {diaItem.fecha}
-                    </span>
-                  </div>
+  // Formatear fecha para el hook (YYYY-MM-DD)
+  const formattedDate = currentDate.toISOString().split('T')[0];
 
-                  {/* Cuerpo de la Columna (El contenedor largo) */}
-                  <div className="flex-1 border border-gray-200 rounded-2xl min-h-[500px] bg-white flex flex-col gap-3 overflow-hidden">
-                    
-                  {/* Pill de Conteo (Encabezado gris dentro de la columna) */}
-                  <div className="bg-gray-200 py-2 text-center relative overflow-hidden">
-                    {/* Simulación del degradado superior en la tarjeta del Martes (opcional) */}
-                    {index === 1 && (
-                      <div className="absolute top-0 left-0 right-0 h-1.5 bg-linear-to-r from-gema-yellow via-gema-blue to-gema-green" />
-                    )}
-                    <span className="text-xs font-bold text-gray-700">
-                      Mantenimientos - {diaItem.tareas.length}
-                    </span>
-                  </div>
+  // Fetch de eventos del calendario (mantenimientos e inspecciones) con filtro semanal
+  const { data: datosCalendario, isLoading, error } = useCalendarioSemanal(formattedDate);
 
-                  {/* Lista de Tarjetas */}
-                  <div className="flex flex-col gap-3 p-1">
-                    {diaItem.tareas.map((tarea) => (
+  // Extraer arrays separados
+  const inspecciones = datosCalendario?.inspecciones || [];
+  const mantenimientos = datosCalendario?.mantenimientos || [];
+  const eventos = [...inspecciones, ...mantenimientos]; // Para compatibilidad 
+
+  // Generar datos de la semana basándose en la fecha actual
+  const semanaDataBase = generateWeekData(currentDate);
+
+  console.log(eventos);
+
+  // Distribuir eventos a los días correspondientes
+  const semanaData = useMemo(() => {
+
+    return semanaDataBase.map(dia => {
+      const diaDateStr = dia.fullDate.toISOString().split('T')[0];
+
+      // Filtrar eventos para este día con estructura adaptada
+      const tareasDelDia = eventos
+        .filter((evento: any) => {
+          // Usar el campo correcto según el tipo de evento
+          let fechaEvento = '';
+
+          if (evento.idInspeccion) {
+            fechaEvento = evento.fechaCreacion; // ← Para inspecciones
+          } else if (evento.idMantenimiento) {
+            fechaEvento = evento.fechaLimite; // ← Para mantenimientos
+          } else {
+            fechaEvento = evento.fecha || '';
+          }
+
+          return fechaEvento === diaDateStr;
+        })
+        .map((evento: any) => {
+          // Adaptar la estructura del evento a la estructura esperada
+          let tipo = '';
+          let id = '';
+          let titulo = '';
+
+          // Para inspecciones
+          if (evento.idInspeccion) {
+            tipo = 'inspeccion';
+            id = evento.idInspeccion;
+            titulo = evento.titulo || evento.nombre || `Inspección ${evento.idInspeccion}`;
+          }
+          // Para mantenimientos
+          else if (evento.idMantenimiento) {
+            tipo = 'mantenimiento';
+            id = evento.idMantenimiento;
+            titulo = evento.titulo || evento.nombre || `Mantenimiento ${evento.idMantenimiento}`;
+          }
+          // Para eventos con tipo explícito
+          else if (evento.tipo) {
+            tipo = evento.tipo.toLowerCase();
+            id = evento.id || evento.idMantenimiento || evento.idInspeccion;
+            titulo = evento.titulo || evento.nombre || `${evento.tipo} ${id}`;
+          }
+
+          const tareaMappeada = {
+            id: id,
+            tipo: tipo,
+            titulo: titulo,
+            area: evento.ubicacionTecnica || evento.ubicacion || '',
+            color: getColorFromEstado(evento.estado || 'no empezado'),
+            estado: evento.estado || 'no empezado',
+            fechaLimite: evento.fechaLimite || evento.fecha || diaDateStr
+          };
+
+          return tareaMappeada;
+        });
+
+      return {
+        ...dia,
+        tareas: tareasDelDia
+      };
+    });
+  }, [semanaDataBase, eventos]);
+
+  // Función para filtrar tareas según el filtro activo
+  const filtrarTareas = (tareas: any[]) => {
+
+    let tareasFiltradas;
+    if (filtroActivo === 'todos') {
+      tareasFiltradas = tareas;
+    } else if (filtroActivo === 'mantenimientos') {
+      tareasFiltradas = tareas.filter(tarea => tarea.tipo === 'mantenimiento');
+    } else if (filtroActivo === 'inspecciones') {
+      tareasFiltradas = tareas.filter(tarea => tarea.tipo === 'inspeccion');
+    } else {
+      tareasFiltradas = tareas;
+    }
+
+
+
+    return tareasFiltradas;
+  };
+
+  // Función para manejar el click en una tarea
+  const handleTaskClick = (tarea: any, fecha: Date) => {
+    if (tarea.tipo === 'mantenimiento') {
+      // Usar datos básicos de la tarea mientras se carga el resumen
+
+      //Llamar al servicio 
+      const basicMaintenanceData = {
+        estado: tarea.estado || 'No empezado',
+        prioridad: 'Media',
+        frecuencia: 'Mensual',
+        repeticion: 'Sí',
+        ubicacion: tarea.area || 'Ubicación por definir',
+        fechaLimite: fecha.toLocaleDateString('es-ES'),
+        titulo: tarea.titulo || 'Sin título',
+        id: tarea.id // Agregar el ID para el enlace
+      };
+
+      setSelectedMaintenanceData(basicMaintenanceData);
+      setIsMaintenanceModalOpen(true);
+
+      // El hook se encargará de obtener los datos detallados
+      // El modal puede mostrar un estado de carga si es necesario
+    } else if (tarea.tipo === 'inspeccion') {
+      // TODO: Generar datos reales de la inspección desde el API
+      const inspectionData = {
+        estado: 'Programado',
+        supervisor: 'Por asignar',
+        area: 'Por definir',
+        frecuencia: 'Mensual',
+        ubicacion: tarea.area || 'Ubicación por definir',
+        observacion: 'Sin observaciones',
+        id: tarea.id
+      };
+      setSelectedInspectionData(inspectionData);
+      setIsInspectionModalOpen(true);
+    }
+  };
+
+  // Lógica específica de la SEMANA: sumar/restar 7 días
+  const handlePrevWeek = () => {
+    const newDate = new Date(currentDate);
+    newDate.setDate(newDate.getDate() - 7);
+    setCurrentDate(newDate);
+  };
+
+  const handleNextWeek = () => {
+    const newDate = new Date(currentDate);
+    newDate.setDate(newDate.getDate() + 7);
+    setCurrentDate(newDate);
+  };
+
+  // Formateo para mostrar rango de semana (simplificado)
+  const startOfWeek = new Date(currentDate);
+
+  // Asumiendo LUNES como inicio de semana
+  const currentDay = currentDate.getDay(); // 0 es Domingo, 1 es Lunes...
+  // Si es domingo (0), queremos restar 6 días para llegar al lunes anterior.
+  // Si es cualquier otro día, restamos (día - 1).
+  const diffToMonday = currentDay === 0 ? 6 : currentDay - 1;
+
+  startOfWeek.setDate(currentDate.getDate() - diffToMonday);
+
+  const endOfWeek = new Date(startOfWeek);
+  endOfWeek.setDate(startOfWeek.getDate() + 6); // Sumamos 6 días para llegar al domingo
+
+  const label = `Semana ${startOfWeek.getDate()} - ${endOfWeek.getDate()} ${MONTH_NAMES[endOfWeek.getMonth()]}`;
+
+  return (
+    <div>
+      {/*--- CABECERA DEL CALENDARIO SEMANAL ---*/}
+      <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+        <h2 className="text-xl font-bold text-gray-900">{label}</h2>
+
+        <div className="flex flex-col md:flex-row gap-4">
+          {/* Filtro de mantenimientos e inspecciones */}
+          <DropdownFilter
+            filtroActual={filtroActivo}
+            onFiltroChange={setFiltroActivo}
+          />
+          {/* Navegación de Semanas */}
+          <DateNavigator label='Semana' onPrev={handlePrevWeek} onNext={handleNextWeek}></DateNavigator>
+        </div>
+      </div>
+
+      {/* --- GRID DE LA SEMANA --- */}
+      <div className="grid grid-cols-1 md:grid-cols-7 gap-4 min-w-[1000px] md:min-w-0 overflow-x-auto">
+        {semanaData.map((diaItem, index) => {
+          // Filtrar las tareas según el filtro activo
+          const tareasFiltradas = filtrarTareas(diaItem.tareas);
+
+          // Calcular la fecha exacta del día
+          const dayDate = new Date(currentDate);
+          const currentDay = currentDate.getDay();
+          const diffToMonday = currentDay === 0 ? 6 : currentDay - 1;
+          const startOfWeek = new Date(currentDate);
+          startOfWeek.setDate(currentDate.getDate() - diffToMonday);
+          const exactDate = new Date(startOfWeek);
+          exactDate.setDate(startOfWeek.getDate() + index);
+
+          return (
+            <div key={index} className="flex flex-col h-full">
+              {/* Cabecera de la Columna (Día y Número) */}
+              <div className="text-center mb-4">
+                <span className="block text-sm font-bold text-gray-400 uppercase tracking-wide">
+                  {diaItem.dia}
+                </span>
+                <span className="block text-3xl font-bold text-gray-900 mt-1">
+                  {diaItem.fecha}
+                </span>
+              </div>
+
+              {/* Cuerpo de la Columna (El contenedor largo) */}
+              <div className="flex-1 border border-gray-200 rounded-2xl min-h-[500px] bg-white flex flex-col gap-3 overflow-hidden">
+                {/* Pill de Conteo (Encabezado gris dentro de la columna) */}
+                <div className="bg-gray-200 py-2 text-center relative overflow-hidden">
+                  {/* Simulación del degradado superior en días con múltiples tareas */}
+                  {tareasFiltradas.length > 2 && (
+                    <div className="absolute top-0 left-0 right-0 h-1.5 bg-linear-to-r from-gema-yellow via-gema-blue to-gema-green" />
+                  )}
+                  <span className="text-xs font-bold text-gray-700">
+                    {filtroActivo === 'todos' ? 'Mantenimientos' :
+                      filtroActivo === 'mantenimientos' ? 'Mantenimientos' : 'Inspecciones'} - {tareasFiltradas.length}
+                  </span>
+                </div>
+
+                {/* Lista de Tarjetas */}
+                <div className="flex flex-col gap-3 p-1">
+                  {tareasFiltradas.length === 0 ? (
+                    <div className="text-center text-gray-400 text-sm py-8">
+                      Sin actividades programadas
+                    </div>
+                  ) : (
+                    tareasFiltradas.map((tarea) => (
                       <div
                         key={tarea.id}
-                          className={`
-                          relative p-3 rounded-r-xl rounded-l-sm border-l-[6px] shadow-sm cursor-pointer hover:opacity-90 transition-opacity
-                          ${cardColors[tarea.color as keyof typeof cardColors]}
-                        `}
+                        onClick={() => handleTaskClick(tarea, exactDate)}
+                        className={`
+                                relative p-3 rounded-r-xl rounded-l-sm border-l-[6px] shadow-sm cursor-pointer hover:opacity-90 transition-opacity
+                                ${tarea.tipo === 'mantenimiento' || tarea.tipo === 'inspeccion' ? 'hover:shadow-md hover:scale-[1.02] transition-all' : ''}
+                                ${cardColors[tarea.color as keyof typeof cardColors]}
+                              `}
                       >
                         <h4 className="font-bold text-gray-800 text-sm leading-tight mb-1">
                           {tarea.titulo}
@@ -145,49 +343,66 @@ const WeeklyCalendar = () => {
                           </p>
                         )}
                       </div>
-                    ))}
-                  </div>
-
+                    ))
+                  )}
                 </div>
               </div>
-            ))}
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-6 w-full">
+
+        {/* Título */}
+        <h3 className="text-lg font-bold text-gray-900 mb-4">
+          Estados de Mantenimientos e Inspecciones
+        </h3>
+
+        {/* Contenedor de los items (Fila flexible) */}
+        <div className="flex flex-wrap items-center gap-6">
+          {/* Item 1: No empezado (Gris) */}
+          <div className="flex items-center gap-2">
+            <div className="h-5 w-5 rounded bg-gema-darkgrey" />
+            <span className="text-sm font-medium text-gray-700">No empezado</span>
           </div>
 
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-6 w-full">
-      
-      {/* Título */}
-      <h3 className="text-lg font-bold text-gray-900 mb-4">
-        Estados de Mantenimientos e Inspecciones
-      </h3>
+          {/* Item 2: En ejecución (Azul) */}
+          <div className="flex items-center gap-2">
+            <div className="h-5 w-5 rounded bg-gema-blue" />
+            <span className="text-sm font-medium text-gray-700">En ejecución</span>
+          </div>
 
-      {/* Contenedor de los items (Fila flexible) */}
-      <div className="flex flex-wrap items-center gap-6">
-        {/* Item 1: No empezado (Gris) */}
-        <div className="flex items-center gap-2">
-          <div className="h-5 w-5 rounded bg-gema-darkgrey" />
-          <span className="text-sm font-medium text-gray-700">No empezado</span>
+          {/* Item 3: Reprogramado (Amarillo/Ámbar) */}
+          <div className="flex items-center gap-2">
+            <div className="h-5 w-5 rounded bg-gema-yellow" /> {/* O usa bg-gema-yellow */}
+            <span className="text-sm font-medium text-gray-700">Reprogramado</span>
+          </div>
+
+          {/* Item 4: Culminado (Verde) */}
+          <div className="flex items-center gap-2">
+            <div className="h-5 w-5 rounded bg-gema-green" /> {/* O usa bg-gema-green */}
+            <span className="text-sm font-medium text-gray-700">Culminado</span>
+          </div>
+
         </div>
-
-        {/* Item 2: En ejecución (Azul) */}
-        <div className="flex items-center gap-2">
-          <div className="h-5 w-5 rounded bg-gema-blue" /> 
-          <span className="text-sm font-medium text-gray-700">En ejecución</span>
-        </div>
-
-        {/* Item 3: Reprogramado (Amarillo/Ámbar) */}
-        <div className="flex items-center gap-2">
-          <div className="h-5 w-5 rounded bg-gema-yellow" /> {/* O usa bg-gema-yellow */}
-          <span className="text-sm font-medium text-gray-700">Reprogramado</span>
-        </div>
-
-        {/* Item 4: Culminado (Verde) */}
-        <div className="flex items-center gap-2">
-          <div className="h-5 w-5 rounded bg-gema-green" /> {/* O usa bg-gema-green */}
-          <span className="text-sm font-medium text-gray-700">Culminado</span>
-        </div>
-
       </div>
-    </div>
+
+      {/* Modal de Resumen de Mantenimiento */}
+      <MaintenanceSummaryModal
+        open={isMaintenanceModalOpen}
+        onClose={() => setIsMaintenanceModalOpen(false)}
+        data={selectedMaintenanceData}
+        mantenimientoId={selectedMaintenanceData?.id} // Pasar el ID del mantenimiento
+      />
+
+      {/* Modal de Resumen de Inspección */}
+      <InspectionSummaryModal
+        open={isInspectionModalOpen}
+        onClose={() => setIsInspectionModalOpen(false)}
+        data={selectedInspectionData}
+        inspeccionId={selectedInspectionData?.id}
+      />
     </div>
   )
 };

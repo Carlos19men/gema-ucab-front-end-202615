@@ -1,7 +1,6 @@
 'use client';
 
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -11,13 +10,7 @@ import { useUpdateGrupo } from "@/hooks/grupos-trabajo/useEditGrupo";
 import { Combobox } from "@/components/ui/combobox";
 import { type Tecnico } from "@/types/tecnicos.types";
 import { type GrupoTrabajo } from "@/types/grupostrabajo.types";
-
-const grupoTrabajoSchema = z.object({
-  codigo: z.string().min(1, "El código es requerido"),
-  nombre: z.string().min(1, "El nombre es requerido"),
-  supervisor: z.string().min(1, "El supervisor es requerido"),
-  area: z.string().min(1, "El área es requerida"),
-});
+import { grupoTrabajoSchema, type GrupoTrabajoForm } from "@/lib/validations/grupoTrabajoSchema";
 
 export interface EditGrupoFormProps {
   grupo: GrupoTrabajo | null;
@@ -30,7 +23,7 @@ export const EditGrupoForm: React.FC<EditGrupoFormProps> = ({
   setGrupo,
   tecnicosDisponibles,
 }) => {
-  const form = useForm<z.infer<typeof grupoTrabajoSchema>>({
+  const form = useForm<GrupoTrabajoForm>({
     resolver: zodResolver(grupoTrabajoSchema),
     defaultValues: {
       codigo: grupo?.codigo || "",
@@ -42,7 +35,7 @@ export const EditGrupoForm: React.FC<EditGrupoFormProps> = ({
 
   const updateGrupoMutation = useUpdateGrupo();
 
-  const handleSubmit = (values: z.infer<typeof grupoTrabajoSchema>) => {
+  const handleSubmit = (values: GrupoTrabajoForm) => {
     if (!grupo) return;
 
     updateGrupoMutation.mutate({

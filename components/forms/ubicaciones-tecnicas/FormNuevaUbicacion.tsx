@@ -11,16 +11,16 @@ import { ComboSelectInput } from "@/components/ui/comboSelectInput";
 import { CircleX, Info, LoaderCircle, PlusCircle, Trash } from "lucide-react";
 import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
-import type { UbicacionTecnica } from "@/types/models/ubicacionesTecnicas.types"; 
+import type { UbicacionTecnica } from "@/types/models/ubicacionesTecnicas.types";
 import { Combobox } from "@/components/ui/combobox";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import type { CreateUbicacionTecnicaRequest } from "@/lib/api/ubicacionesTecnicas";
 
 // ✅ Usar hooks organizados
-import { 
-  useUbicaciones, 
+import {
+  useUbicaciones,
   useUbicacionDependientes,
-  useUbicacionesPorNivel 
+  useUbicacionesPorNivel
 } from "@/hooks/ubicaciones-tecnicas/useUbicaciones";
 import { useCreateUbicacion } from "@/hooks/ubicaciones-tecnicas/useCreateUbicacion";
 
@@ -91,7 +91,7 @@ const useUbicacionesNiveles = (formValues: UbicacionTecnicaForm) => {
 
     // Nivel 1 - Módulo
     items[1] = flat.find(u => u.abreviacion === formValues.modulo && u.nivel === 1);
-    
+
     // Construir código progresivamente para encontrar items por nivel
     const buildCode = (level: number) => {
       const fields = ['modulo', 'planta', 'espacio', 'tipo', 'subtipo', 'numero', 'pieza'];
@@ -111,9 +111,9 @@ const useUbicacionesNiveles = (formValues: UbicacionTecnicaForm) => {
   // Obtener opciones para cada nivel
   const getOptionsForLevel = (level: number) => {
     if (!ubicaciones) return [];
-    
+
     const flat = flattenUbicaciones(ubicaciones);
-    
+
     if (level === 1) {
       return flat.filter(u => u.nivel === 1);
     }
@@ -121,9 +121,9 @@ const useUbicacionesNiveles = (formValues: UbicacionTecnicaForm) => {
     // Para niveles superiores, filtrar por padre
     const parentLevel = level - 1;
     const parent = selectedItems[parentLevel];
-    
+
     if (!parent) return [];
-    
+
     return flat.filter(u => u.nivel === level && u.codigo_Identificacion.startsWith(parent.codigo_Identificacion + '-'));
   };
 
@@ -150,11 +150,14 @@ const FormNuevaUbicacion: React.FC<Props> = ({
   // Estados locales
   const [esEquipo, setEsEquipo] = useState(false);
   const [padres, setPadres] = useState<(string | number | null)[]>([null]);
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   // ✅ Hook para obtener posibles padres (solo cuando es equipo)
-  const { data: posiblesPadres, isLoading: loadingPadres } = useUbicacionesPorNivel(
+  const { data: posiblesPadresResponse, isLoading: loadingPadres, isError: errorPadres } = useUbicacionesPorNivel(
     displayedLevels > 1 ? displayedLevels - 1 : 1
   );
+
+  const posiblesPadres = posiblesPadresResponse?.data || [];
 
   // Verificar si el último nivel es válido
   const isLastLevelValid = selectedItems[displayedLevels] !== undefined;
@@ -162,11 +165,12 @@ const FormNuevaUbicacion: React.FC<Props> = ({
   const closeModal = () => {
     setDisplayedLevels(1);
     setFormValues({
-      modulo: "", planta: "", espacio: "", tipo: "", subtipo: "", 
+      modulo: "", planta: "", espacio: "", tipo: "", subtipo: "",
       numero: "", pieza: "", descripcion: ""
     });
     setEsEquipo(false);
     setPadres([null]);
+    setErrorMessage(""); // Limpiar mensaje de error
     onClose();
   };
 
@@ -180,11 +184,11 @@ const FormNuevaUbicacion: React.FC<Props> = ({
     setFormValues(prev => {
       const nuevosValores = { ...prev };
       const campos = ['planta', 'espacio', 'tipo', 'subtipo', 'numero', 'pieza'];
-      
+
       for (let i = nivelInicio - 1; i < campos.length; i++) {
         nuevosValores[campos[i] as keyof UbicacionTecnicaForm] = "";
       }
-      
+
       return nuevosValores;
     });
   };
@@ -193,75 +197,163 @@ const FormNuevaUbicacion: React.FC<Props> = ({
     window.open('/guia-ubicaciones-tecnicas.pdf', '_blank');
   };
 
-  // ✅ Función onSubmit simplificada usando hook
+  // ✅ Función onSubmit mejorada con validación de duplicados
   const onSubmit = () => {
-    if (!ubicaciones) {
-      toast.error("Los datos de ubicaciones aún no se han cargado.");
+    console.log("🚀 Iniciando envío de formulario de ubicación...");
+    
+    // Limpiar mensaje de error previo
+    setErrorMessage("");
+    
+    // Validación básica
+    if (!formValues.descripcion.trim()) {
+      setErrorMessage("La descripción es requerida");
       return;
     }
 
-    const flatUbicaciones = flattenUbicaciones(ubicaciones);
-    const codigoCompleto = generarCodigo(formValues);
-    const partes = codigoCompleto.split("-");
-    const codigoSinUltimoNivel = partes.slice(0, -1).join("-");
-
-    const padreFisico = flatUbicaciones.find(u => u.codigo_Identificacion === codigoSinUltimoNivel);
-
-    const payload: CreateUbicacionTecnicaRequest = {
-      descripcion: formValues.descripcion,
-      abreviacion: getAbreviacion(formValues),
-      padres: [],
-    };
-
-    // Agregar padre físico si existe
-    if (padreFisico) {
-      payload.padres!.push({ 
-        idPadre: padreFisico.idUbicacion, 
-        esUbicacionFisica: true,
-        estaHabilitado: true 
-      });
-    } else if (partes.length > 1) {
-      toast.error(`Error: No se encontró la ubicación padre con código "${codigoSinUltimoNivel}".`);
+    const abreviacion = getAbreviacion(formValues);
+    if (!abreviacion.trim()) {
+      setErrorMessage("La abreviación es obligatoria");
       return;
     }
 
-    // Agregar padres virtuales si es equipo
-    if (esEquipo) {
-      const idsPadresVirtuales = padres
-        .filter((p) => p !== null)
-        .map((id) => ({ 
-          idPadre: Number(id), 
-          esUbicacionFisica: false,
-          estaHabilitado: true 
-        }));
+    if (abreviacion.length > 5) {
+      setErrorMessage("La abreviación no puede exceder los 5 caracteres");
+      return;
+    }
 
-      for (const p of idsPadresVirtuales) {
-        if (!payload.padres!.some(existente => existente.idPadre === p.idPadre)) { 
-          payload.padres!.push(p); 
+    // Validación de duplicados si tenemos ubicaciones cargadas
+    if (ubicaciones) {
+      const flatUbicaciones = flattenUbicaciones(ubicaciones);
+      
+      // Verificar si ya existe una ubicación con la misma abreviación
+      const duplicadoAbreviacion = flatUbicaciones.find(u => 
+        u.abreviacion.toLowerCase() === abreviacion.toLowerCase()
+      );
+      
+      if (duplicadoAbreviacion) {
+        setErrorMessage(`Ya existe una ubicación con la abreviación "${abreviacion}": ${duplicadoAbreviacion.descripcion}`);
+        return;
+      }
+
+      // Si estamos creando con jerarquía, verificar el código completo
+      if (displayedLevels > 1) {
+        const codigoCompleto = generarCodigo(formValues);
+        const duplicadoCodigo = flatUbicaciones.find(u => 
+          u.codigo_Identificacion === codigoCompleto
+        );
+        
+        if (duplicadoCodigo) {
+          setErrorMessage(`Ya existe una ubicación con el código "${codigoCompleto}": ${duplicadoCodigo.descripcion}`);
+          return;
         }
       }
     }
 
+    // Construir payload según la especificación del endpoint
+    const payload: CreateUbicacionTecnicaRequest = {
+      descripcion: formValues.descripcion.trim(),
+      abreviacion: abreviacion.trim(),
+    };
+
+    // Solo agregar padres si existen
+    const padresArray: Array<{ idPadre: number; esUbicacionFisica: boolean }> = [];
+
+    // Agregar padre físico si existe (basado en la jerarquía de niveles)
+    if (ubicaciones && displayedLevels > 1) {
+      const flatUbicaciones = flattenUbicaciones(ubicaciones);
+      const codigoCompleto = generarCodigo(formValues);
+      const partes = codigoCompleto.split("-");
+      const codigoSinUltimoNivel = partes.slice(0, -1).join("-");
+      
+      const padreFisico = flatUbicaciones.find(u => u.codigo_Identificacion === codigoSinUltimoNivel);
+      
+      if (padreFisico) {
+        console.log("🔗 Agregando padre físico:", padreFisico);
+        padresArray.push({
+          idPadre: padreFisico.idUbicacion,
+          esUbicacionFisica: true
+        });
+      } else {
+        setErrorMessage(`No se encontró la ubicación padre con código "${codigoSinUltimoNivel}". Asegúrate de que exista antes de crear esta ubicación.`);
+        return;
+      }
+    }
+
+    // Agregar padres lógicos si es equipo
+    if (esEquipo) {
+      const padresLogicos = padres
+        .filter((p) => p !== null)
+        .map((id) => ({
+          idPadre: Number(id),
+          esUbicacionFisica: false
+        }));
+
+      console.log("🔗 Agregando padres lógicos:", padresLogicos);
+
+      // Evitar duplicados
+      for (const padreLogico of padresLogicos) {
+        if (!padresArray.some(p => p.idPadre === padreLogico.idPadre)) {
+          padresArray.push(padreLogico);
+        }
+      }
+    }
+
+    // Solo agregar padres al payload si existen
+    if (padresArray.length > 0) {
+      payload.padres = padresArray;
+    }
+
+    console.log("📦 Enviando payload:", payload);
+    console.log("📊 Resumen:", {
+      descripcion: payload.descripcion,
+      abreviacion: payload.abreviacion,
+      cantidadPadres: payload.padres?.length || 0,
+      padres: payload.padres
+    });
+
     // ✅ Usar hook de creación
     createMutation.mutate(payload, {
       onSuccess: () => {
+        console.log("✅ Creación exitosa");
         closeModal();
         toast.success("Ubicación técnica creada correctamente");
       },
-      onError: (error) => {
-        toast.error(error.message || "Error al crear la ubicación técnica");
+      onError: (error: any) => {
+        console.error("❌ Error en mutación:", error);
+        console.error("❌ Detalles del error:", {
+          status: error?.response?.status,
+          statusText: error?.response?.statusText,
+          data: error?.response?.data,
+          message: error?.message
+        });
+        
+        // Manejo específico de errores
+        if (error?.response?.status === 409) {
+          const errorMessage = error?.response?.data?.message || error?.response?.data?.error || "La ubicación técnica ya existe";
+          toast.error(`Error 409: ${errorMessage}`);
+        } else if (error?.response?.status === 400) {
+          const errorMessage = error?.response?.data?.message || error?.response?.data?.error || "Datos inválidos";
+          toast.error(`Error 400: ${errorMessage}`);
+        } else if (error?.response?.status === 500) {
+          toast.error("Error interno del servidor. Por favor, intenta de nuevo más tarde.");
+        } else {
+          toast.error(error?.message || "Error al crear la ubicación técnica");
+        }
       }
     });
   };
 
   const renderNivel = (nivel: number, label: string, campo: keyof UbicacionTecnicaForm, placeholder: string) => {
     if (displayedLevels < nivel) return null;
-    
+
     const options = getOptionsForLevel(nivel);
-    
+    const isLast = displayedLevels === nivel;
+
     return (
       <div key={nivel}>
-        <Label className="text-sm">{label}</Label>
+        <Label className="text-sm">
+          {label}
+        </Label>
         <ComboSelectInput
           name={campo}
           placeholder={isLoading ? "Cargando..." : placeholder}
@@ -277,6 +369,12 @@ const FormNuevaUbicacion: React.FC<Props> = ({
                   .map(campo => [campo, ""])
               )
             }));
+
+            // ✅ AUTO-EXPANDIR: Si seleccionamos un item existente, mostrar el siguiente nivel automáticamente
+            const existe = options.some(o => o.abreviacion === value);
+            if (existe && nivel < 7) {
+              setDisplayedLevels(prev => Math.max(prev, nivel + 1));
+            }
           }}
           options={options.map((u) => ({
             value: u.abreviacion,
@@ -311,14 +409,29 @@ const FormNuevaUbicacion: React.FC<Props> = ({
     >
       <div className="flex flex-col md:flex-row gap-8">
         <div className="space-y-2">
+
           {/* Nivel 1 */}
           <div>
-            <Label className="text-sm">Nivel 1 <span className="text-red-500">*</span></Label>
+            <Label className="text-sm">
+              Nivel 1 <span className="text-red-500">*</span>
+            </Label>
             <ComboSelectInput
               name="modulo"
               placeholder={isLoading ? "Cargando..." : "Ejemplo: M2"}
               value={formValues.modulo}
-              onChange={(value) => resetNivelesSuperiores(2)}
+              onChange={(value) => {
+                setFormValues(prev => ({
+                  ...prev,
+                  modulo: value,
+                  planta: "", espacio: "", tipo: "", subtipo: "", numero: "", pieza: ""
+                }));
+                // ✅ AUTO-EXPANDIR NIVEL 1
+                const options = ubicaciones?.filter((u) => u.nivel === 1) || [];
+                const existe = options.some(o => o.abreviacion === value);
+                if (existe) {
+                  setDisplayedLevels(prev => Math.max(prev, 2));
+                }
+              }}
               options={ubicaciones?.filter((u) => u.nivel === 1).map((u) => ({
                 value: u.abreviacion,
                 label: `${u.abreviacion} - ${u.descripcion}`,
@@ -328,7 +441,7 @@ const FormNuevaUbicacion: React.FC<Props> = ({
             />
           </div>
 
-          {/* ✅ CORREGIDO: Niveles renderizados dinámicamente */}
+          {/* ✅ CORREGIDO: Niveles renderizados dinámicamente con auto-expansión */}
           {renderNivel(2, "Nivel 2", "planta", "Ejemplo: P01")}
           {renderNivel(3, "Nivel 3", "espacio", "Ejemplo: A2-14, LABBD")}
           {renderNivel(4, "Nivel 4", "tipo", "Ejemplo: HVAC")}
@@ -372,7 +485,7 @@ const FormNuevaUbicacion: React.FC<Props> = ({
           <div className="bg-slate-200 p-4 pt-3 rounded-sm">
             <span className="text-sm font-semibold">Vista previa del código:</span>
             <div className="p-2 rounded border-2 border-neutral-300 font-mono text-sm">
-              {generarCodigo(formValues)}
+              {generarCodigo(formValues) || <span className="text-gray-400 italic">Completa los niveles...</span>}
             </div>
           </div>
 
@@ -388,11 +501,11 @@ const FormNuevaUbicacion: React.FC<Props> = ({
                   Si aplica, indica los espacios donde el equipo brinda servicio, además de su ubicación física
                 </p>
                 <div className="space-y-2">
-                  {posiblesPadres.isLoading ? <LoaderCircle className="animate-spin h-5 w-5" />
-                    : posiblesPadres.isError ? <p className="text-red-600 text-sm">Error al cargar ubicaciones.</p>
+                  {loadingPadres ? <LoaderCircle className="animate-spin h-5 w-5" />
+                    : errorPadres ? <p className="text-red-600 text-sm">Error al cargar ubicaciones.</p>
                       : (
                         <>
-                          {padres.filter((p) => p !== null).map((p) => posiblesPadres.data?.data.find(ubicacion => ubicacion.idUbicacion == p)).map((ubicacion) => (
+                          {padres.filter((p) => p !== null).map((p) => posiblesPadres.find((ubicacion: UbicacionTecnica) => ubicacion.idUbicacion == p)).map((ubicacion: UbicacionTecnica | undefined) => (
                             <div key={ubicacion?.idUbicacion} className="flex space-x-3 items-center bg-slate-200 rounded px-2 mb-3">
                               <span className="text-sm text-neutral-700">{ubicacion?.codigo_Identificacion}</span>
                               <Button variant="ghost" className="text-red-500 hover:text-red-700 hover:bg-slate-100 px-1"
@@ -403,7 +516,7 @@ const FormNuevaUbicacion: React.FC<Props> = ({
                           ))}
                           <Combobox
                             triggerClassName="w-4/5" contentClassName="w-full"
-                            data={posiblesPadres.data?.data.filter(ubicacion => !generarCodigo(formValues).includes(ubicacion.codigo_Identificacion) && !padres.includes(String(ubicacion.idUbicacion))).map((ubicacion) => ({
+                            data={posiblesPadres.filter((ubicacion: UbicacionTecnica) => !generarCodigo(formValues).includes(ubicacion.codigo_Identificacion) && !padres.includes(String(ubicacion.idUbicacion))).map((ubicacion: UbicacionTecnica) => ({
                               value: ubicacion.idUbicacion, label: `${ubicacion.codigo_Identificacion} - ${ubicacion.descripcion}`,
                             })) || []}
                             value={padres.at(-1) || null}
@@ -420,10 +533,17 @@ const FormNuevaUbicacion: React.FC<Props> = ({
 
       {createMutation.isError && <p className="text-red-600 text-sm">{createMutation.error instanceof Error ? createMutation.error.message : "Error al crear la ubicación técnica, por favor intente de nuevo."}</p>}
 
+      {/* Mensaje de error de validación */}
+      {errorMessage && (
+        <div className="bg-red-50 border border-red-200 rounded-md p-3">
+          <p className="text-red-600 text-sm">{errorMessage}</p>
+        </div>
+      )}
+
       <div className="flex justify-end gap-2">
         <Button variant="outline" onClick={closeModal} className="px-4 md:px-8">Cancelar</Button>
-        <Button className="bg-gema-green/80 hover:bg-gema-green text-primary-foreground px-4 md:px-8" onClick={onSubmit} disabled={status === "pending" || createMutation.isPending}>
-          {status === "pending" ? "Creando..." : "Crear Ubicación"}
+        <Button className="bg-gema-green/80 hover:bg-gema-green text-primary-foreground px-4 md:px-8" onClick={onSubmit} disabled={createMutation.isPending}>
+          {createMutation.isPending ? "Creando..." : "Crear Ubicación"}
         </Button>
       </div>
     </Modal>

@@ -1,10 +1,12 @@
 export type Inspeccion = {
     Id: number;
-    FechaCreacion: Date;
-    Ubicacion: string;
-    Estado: "NO EMPEZADO" | "EN EJECUCION" | "REPROGRAMADO" | "CULMINADO";
-    Supervisor: string;
-    Observaciones: string;
-    Frecuencia: string;
-    AreaEncargada: string;
+    titulo?: string;
+    fechaCreacion: Date;
+    ubicacion: string;
+    estado: "NO EMPEZADO" | "EN EJECUCION" | "REPROGRAMADO" | "CULMINADO";
+    supervisor: string;
+    observacion: string;
+    frecuencia: string;
+    areaEncargada: string;
+    codigoVerificacion?: string;
 };

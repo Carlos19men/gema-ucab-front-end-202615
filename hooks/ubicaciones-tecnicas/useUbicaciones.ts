@@ -4,8 +4,21 @@ import { ubicacionesTecnicasAPI } from "@/lib/api/ubicacionesTecnicas";
 export const useUbicaciones = () => {
     return useQuery({
         queryKey: ["ubicacionesTecnicas"],
-        queryFn: ubicacionesTecnicasAPI.getAll,
-        select: (data) => data.data,
+        queryFn: async () => {
+            console.log("🔄 Llamando a ubicacionesTecnicasAPI.getAll()");
+            try {
+                const result = await ubicacionesTecnicasAPI.getAll();
+                console.log("✅ Respuesta exitosa de ubicaciones:", result);
+                return result;
+            } catch (error) {
+                console.error("❌ Error al obtener ubicaciones:", error);
+                throw error;
+            }
+        },
+        select: (data) => {
+            console.log("🔍 Procesando data en select:", data);
+            return data.data;
+        },
     });
 };
 
@@ -34,5 +47,16 @@ export const useUbicacionesPorNivel = (nivel: number) => {
         queryKey: ["ubicacionesNivel", nivel],
         queryFn: () => ubicacionesTecnicasAPI.getByNivel(nivel),
         enabled: nivel > 0,
+    });
+};
+
+// Hook para obtener lista plana de ubicaciones técnicas
+export const useUbicacionesLista = () => {
+    return useQuery({
+        queryKey: ["ubicacionesLista"],
+        queryFn: ubicacionesTecnicasAPI.getLista,
+        select: (data) => data.data,
+        staleTime: 5 * 60 * 1000, // 5 minutos
+        gcTime: 10 * 60 * 1000, // 10 minutos
     });
 };

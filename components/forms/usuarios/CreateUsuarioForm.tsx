@@ -1,0 +1,148 @@
+'use client';
+
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { useCreateUsuario } from "@/hooks/usuarios/useCreateUsuario";
+
+const usuarioSchema = z.object({
+    nombre: z.string().min(1, "El nombre es requerido"),
+    correo: z.string().email("Correo inválido").refine((val) => val.includes("ucab.edu.ve") && val.includes("@"), {
+        message: "El correo debe ser del dominio @ucab.edu.ve"
+    }),
+    contraseña: z.string().min(8, "La contraseña debe tener al menos 8 caracteres"),
+    tipo: z.string().min(1, "El tipo es requerido"),
+});
+
+interface CreateUsuarioFormProps {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+}
+
+export const CreateUsuarioForm: React.FC<CreateUsuarioFormProps> = ({
+    open,
+    onOpenChange,
+}) => {
+    const form = useForm<z.infer<typeof usuarioSchema>>({
+        resolver: zodResolver(usuarioSchema),
+        defaultValues: {
+            nombre: "",
+            correo: "",
+            tipo: "",
+            contraseña: "defaultPassword123",
+        },
+    });
+
+    const { errors } = form.formState;
+
+    const createUsuarioMutation = useCreateUsuario();
+
+    const handleSubmit = (values: z.infer<typeof usuarioSchema>) => {
+        createUsuarioMutation.mutate({
+            nombre: values.nombre,
+            correo: values.correo,
+            tipo: values.tipo as "SUPERVISOR" | "COORDINADOR" | "DIRECTOR",
+            contraseña: values.contraseña,
+        }, {
+            onSuccess: () => {
+                form.reset();
+                onOpenChange(false);
+            },
+            onError: (error) => {
+                const message = error instanceof Error ? error.message : "Error al crear usuario";
+                const lower = message.toLowerCase();
+                if (lower.includes("correo") || lower.includes("email")) {
+                    form.setError("correo", { type: "manual", message: "El correo electrónico ya está en uso" });
+                    form.setFocus("correo");
+                }
+            }
+        });
+    };
+
+    return (
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Crear Nuevo Usuario</DialogTitle>
+                </DialogHeader>
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+                        <FormField
+                            control={form.control}
+                            name="nombre"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Nombre y Apellido</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="Ej: Juan Pérez" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="correo"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Correo Electrónico</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            placeholder="Ej: juan.perez@ucab.edu.ve"
+                                            className={errors.correo ? "border-red-500 focus-visible:ring-red-500" : undefined}
+                                            {...field}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="tipo"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Rol</FormLabel>
+                                    <Select onValueChange={field.onChange} value={field.value}>
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Seleccione un rol" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            <SelectItem value="SUPERVISOR">Supervisor</SelectItem>
+                                            <SelectItem value="COORDINADOR">Coordinador</SelectItem>
+                                            <SelectItem value="DIRECTOR">Director</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <div className="flex justify-end space-x-3">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => onOpenChange(false)}
+                            >
+                                Cancelar
+                            </Button>
+                            <Button
+                                type="submit"
+                                className="bg-gema-green/80 hover:bg-gema-green"
+                                disabled={createUsuarioMutation.isPending}
+                            >
+                                {createUsuarioMutation.isPending ? "Guardando..." : "Guardar"}
+                            </Button>
+                        </div>
+                    </form>
+                </Form>
+            </DialogContent>
+        </Dialog>
+    );
+};

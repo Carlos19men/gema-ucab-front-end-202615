@@ -14,10 +14,9 @@ import { Button } from "@/components/ui/button";
 // ✅ Usar hooks organizados
 import { useGrupos } from "@/hooks/grupos-trabajo/useGrupoTrabajo";
 import { useTrabajadoresPorGrupo } from "@/hooks/grupos-trabajo/useTrabajadoresPorGrupo";
+import { useSupervisores } from "@/hooks/usuarios/useUsuarios";
 import { tecnicosAPI } from "@/lib/api/tecnicos";
 import { useQuery } from "@tanstack/react-query";
-import type { Usuario } from "@/types/usuarios.types";
-import type { Tecnico } from "@/types/models/tecnicos.types";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { CreateGrupoForm } from "@/components/forms/grupos/CreateGrupoForm";
 import { GestionTecnicosForm } from "@/components/forms/grupos/GestionTecnicosForm";
@@ -35,13 +34,15 @@ const GruposTrabajo: React.FC = () => {
     // ✅ Usar hooks organizados
     const { data: grupos, isLoading: isLoadingGrupos } = useGrupos();
     const { data: trabajadoresPorGrupo, isLoading: isLoadingTrabajadores } = useTrabajadoresPorGrupo();
+    const { supervisores, isLoading: isLoadingSupervisores } = useSupervisores();
 
+    // Hook para técnicos (solo para el formulario de editar)
     const { data: tecnicos, isLoading: isLoadingTecnicos } = useQuery({
         queryKey: ["tecnicos"],
         queryFn: () => tecnicosAPI.getAll(),
     });
 
-    const isLoading = isLoadingGrupos || isLoadingTecnicos || isLoadingTrabajadores;
+    const isLoading = isLoadingGrupos || isLoadingSupervisores || isLoadingTrabajadores;
 
     const openTecnicosModal = (grupoId: number) => {
         setSelectedGrupoId(grupoId);
@@ -49,7 +50,7 @@ const GruposTrabajo: React.FC = () => {
     };
 
     const getSupervisorNombre = (id: number | null) =>
-        tecnicos?.data?.find((s) => s.Id === id)?.Nombre || "No asignado";
+        supervisores?.find((s) => s.Id === id)?.Nombre || "No asignado";
 
     if (isLoading) {
         return (

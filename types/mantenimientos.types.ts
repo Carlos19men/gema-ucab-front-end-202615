@@ -1,11 +1,13 @@
 export type Mantenimiento = {
     Id: number;
+    Titulo?: string; 
     FechaCreacion: Date;
     FechaLimite: Date;
     Ubicacion: string;
-    Estado: "NO EMPEZADO" | "EN EJECUCION" | "REPROGRAMADO" | "CULMINADO";
-    Tipo: "PREVENTIVO" | "POR CONDICION";
+    Estado: "No empezado" | "En ejecución" | "Reprogramado" | "Culminado";
+    Tipo: "Periodico" | "Por condicion";
     Resumen: string;
-    Prioridad: "BAJA" | "MEDIA" | "ALTA";
+    Prioridad: "Baja" | "Media" | "Alta";
     AreaEncargada: string;
+    Frecuencia?: "Diaria" | "Semanal" | "Mensual" | "Bimestral" | "Trimestral" | "Semestral" | "Anual";
 };
