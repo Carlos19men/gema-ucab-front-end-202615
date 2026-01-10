@@ -366,7 +366,7 @@ export const MaintenanceFormContent: React.FC<MaintenanceFormContentProps> = ({
                         className="bg-gema-green/80 hover:bg-gema-green text-primary-foreground"
                         disabled={createMantenimientoMutation.isPending}
                     >
-                        {createMantenimientoMutation.isPending ? "Guardando..." : "Guardar"}
+                        {createMantenimientoMutation.isPending ? "Guardando cambios..." : "Guardar cambios"}
                     </Button>
                 </div>
             </form>

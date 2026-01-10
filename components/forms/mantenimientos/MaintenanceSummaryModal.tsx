@@ -75,7 +75,9 @@ export const MaintenanceSummaryModal: React.FC<MaintenanceSummaryModalProps> = (
                 </div>
             </div>
             <div className="flex justify-end gap-2 mt-4">
-                <Button variant="ghost" onClick={onClose}>Cancelar</Button>
+                <Button variant="outline" onClick={onClose}>
+                    Cancelar
+                </Button>
                 <Link href={`/calendario/mantenimientos/${mantenimientoId}`}>
                     <Button variant="outline" className="border-gema-green text-gema-green hover:bg-gema-green/10">
                         Ver detalle del mantenimiento

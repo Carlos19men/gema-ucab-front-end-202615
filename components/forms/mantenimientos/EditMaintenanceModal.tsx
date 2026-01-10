@@ -20,6 +20,7 @@ export const EditMaintenanceModal: React.FC<EditMaintenanceModalProps> = ({ open
             onClose={onClose}
             title={<span className="text-xl font-semibold">Editar Mantenimiento</span>}
             className="bg-white max-w-4xl" // Expanded width for the form
+            contentClassName="pt-6"
         >
             <MaintenanceFormContent initialValues={data} onClose={onClose} />
         </Modal>
