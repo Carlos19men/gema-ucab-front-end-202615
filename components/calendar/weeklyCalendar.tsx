@@ -277,7 +277,7 @@ const WeeklyCalendar = ({ initialDate }: WeeklyCalendarProps) => {
       </div>
 
       {/* --- GRID DE LA SEMANA --- */}
-      <div className="grid grid-cols-1 md:grid-cols-7 gap-4 min-w-[1000px] md:min-w-0 overflow-x-auto">
+      <div className="grid grid-cols-1 md:grid-cols-7 gap-4 w-full md:min-w-0 overflow-x-auto">
         {semanaData.map((diaItem, index) => {
           // Filtrar las tareas según el filtro activo
           const tareasFiltradas = filtrarTareas(diaItem.tareas);
@@ -304,7 +304,7 @@ const WeeklyCalendar = ({ initialDate }: WeeklyCalendarProps) => {
               </div>
 
               {/* Cuerpo de la Columna (El contenedor largo) */}
-              <div className="flex-1 border border-gray-200 rounded-2xl min-h-[500px] bg-white flex flex-col gap-3 overflow-hidden">
+              <div className="flex-1 border border-gray-200 rounded-2xl min-h-[200px] md:min-h-[500px] bg-white flex flex-col gap-3 overflow-hidden">
                 {/* Pill de Conteo (Encabezado gris dentro de la columna) */}
                 <div className="bg-gray-200 py-2 text-center relative overflow-hidden">
                   {/* Simulación del degradado superior en días con múltiples tareas */}
@@ -334,11 +334,11 @@ const WeeklyCalendar = ({ initialDate }: WeeklyCalendarProps) => {
                                 ${cardColors[tarea.color as keyof typeof cardColors]}
                               `}
                       >
-                        <h4 className="font-bold text-gray-800 text-sm leading-tight mb-1">
+                        <h4 className="font-bold text-gray-800 text-base leading-tight mb-1">
                           {tarea.titulo}
                         </h4>
                         {tarea.area && (
-                          <p className="text-xs text-gray-600 font-medium">
+                          <p className="text-sm text-gray-600 font-medium">
                             {tarea.area}
                           </p>
                         )}
