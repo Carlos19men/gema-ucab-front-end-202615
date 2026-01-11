@@ -96,4 +96,13 @@ export const ubicacionesTecnicasAPI = {
   async getLista(): Promise<UbicacionesTecnicasResponse> {
     return apiClient.get<UbicacionesTecnicasResponse>('/ubicaciones-tecnicas/lista');
   },
+
+  /**
+   * Exporta las ubicaciones técnicas a Excel.
+   */
+  async exportExcel(): Promise<Blob> {
+    return apiClient.get<Blob>('/ubicaciones-tecnicas/export/excel', {
+      responseType: 'blob'
+    });
+  },
 };
