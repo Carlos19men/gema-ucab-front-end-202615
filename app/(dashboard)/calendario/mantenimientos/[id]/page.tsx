@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { Button } from "@/components/ui/button";
-import { EditMaintenanceModal } from "@/components/forms/mantenimientos/EditMaintenanceModal";
+import { EditarMantenimientoFormContent } from '@/components/forms/mantenimientos/EditarMantenmientoContent';
 import { DeleteMaintenanceModal } from "@/components/forms/mantenimientos/DeleteMaintenanceModal";
 import { useMantenimientoDetalle } from "@/hooks/mantenimientos/useMantenimiento";
 import { AgregarChecklistForm } from "@/components/forms/checklist/AgregarChecklistForm";
@@ -41,6 +41,7 @@ export default function MantenimientoDetalle() {
     // Usar datos reales cuando estén disponibles, sino mock data
     const data = maintenanceData;
 
+    console.log(data); 
 
     return (
         <div className="p-8 space-y-6 min-h-screen">
@@ -112,7 +113,7 @@ export default function MantenimientoDetalle() {
                 <div className="mb-8">
                     <h3 className="font-bold text-lg mb-3">Resumen</h3>
                     <div className="p-4 border border-slate-300 rounded-lg text-slate-700">
-                        {data.resumen}
+                        {data.especificacion}
                     </div>
                 </div>
 
@@ -187,14 +188,6 @@ export default function MantenimientoDetalle() {
                 </div>
 
             </div>
-
-            {/* Edit Modal */}
-            <EditMaintenanceModal
-                open={editModalOpen}
-                onClose={() => setEditModalOpen(false)}
-                data={data}
-                mantenimientoId={id}
-            />
 
             {/* Delete Modal */}
             <DeleteMaintenanceModal
