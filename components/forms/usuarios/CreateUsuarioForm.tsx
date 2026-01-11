@@ -117,7 +117,6 @@ export const CreateUsuarioForm: React.FC<CreateUsuarioFormProps> = ({
                                         <SelectContent>
                                             <SelectItem value="SUPERVISOR">Supervisor</SelectItem>
                                             <SelectItem value="COORDINADOR">Coordinador</SelectItem>
-                                            <SelectItem value="DIRECTOR">Director</SelectItem>
                                         </SelectContent>
                                     </Select>
                                     <FormMessage />
