@@ -10,7 +10,6 @@ export const useDeleteChecklist = () => {
         onSuccess: () => {
             toast.success("Checklist eliminado correctamente");
             queryClient.invalidateQueries({ queryKey: ["checklist"] });
-            queryClient.invalidateQueries({ queryKey: ["checklistItems"] });
             queryClient.invalidateQueries({ queryKey: ["mantenimiento"] });
             queryClient.invalidateQueries({ queryKey: ["mantenimientos"] });
             queryClient.invalidateQueries({ queryKey: ["Inspeccion"] });
