@@ -20,8 +20,6 @@ export const MaintenanceSummaryModal: React.FC<MaintenanceSummaryModalProps> = (
         return <div>Cargando...</div>;
     }
 
-
-
     return (
         <Modal
             isOpen={open}
@@ -48,10 +46,10 @@ export const MaintenanceSummaryModal: React.FC<MaintenanceSummaryModalProps> = (
                             <span className="font-semibold">{mantenimiento?.frecuencia ?? '...'}</span>
                         </div>
 
-                        {mantenimiento?.repeticion && (
+                        {mantenimiento?.frecuencia && (
                             <div className="bg-slate-50 p-3 rounded-md border text-center">
                                 <span className="block text-sm text-gray-500">Repetición</span>
-                                <span className="font-semibold">{mantenimiento?.repetición ?? '...'}</span>
+                                <span className="font-semibold">{mantenimiento?.frecuencia ?? '...'}</span>
                             </div>
                         )}
 
