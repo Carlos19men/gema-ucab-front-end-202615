@@ -13,6 +13,7 @@ export const useDeleteChecklist = () => {
             queryClient.invalidateQueries({ queryKey: ["checklistItems"] });
             queryClient.invalidateQueries({ queryKey: ["mantenimiento"] });
             queryClient.invalidateQueries({ queryKey: ["mantenimientos"] });
+            queryClient.invalidateQueries({ queryKey: ["Inspeccion"] });
         },
         onError: (error: any) => {
             toast.error("Error al eliminar el checklist");
