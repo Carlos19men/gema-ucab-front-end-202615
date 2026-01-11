@@ -19,7 +19,7 @@ export function middleware(request: NextRequest) {
 
   // Si ya está autenticado y va a login, redirigir al inicio
   if (token && isPublicRoute) {
-    return NextResponse.redirect(new URL('/ubicaciones-tecnicas', request.url))
+    return NextResponse.redirect(new URL('/calendario', request.url))
   }
 
   return NextResponse.next()
