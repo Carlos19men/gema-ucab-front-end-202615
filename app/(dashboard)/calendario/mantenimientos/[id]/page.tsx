@@ -6,7 +6,10 @@ import { Button } from "@/components/ui/button";
 import { EditMaintenanceModal } from "@/components/forms/mantenimientos/EditMaintenanceModal";
 import { DeleteMaintenanceModal } from "@/components/forms/mantenimientos/DeleteMaintenanceModal";
 import { useMantenimientoDetalle } from "@/hooks/mantenimientos/useMantenimiento";
+import { useGetAllChecklistItem } from "@/hooks/checklist/useGetAllChecklistItem";
 import { AgregarChecklistForm } from "@/components/forms/checklist/AgregarChecklistForm";
+import { EditarChecklistForm } from "@/components/forms/checklist/EditarChecklistForm";
+import { DeleteChecklistModal } from "@/components/forms/checklist/DeleteChecklistModal";
 import {
     Clock,
     AlertCircle,
@@ -24,6 +27,8 @@ export default function MantenimientoDetalle() {
     const [editModalOpen, setEditModalOpen] = useState(false);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [addChecklistModalOpen, setAddChecklistModalOpen] = useState(false);
+    const [editChecklistModalOpen, setEditChecklistModalOpen] = useState(false);
+    const [deleteChecklistModalOpen, setDeleteChecklistModalOpen] = useState(false);
 
     // Obtener el ID de la URL
     const params = useParams();
@@ -32,6 +37,11 @@ export default function MantenimientoDetalle() {
     // Usar el hook para obtener datos del mantenimiento
     const { data: maintenanceData, isLoading, error } = useMantenimientoDetalle(id);
 
+    // Obtener datos del checklist
+    // Solo intentar buscar checklist si el mantenimiento tiene uno asociado
+    const { data: checklistData } = useGetAllChecklistItem("mantenimientos", id, {
+        enabled: !!maintenanceData?.idChecklist
+    });
 
     // Estados de carga y error
     if (isLoading) return <div className="p-8">Cargando mantenimiento...</div>;
@@ -41,7 +51,12 @@ export default function MantenimientoDetalle() {
     // Usar datos reales cuando estén disponibles, sino mock data
     const data = maintenanceData;
 
-    console.log(data);
+    console.log("Maintenance Data:", data);
+    console.log("Checklist Data:", checklistData);
+
+    const checklistId = checklistData?.id || data.idChecklist;
+    const checklistTitle = data.tituloChecklist;
+
     return (
         <div className="p-8 space-y-6 min-h-screen">
             {/* Top Navigation / Header */}
@@ -173,14 +188,44 @@ export default function MantenimientoDetalle() {
                     <h3 className="font-bold text-lg mb-4">Actividades</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         {/* Checklist Item */}
-                        {data.tituloChecklist ? (
-                            <div className="flex items-center justify-between p-3 border border-slate-300 rounded-lg hover:border-slate-400 transition-colors">
+                        {checklistTitle ? (
+                            <div className="flex items-center justify-between p-3 border border-slate-300 rounded-lg group hover:border-slate-400 transition-colors relative">
                                 <Link
                                     href={`/detalle-trabajo/mantenimientos/${id}`}
                                     className="flex-1 hover:underline cursor-pointer"
                                 >
-                                    <span className="font-medium text-slate-900">{data.tituloChecklist}</span>
+                                    <span className="font-medium text-slate-900">{checklistTitle}</span>
                                 </Link>
+                                {checklistId && (
+                                    <div className="flex gap-2 z-10 relative">
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className="h-8 w-8 p-0"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                console.log("Opening edit modal, ID:", checklistId);
+                                                setEditChecklistModalOpen(true);
+                                            }}
+                                        >
+                                            <Pencil className="h-4 w-4 text-slate-500 hover:text-blue-500" />
+                                        </Button>
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className="h-8 w-8 p-0"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                console.log("Opening delete modal, ID:", checklistId);
+                                                setDeleteChecklistModalOpen(true);
+                                            }}
+                                        >
+                                            <Trash2 className="h-4 w-4 text-slate-500 hover:text-red-500" />
+                                        </Button>
+                                    </div>
+                                )}
                             </div>
                         ) : (
                             <Button
@@ -223,6 +268,21 @@ export default function MantenimientoDetalle() {
                 }}
                 maintenanceId={id}
                 type="mantenimientos"
+            />
+
+            {/* Edit Checklist Modal */}
+            <EditarChecklistForm
+                open={editChecklistModalOpen}
+                onClose={() => setEditChecklistModalOpen(false)}
+                checklistId={checklistId || 0}
+                currentName={checklistTitle || ""}
+            />
+
+            <DeleteChecklistModal
+                open={deleteChecklistModalOpen}
+                onClose={() => setDeleteChecklistModalOpen(false)}
+                checklistId={checklistId || 0}
+                checklistName={checklistTitle || ""}
             />
         </div>
     );

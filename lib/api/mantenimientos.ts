@@ -41,5 +41,10 @@ export const mantenimientosAPI = {
 
     async delete(id: number): Promise<any> {
         return apiClient.delete<any>(`/mantenimientos/${id}`)
+    },
+
+    async update(id: number, data: any): Promise<any> {
+        console.log(`[API] Updating mantenimiento ${id} with patch at /mantenimientos/${id}`, data);
+        return apiClient.patch<any>(`/mantenimientos/${id}`, data);
     }
 }
