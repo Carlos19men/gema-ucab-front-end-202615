@@ -307,9 +307,9 @@ const WeeklyCalendar = ({ initialDate }: WeeklyCalendarProps) => {
               <div className="flex-1 border border-gray-200 rounded-2xl min-h-[200px] md:min-h-[500px] bg-white flex flex-col gap-3 overflow-hidden">
                 {/* Pill de Conteo (Encabezado gris dentro de la columna) */}
                 <div className="bg-gray-200 py-2 text-center relative overflow-hidden">
-                  {/* Simulación del degradado superior en días con múltiples tareas */}
-                  {tareasFiltradas.length > 2 && (
-                    <div className="absolute top-0 left-0 right-0 h-1.5 bg-linear-to-r from-gema-yellow via-gema-blue to-gema-green" />
+                  {/* Simulación del degradado superior si es hoy */}
+                  {exactDate.toDateString() === new Date().toDateString() && (
+                    <div className="absolute top-0 left-0 right-0 h-1.5 rounded-t-lg bg-linear-to-r from-gema-yellow via-gema-blue to-gema-green" />
                   )}
                   <span className="text-xs font-bold text-gray-700">
                     {filtroActivo === 'todos' ? 'Mantenimientos' :
