@@ -81,10 +81,10 @@ export const EditarMantenimientoFormContent: React.FC<MaintenanceFormContentProp
             fechaLimite: data.fechaLimite,
             tipo: data.tipo === "Periodico" ? "Periodico" : "Condicion",
             frecuencia: data.frecuencia,
-            resumen: data.resumen
+            resumen: data.resumen ? data.resumen : "Ninguno."
         }
 
-        console.log(payload);
+        console.log("payload", payload);
 
         mutation.mutate(payload, {
             onSuccess: () => {
@@ -190,6 +190,29 @@ export const EditarMantenimientoFormContent: React.FC<MaintenanceFormContentProp
                                         <Input type="date" {...field} />
                                     </FormControl>
                                     <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        {/* Prioridad */}
+                        <FormField
+                            control={form.control}
+                            name="prioridad"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Prioridad</FormLabel>
+                                    <Select onValueChange={field.onChange} value={field.value}>
+                                        <FormControl>
+                                            <SelectTrigger className="w-1/2">
+                                                <SelectValue placeholder="Seleccionar prioridad" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            <SelectItem value="BAJA">Baja</SelectItem>
+                                            <SelectItem value="MEDIA">Media</SelectItem>
+                                            <SelectItem value="ALTA">Alta</SelectItem>
+                                        </SelectContent>
+                                    </Select>
                                 </FormItem>
                             )}
                         />

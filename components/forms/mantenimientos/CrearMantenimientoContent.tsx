@@ -72,10 +72,10 @@ export const MaintenanceFormContent: React.FC<MaintenanceFormContentProps> = ({
                 return;
             }
         }
-        
+
         const payload: CreateMantenimientoRequest = {
             tipoTrabajo: "Mantenimiento",
-            titulo: data.titulo,
+            nombre: data.titulo,
             prioridad: data.prioridad,
             fechaCreacion: data.fechaCreacion || new Date().toISOString().split('T')[0],
             fechaLimite: data.fechaLimite, // +7 días si no se especifica
@@ -151,7 +151,7 @@ export const MaintenanceFormContent: React.FC<MaintenanceFormContentProps> = ({
                                     <FormLabel>Ubicación Técnica</FormLabel>
                                     <FormControl>
                                         <Combobox
-                                            
+
                                             data={ubicaciones?.map(u => ({
                                                 value: u.idUbicacion,
                                                 label: `${u.codigo_Identificacion} - ${u.descripcion}`

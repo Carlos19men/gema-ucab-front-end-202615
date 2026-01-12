@@ -3,7 +3,7 @@ import type { Mantenimiento } from "@/types/mantenimientos.types";
 
 export interface CreateMantenimientoRequest {
     tipoTrabajo: "Mantenimiento";
-    titulo: string;
+    nombre: string;
     prioridad: "ALTA" | "MEDIA" | "BAJA";
     fechaCreacion: string;
     fechaLimite: string;
