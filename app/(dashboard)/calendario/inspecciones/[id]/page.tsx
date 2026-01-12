@@ -50,6 +50,8 @@ export default function InspeccionDetalle() {
         )
     }
 
+    console.log(data);
+
 
     const checklistId = checklistData?.id;
     const checklistTitle = data.checklist;
@@ -222,7 +224,7 @@ export default function InspeccionDetalle() {
             </div>
 
             {/* Derive Maintenance Modal */
-            
+
             }
             <DeriveMaintenanceModal
                 open={deriveModalOpen}
@@ -247,7 +249,7 @@ export default function InspeccionDetalle() {
                 onClose={() => setDeleteModalOpen(false)}
                 onConfirm={() => { toast.success("Inspección eliminada con éxito"); setDeleteModalOpen(false); }}
                 inspectionName={data.titulo}
-                idInspeccion={data.idInspeccion}
+                idInspeccion={id}
             />
 
             {/* Add Checklist Modal */}
