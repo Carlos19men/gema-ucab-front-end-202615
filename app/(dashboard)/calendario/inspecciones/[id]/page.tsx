@@ -39,6 +39,8 @@ export default function InspeccionDetalle() {
         )
     }
 
+    console.log(data);
+
 
     return (
         <div className="p-8 space-y-6  min-h-screen">
@@ -184,7 +186,7 @@ export default function InspeccionDetalle() {
             </div>
 
             {/* Derive Maintenance Modal */
-            
+
             }
             <DeriveMaintenanceModal
                 open={deriveModalOpen}
@@ -209,7 +211,7 @@ export default function InspeccionDetalle() {
                 onClose={() => setDeleteModalOpen(false)}
                 onConfirm={() => { toast.success("Inspección eliminada con éxito"); setDeleteModalOpen(false); }}
                 inspectionName={data.titulo}
-                idInspeccion={data.idInspeccion}
+                idInspeccion={id}
             />
 
             {/* Add Checklist Modal */}
