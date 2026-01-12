@@ -41,6 +41,7 @@ export default function MantenimientoDetalle() {
     // Usar datos reales cuando estén disponibles, sino mock data
     const data = maintenanceData;
 
+    console.log(data);
 
     return (
         <div className="p-8 space-y-6 min-h-screen">
@@ -112,7 +113,7 @@ export default function MantenimientoDetalle() {
                 <div className="mb-8">
                     <h3 className="font-bold text-lg mb-3">Resumen</h3>
                     <div className="p-4 border border-slate-300 rounded-lg text-slate-700">
-                        {data.resumen}
+                        {data.resumen ?? "Ninguno."}
                     </div>
                 </div>
 
@@ -202,7 +203,7 @@ export default function MantenimientoDetalle() {
                 onClose={() => setDeleteModalOpen(false)}
                 onConfirm={() => { toast.success("Mantenimiento eliminado con éxito"); setDeleteModalOpen(false); }}
                 maintenanceName={data.titulo}
-                maintenanceId={data.id}
+                maintenanceId={id}
             />
 
             {/* Add Checklist Modal */}
