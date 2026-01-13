@@ -83,7 +83,7 @@ export const MaintenanceFormContent: React.FC<MaintenanceFormContentProps> = ({
             frecuencia: data.frecuencia,
             idUbicacionTecnica: data.idUbicacionTecnica,
             idGrupo: data.idGrupo,
-            especificacion: data.resumen ?? " "
+            resumen: data.resumen ?? " "
         }
 
         console.log("Payload to send:", payload);

@@ -11,7 +11,7 @@ export interface CreateMantenimientoRequest {
     frecuencia?: "Diaria" | "Semanal" | "Mensual" | "Trimestral" | "Anual";
     idUbicacionTecnica: number;
     idGrupo: number;
-    especificacion: string;
+    resumen: string;
 }
 
 export interface EditMantenimientoRequest {
