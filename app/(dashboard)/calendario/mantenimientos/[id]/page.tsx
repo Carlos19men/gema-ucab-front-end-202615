@@ -40,7 +40,7 @@ export default function MantenimientoDetalle() {
     // Obtener datos del checklist
     // Solo intentar buscar checklist si el mantenimiento tiene uno asociado
     const { data: checklistData } = useGetAllChecklistItem("mantenimientos", id, {
-        enabled: !!maintenanceData
+        enabled: !!maintenanceData && !!maintenanceData.idChecklist
     });
 
     // Estados de carga y error
