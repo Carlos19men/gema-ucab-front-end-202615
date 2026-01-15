@@ -8,7 +8,7 @@ import { WeeklyCalendar } from "@/components/calendar/weeklyCalendar";
 import { Button } from "@/components/ui/button";
 import { Modal } from '@/components/ui/modal';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { InspectionFormContent } from "@/components/forms/inspecciones/InspectionFormModal";
+import { InspectionFormContent } from "@/components/forms/inspecciones/CreateInspectionFormModal";
 import { MaintenanceFormContent } from "@/components/forms/mantenimientos/CrearMantenimientoContent";
 import {
     CirclePlus,

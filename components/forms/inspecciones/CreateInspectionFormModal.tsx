@@ -27,7 +27,7 @@ interface InspectionFormModalProps {
 
 //Esquema de validación 
 export const inspeccionSchema = z.object({
-    nombre: z.string().optional(),
+    nombre: z.string().min(1, "El nombre es requerido").max(100, "El nombre no puede exceder los 100 caracteres"),
     // tipo de trabajo 
     tipoTrabajo: z.string("Inspeccion"),
 
@@ -41,6 +41,9 @@ export const inspeccionSchema = z.object({
 
     // Frecuencia
     frecuencia: z.enum(FRECUENCIA_OPTS),
+
+    //fecha de inicio 
+    fechaInicio: z.string(),
 
     // Texto libre
     especificacion: z.string().min(1, "La Observación es requerida"),
@@ -57,7 +60,7 @@ export const InspectionFormContent: React.FC<{
     const form = useForm<InspeccionForm>({
         resolver: zodResolver(inspeccionSchema),
         defaultValues: {
-            nombre: " ",
+            nombre: "",
             tipoTrabajo: "Inspeccion",
             fechaCreacion: new Date().toISOString().split('T')[0], // Fecha actual en formato YYYY-MM-DD
             idUbicacionTecnica: 0,
@@ -85,9 +88,9 @@ export const InspectionFormContent: React.FC<{
     const onSubmit = (data: InspeccionForm) => {
 
         const payload: CreateInspectionRequest = {
-            nombre: "Inspección - " + data.especificacion,
+            nombre: data.nombre,
             tipoTrabajo: data.tipoTrabajo,
-            fechaCreacion: data.fechaCreacion,
+            fechaCreacion: data.fechaInicio,
             idUbicacionTecnica: Number(data.idUbicacionTecnica),
             idGrupo: Number(data.idGrupo),
             prioridad: data.prioridad,
@@ -115,11 +118,27 @@ export const InspectionFormContent: React.FC<{
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 text-left">
+                {/* Nombre de la inspeccíon  */}
+                    
+                <div className="px-4">
+                    <FormField
+                        control={form.control}
+                        name="nombre"
+                        render={({ field }) => (
+                            <FormItem className="w-3/4 border-gray-200">
+                                <FormLabel>Nombre</FormLabel>
+                                <FormControl className=" border-gray-200">
+                                    <Input placeholder="Ej: Inspección de Aires acondicionados..." {...field} />
+                                </FormControl>
+                            </FormItem>
+                        )}
+                    />
+                </div>
+                
                 <div className="grid grid-cols-2 gap-4">
-
                     <div className="p-4 flex flex-col gap-4">
-                        {/* Ubicación Técnica (usa código en el form y mapea a id en el submit) */}
-
+                        
+                        {/* Grupo de trabajo   */}
                         <FormField
                             control={form.control}
                             name="idUbicacionTecnica"
@@ -137,19 +156,14 @@ export const InspectionFormContent: React.FC<{
                                             placeholder={isLoadingUbicaciones ? "Cargando ubicaciones..." : "Seleccionar ubicación técnica"}
                                             searchPlaceholder="Buscar ubicación..."
                                             triggerClassName="w-full !border-gray-200 overflow-hidden text-ellipsis"
+                                            contentClassName='w-78'
                                         />
                                     </FormControl>
                                 </FormItem>
                             )}
                         />
 
-                        {/* Supervisor (mapear a id en submit) */}
-
-
-
-
-
-
+        
                         {/* Grupo de Trabajo (número en el form) */}
                         <FormField
                             control={form.control}
@@ -157,53 +171,18 @@ export const InspectionFormContent: React.FC<{
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Grupo de Trabajo</FormLabel>
-                                    <Select
-                                        onValueChange={(val) => field.onChange(Number(val))}
-                                        value={field.value?.toString()}
-                                    >
-                                        <FormControl>
-                                            <SelectTrigger className="w-full overflow-hidden text-ellipsis">
-                                                <SelectValue placeholder="Seleccionar grupo" />
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            {grupos?.map((grupo) => (
-                                                <SelectItem key={grupo.id} value={grupo.id.toString()}>
-                                                    {grupo.nombre} ({grupo.codigo})
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </FormItem>
-                            )}
-                        />
-
-                    </div>
-
-                    <div className="p-4 flex flex-col gap-4">
-
-                        {/* Frecuencia */}
-                        <FormField
-                            control={form.control}
-                            name="frecuencia"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Frecuencia</FormLabel>
-                                    <Select onValueChange={field.onChange} value={field.value}>
-                                        <FormControl>
-                                            <SelectTrigger className='w-1/2'>
-                                                <SelectValue placeholder="Seleccionar frecuencia" />
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            {FRECUENCIA_OPTS.map((frecuencia) => (
-                                                <SelectItem key={frecuencia} value={frecuencia}>
-                                                    {frecuencia}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage />
+                                    <Combobox
+                                        data={grupos?.map((g) => ({
+                                            value: g.id, // ID numérico como valor
+                                            label: `${g.area} - (${g.codigo})`
+                                        })) || []}
+                                        value={field.value || null}
+                                        onValueChange={(value) => field.onChange(value ? Number(value) : 0)}
+                                        placeholder={isLoadingUbicaciones ? "Cargando grupos de trabajo..." : "Seleccionar un área encargada"}
+                                        searchPlaceholder="Buscar área..."
+                                        triggerClassName="w-full !border-gray-200 overflow-hidden text-ellipsis"
+                                        contentClassName='w-78'
+                                    />
                                 </FormItem>
                             )}
                         />
@@ -217,7 +196,7 @@ export const InspectionFormContent: React.FC<{
                                     <FormLabel>Prioridad</FormLabel>
                                     <Select onValueChange={field.onChange} value={field.value}>
                                         <FormControl>
-                                            <SelectTrigger className='w-1/2'>
+                                            <SelectTrigger className='w-3/4'>
                                                 <SelectValue placeholder="Seleccionar prioridad" />
                                             </SelectTrigger>
                                         </FormControl>
@@ -227,6 +206,50 @@ export const InspectionFormContent: React.FC<{
                                             <SelectItem value="ALTA">Alta</SelectItem>
                                         </SelectContent>
                                     </Select>
+                                </FormItem>
+                            )}
+                        />
+
+                    </div>
+
+                    <div className="p-4 flex flex-col gap-4">
+
+                        {/* Fecha de inicio */}
+                        <FormField
+                            control={form.control}
+                            name="fechaInicio"
+                            render={({ field }) => (
+                                <FormItem >
+                                    <FormLabel>Fecha de inicio</FormLabel>
+                                    <FormControl className="w-full border-gray-200">
+                                        <Input type="date" {...field} />
+                                    </FormControl>
+                                </FormItem>
+                            )}
+                        />
+
+                        {/* Frecuencia */}
+                        <FormField
+                            control={form.control}
+                            name="frecuencia"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Frecuencia</FormLabel>
+                                    <Select onValueChange={field.onChange} value={field.value}>
+                                        <FormControl>
+                                            <SelectTrigger className='w-3/4'>
+                                                <SelectValue placeholder="Seleccionar frecuencia" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            {FRECUENCIA_OPTS.map((frecuencia) => (
+                                                <SelectItem key={frecuencia} value={frecuencia}>
+                                                    {frecuencia}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
                                 </FormItem>
                             )}
                         />
