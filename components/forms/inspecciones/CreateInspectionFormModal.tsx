@@ -137,8 +137,8 @@ export const InspectionFormContent: React.FC<{
                 
                 <div className="grid grid-cols-2 gap-4">
                     <div className="p-4 flex flex-col gap-4">
-                        {/* Inspeccón  */}
-
+                        
+                        {/* Grupo de trabajo   */}
                         <FormField
                             control={form.control}
                             name="idUbicacionTecnica"
