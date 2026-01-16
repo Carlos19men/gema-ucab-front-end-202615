@@ -1,17 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
-import { getMantenimientosReabiertos, getMantenimientosActivosPorArea,getMantenimientosReabiertosPorArea,getMantenimientosResumenMesActual } from "@/services/estadisticas";
+import { getMantenimientosReprogramados, getMantenimientosEmpezadosPorArea,getMantenimientosReprogramadosPorArea,getMantenimientosResumenMesActual } from "@/services/estadisticas";
 
-export const useMantenimientosReabiertos = () => {
+export const useMantenimientosReprogramados = () => {
   return useQuery({
-    queryKey: ["estadisticas", "mantenimientosReabiertos"],
-    queryFn: getMantenimientosReabiertos
+    queryKey: ["estadisticas", "mantenimientosReprogramados"],
+    queryFn: getMantenimientosReprogramados
   });
 }
 
-export const useMantenimientosReabiertosPorArea = () => {
+export const useMantenimientosReprogramadosPorArea = () => {
   return useQuery({
-    queryKey: ["estadisticas", "mantenimientosReabiertosPorArea"],
-    queryFn: getMantenimientosReabiertosPorArea
+    queryKey: ["estadisticas", "mantenimientosReprogramadosPorArea"],
+    queryFn: getMantenimientosReprogramadosPorArea
   });
 }
 
@@ -21,10 +21,10 @@ export const useMantenimientosResumenMesActual = () => {
     queryFn: getMantenimientosResumenMesActual
   });
 }
-export const useMantenimientosActivosPorArea = () => {
+export const useMantenimientosEmpezadosPorArea = () => {
   return useQuery({
-    queryKey: ["estadisticas", "mantenimientosActivosPorArea"],
-    queryFn: getMantenimientosActivosPorArea
+    queryKey: ["estadisticas", "mantenimientosEmpezadosPorArea"],
+    queryFn: getMantenimientosEmpezadosPorArea
   });
 }
 
