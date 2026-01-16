@@ -20,8 +20,6 @@ export const MaintenanceSummaryModal: React.FC<MaintenanceSummaryModalProps> = (
         return <div>Cargando...</div>;
     }
 
-
-
     return (
         <Modal
             isOpen={open}
@@ -69,6 +67,14 @@ export const MaintenanceSummaryModal: React.FC<MaintenanceSummaryModalProps> = (
                         <span className="text-red-700 font-semibold">{mantenimiento?.fechaLimite ?? '...'}</span>
                     </div>
                 </div>
+
+                {/* Section 4: Summary */}
+                <div>
+                    <h3 className="text-lg font-medium mb-2">Resumen</h3>
+                    <div className="bg-slate-50 p-4 rounded-md border">
+                        <p className="text-sm whitespace-pre-wrap">{mantenimiento?.resumen || mantenimiento?.especificacion || 'Sin resumen'}</p>
+                    </div>
+                </div>
             </div>
 
             <div className="flex justify-end gap-2 mt-4">
@@ -77,7 +83,6 @@ export const MaintenanceSummaryModal: React.FC<MaintenanceSummaryModalProps> = (
                 </Button>
                 <Link href={`/calendario/mantenimientos/${mantenimientoId}`}>
                     <Button variant="outline" className="border-gema-green text-gema-green hover:bg-gema-green/10">
-
                         Ver detalle del mantenimiento
                     </Button>
                 </Link>
