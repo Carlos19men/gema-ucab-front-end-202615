@@ -185,7 +185,7 @@ export const MaintenanceFormContent: React.FC<MaintenanceFormContentProps> = ({
                                             onValueChange={(value) => field.onChange(value || 0)}
                                             placeholder="Seleccionar grupo"
                                             searchPlaceholder="Buscar grupo..."
-                                            triggerClassName="w-full  !border-gray-200"
+                                            triggerClassName="w-full !border-gray-200 overflow-hidden [&>span]:truncate"
                                             contentClassName="w-full"
                                         />
                                     </FormControl>
