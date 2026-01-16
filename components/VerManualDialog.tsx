@@ -23,8 +23,8 @@ export default function VerManualDialog({
 
     // Método mejorado para descargar archivos en Next.js
     const link = document.createElement("a");
-    link.href = "/guia-ubicaciones-tecnicas.pdf";
-    link.download = "guia-ubicaciones-tecnicas.pdf";
+    link.href = "/guia-tecnica";
+    // link.download = "guia-ubicaciones-tecnicas.pdf"; // Comentado para permitir ver en pestaña con título correcto
     link.target = "_blank"; // Abrir en nueva pestaña
     document.body.appendChild(link);
     link.click();

@@ -194,15 +194,15 @@ const FormNuevaUbicacion: React.FC<Props> = ({
   };
 
   const downloadGuia = () => {
-    window.open('/guia-ubicaciones-tecnicas.pdf', '_blank');
+    window.open('/guia-tecnica', '_blank');
   };
 
   // ✅ Función onSubmit mejorada con validación de duplicados
   const onSubmit = () => {
-    
+
     // Limpiar mensaje de error previo
     setErrorMessage("");
-    
+
     // Validación básica
     if (!formValues.descripcion.trim()) {
       setErrorMessage("La descripción es requerida");
@@ -223,12 +223,12 @@ const FormNuevaUbicacion: React.FC<Props> = ({
     // Validación de duplicados si tenemos ubicaciones cargadas
     if (ubicaciones) {
       const flatUbicaciones = flattenUbicaciones(ubicaciones);
-      
+
       // Verificar si ya existe una ubicación con la misma abreviación
-      const duplicadoAbreviacion = flatUbicaciones.find(u => 
+      const duplicadoAbreviacion = flatUbicaciones.find(u =>
         u.abreviacion.toLowerCase() === abreviacion.toLowerCase()
       );
-      
+
       if (duplicadoAbreviacion) {
         setErrorMessage(`Ya existe una ubicación con la abreviación "${abreviacion}": ${duplicadoAbreviacion.descripcion}`);
         return;
@@ -237,10 +237,10 @@ const FormNuevaUbicacion: React.FC<Props> = ({
       // Si estamos creando con jerarquía, verificar el código completo
       if (displayedLevels > 1) {
         const codigoCompleto = generarCodigo(formValues);
-        const duplicadoCodigo = flatUbicaciones.find(u => 
+        const duplicadoCodigo = flatUbicaciones.find(u =>
           u.codigo_Identificacion === codigoCompleto
         );
-        
+
         if (duplicadoCodigo) {
           setErrorMessage(`Ya existe una ubicación con el código "${codigoCompleto}": ${duplicadoCodigo.descripcion}`);
           return;
@@ -263,9 +263,9 @@ const FormNuevaUbicacion: React.FC<Props> = ({
       const codigoCompleto = generarCodigo(formValues);
       const partes = codigoCompleto.split("-");
       const codigoSinUltimoNivel = partes.slice(0, -1).join("-");
-      
+
       const padreFisico = flatUbicaciones.find(u => u.codigo_Identificacion === codigoSinUltimoNivel);
-      
+
       if (padreFisico) {
         padresArray.push({
           idPadre: padreFisico.idUbicacion,
@@ -304,7 +304,7 @@ const FormNuevaUbicacion: React.FC<Props> = ({
     // ✅ Usar hook de creación
     createMutation.mutate(payload, {
       onSuccess: () => {
-      
+
         closeModal();
         toast.success("Ubicación técnica creada correctamente");
       },
@@ -316,7 +316,7 @@ const FormNuevaUbicacion: React.FC<Props> = ({
           data: error?.response?.data,
           message: error?.message
         });
-        
+
         // Manejo específico de errores
         if (error?.response?.status === 409) {
           const errorMessage = error?.response?.data?.message || error?.response?.data?.error || "La ubicación técnica ya existe";
