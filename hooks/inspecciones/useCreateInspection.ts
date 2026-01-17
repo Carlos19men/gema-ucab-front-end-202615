@@ -20,6 +20,7 @@ export interface EditInspectionRequest {
   id: number;
   frecuencia: "Diaria" | "Semanal" | "Mensual" | "Trimestral" | "Anual";
   especificacion: string;
+  fechaCreacion?: string;
 }
 
 export const useCreateInspection = () => {
