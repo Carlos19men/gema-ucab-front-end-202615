@@ -13,7 +13,7 @@ import { FormEvent, useEffect, useState } from "react";
 import { Usuario } from "@/types/usuarios.types";
 
 const usuarioSchema = z.object({
-    nombre: z.string().min(1, "El nombre es requerido"),
+    nombre: z.string().min(1, "El nombre es requerido").max(100, "Máximo 100 caracteres"),
     correo: z.string().email("Correo inválido").refine((val) => val.includes("@ucab.edu.ve"), {
         message: "El correo debe ser del dominio @ucab.edu.ve"
     }),
