@@ -10,7 +10,7 @@ export interface CreateInspectionRequest {
   idGrupo: number;
   prioridad: "BAJA" | "MEDIA" | "ALTA";
   frecuencia: string;
-  especificacion: string;
+  observacion: string;
   codigoArea?: string;
   codigoVerificacion?: string;
 }
