@@ -46,8 +46,8 @@ export const MaintenanceFormContent: React.FC<MaintenanceFormContentProps> = ({
             idUbicacionTecnica: initialValues?.idUbicacionTecnica || 0,
             idGrupo: initialValues?.idGrupo || 0,
             fechaCreacion: initialValues?.fechaCreacion || new Date().toISOString().split('T')[0],
-            fechaLimite: initialValues?.fechaLimite || '',
-            tipo: initialValues?.tipo || 'Periodico',
+            fechaLimite: initialValues?.fechaLimite,
+            tipo: initialValues?.tipo,
             frecuencia: initialValues?.frecuencia,
             resumen: initialValues?.resumen || ''
         }
@@ -80,7 +80,7 @@ export const MaintenanceFormContent: React.FC<MaintenanceFormContentProps> = ({
             fechaCreacion: data.fechaCreacion || new Date().toISOString().split('T')[0],
             fechaLimite: data.fechaLimite, // +7 días si no se especifica
             tipo: data.tipo,
-            frecuencia: data.frecuencia ?? "Semanal",
+            frecuencia: data.frecuencia,
             idUbicacionTecnica: data.idUbicacionTecnica,
             idGrupo: data.idGrupo,
             resumen: data.resumen ?? " ",

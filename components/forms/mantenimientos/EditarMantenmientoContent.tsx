@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -30,8 +30,9 @@ export const EditarMantenimientoFormContent: React.FC<MaintenanceFormContentProp
     mantenimientoId,
 }) => {
 
-    console.log(initialValues);
 
+    //tipo de mantenimiento a mostrar 
+    const [tipo,setTipo] = React.useState<string>(initialValues.tipo);
 
     const mutation = useUpdateMantenimiento(mantenimientoId);
 
@@ -49,17 +50,9 @@ export const EditarMantenimientoFormContent: React.FC<MaintenanceFormContentProp
         }
     });
 
-    const tipoMantenimiento = initialValues.tipo;
-
     // Función para determinar si es periódico (maneja ambos casos: con y sin tilde)
     const esPeriodico = (tipo: string) => {
         return tipo.toLowerCase() === "periodico";
-    };
-
-    // Función para normalizar el valor del tipo de mantenimiento
-    const getTipoValue = (tipo?: string) => {
-        if (!tipo) return "Por Condición";
-        return esPeriodico(tipo) ? "Periodico" : "Por Condición";
     };
 
     // Función para normalizar frecuencia (asegura que coincida con los SelectItem)
@@ -133,7 +126,11 @@ export const EditarMantenimientoFormContent: React.FC<MaintenanceFormContentProp
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Tipo de mantenimiento</FormLabel>
-                                    <Select onValueChange={field.onChange} value={getTipoValue(field.value)}>
+                                    <Select onValueChange={(value) => {
+                                        field.onChange(value);
+                                        setTipo(value); 
+                                    }} 
+                                            value={field.value}>
                                         <FormControl>
                                             <SelectTrigger className="w-3/4">
                                                 <SelectValue placeholder="Tipo de mantenimiento" />
@@ -149,8 +146,49 @@ export const EditarMantenimientoFormContent: React.FC<MaintenanceFormContentProp
                             )}
                         />
 
+                        
+                        {/* Prioridad */}
+                        <FormField
+                            control={form.control}
+                            name="prioridad"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Prioridad</FormLabel>
+                                    <Select onValueChange={field.onChange} value={field.value}>
+                                        <FormControl>
+                                            <SelectTrigger className="w-1/2">
+                                                <SelectValue placeholder="Seleccionar prioridad" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            <SelectItem value="BAJA">Baja</SelectItem>
+                                            <SelectItem value="MEDIA">Media</SelectItem>
+                                            <SelectItem value="ALTA">Alta</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+
+                    <div className="flex flex-col gap-6">
+                        {/* Fecha de finalización */}
+                        <FormField
+                            control={form.control}
+                            name="fechaLimite"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Fecha de Limite</FormLabel>
+                                    <FormControl className="w-full border-gray-200">
+                                        <Input type="date" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
                         {/* Frecuencia (solo si es periódico) */}
-                        {esPeriodico(tipoMantenimiento) && (
+                        {tipo === "Periodico" && (
                             <FormField
                                 control={form.control}
                                 name="frecuencia"
@@ -176,46 +214,6 @@ export const EditarMantenimientoFormContent: React.FC<MaintenanceFormContentProp
                                 )}
                             />
                         )}
-                    </div>
-
-                    <div className="flex flex-col gap-6">
-                        {/* Fecha de finalización */}
-                        <FormField
-                            control={form.control}
-                            name="fechaLimite"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Fecha de Limite</FormLabel>
-                                    <FormControl className="w-full border-gray-200">
-                                        <Input type="date" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        {/* Prioridad */}
-                        <FormField
-                            control={form.control}
-                            name="prioridad"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Prioridad</FormLabel>
-                                    <Select onValueChange={field.onChange} value={field.value}>
-                                        <FormControl>
-                                            <SelectTrigger className="w-1/2">
-                                                <SelectValue placeholder="Seleccionar prioridad" />
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            <SelectItem value="BAJA">Baja</SelectItem>
-                                            <SelectItem value="MEDIA">Media</SelectItem>
-                                            <SelectItem value="ALTA">Alta</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </FormItem>
-                            )}
-                        />
                     </div>
                 </div>
 

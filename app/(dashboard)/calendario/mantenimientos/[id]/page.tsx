@@ -94,7 +94,7 @@ export default function MantenimientoDetalle() {
             <div className="bg-white p-8 rounded-xl shadow-sm border border-slate-200">
 
                 {/* Status Row */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
                     {/* Estado */}
                     <div className="space-y-2">
                         <h3 className="font-bold text-lg">Estado</h3>
