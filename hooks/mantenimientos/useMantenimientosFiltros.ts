@@ -39,7 +39,18 @@ export const useMantenimientosFiltros = (date: string, filter: string = 'mensual
         },
         select: (data) => {
             // DEBUG: Ver datos crudos del API
-            console.log("RAW API DATA (useMantenimientosFiltros):", data);
+            // console.log("RAW API DATA (useMantenimientosFiltros):", data);
+
+            if (data?.mantenimientos) {
+                const ghosts = data.mantenimientos.filter((m: any) => m.fechaProximaGeneracion);
+                // console.log("DEBUG: Mantenimientos with fechaProximaGeneracion:", ghosts);
+                if (ghosts.length > 0) {
+                    // console.log("DEBUG: First ghost event:", ghosts[0]);
+                } else {
+                    // console.warn("DEBUG: NO ghost events found in API response!");
+                }
+            }
+
 
             // Devolver la estructura separada como la devuelve el servidor
             const resultado: {

@@ -141,6 +141,7 @@ const WeeklyCalendar = ({ initialDate }: WeeklyCalendarProps) => {
 
   const eventos = [...inspecciones, ...mantenimientos];
 
+
   // Generar datos de la semana basándose en la fecha actual
   const semanaDataBase = generateWeekData(currentDate);
 
@@ -220,8 +221,31 @@ const WeeklyCalendar = ({ initialDate }: WeeklyCalendarProps) => {
         .filter((evento: any) => {
           // Solo si existe fechaProximaGeneracion
           if (!evento.fechaProximaGeneracion) return false;
-          // Comparar con el día actual
-          const fechaProj = evento.fechaProximaGeneracion.split('T')[0];
+
+          let fechaProj = '';
+          try {
+            const rawDate = String(evento.fechaProximaGeneracion);
+            // Handle both full ISO strings and simple date strings
+            fechaProj = rawDate.includes('T')
+              ? rawDate.split('T')[0]
+              : rawDate;
+            fechaProj = fechaProj.trim();
+
+
+            // DEBUG: Log specific date to help debugging
+            // if (fechaProj === '2026-02-20' || fechaProj.includes('2026-02-20')) {
+            //   console.log('DEBUG: Found projection for 2026-02-20 in WeeklyCalendar:', {
+            //     id: evento.id || evento.idMantenimiento,
+            //     titulo: evento.titulo || evento.nombre,
+            //     fechaProximaGeneracion: evento.fechaProximaGeneracion,
+            //     diaDateStr
+            //   });
+            // }
+          } catch (e) {
+            console.error('Error parsing date for projection:', evento);
+            return false;
+          }
+
           return fechaProj === diaDateStr;
         })
         .map((evento: any) => {

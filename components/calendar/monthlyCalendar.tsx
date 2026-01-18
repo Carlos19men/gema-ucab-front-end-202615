@@ -92,15 +92,41 @@ const MonthlyCalendar = ({ onDayClick }: MonthlyCalendarProps) => {
     // Estado para la fecha actual (mes y año)
     const [currentDate, setCurrentDate] = useState(new Date());
 
-    // Formatear fecha para el hook (YYYY-MM-DD)
-    const formattedDate = currentDate.toISOString().split('T')[0];
+    // Helper para obtener string de fecha segura en medio del mes (evita problemas de timezone al cambiar de mes)
+    const getSafeMonthDateStr = (baseDate: Date, monthOffset: number) => {
+        const d = new Date(baseDate.getFullYear(), baseDate.getMonth() + monthOffset, 15);
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
 
-    // Fetch de eventos del calendario (mantenimientos e inspecciones)
-    const { data: datosCalendario, isLoading, error } = useMantenimientosFiltros(formattedDate, "mensual");
+    const currentStr = getSafeMonthDateStr(currentDate, 0);
+    const prevStr = getSafeMonthDateStr(currentDate, -1);
+    const nextStr = getSafeMonthDateStr(currentDate, 1);
 
-    // Extraer arrays separados
-    const inspecciones = datosCalendario?.inspecciones || [];
-    const mantenimientos = datosCalendario?.mantenimientos || [];
+    // Fetch de eventos del calendario (actual, previo y siguiente)
+    const { data: dataActual, isLoading: load1 } = useMantenimientosFiltros(currentStr, "mensual");
+    const { data: dataPrev, isLoading: load2 } = useMantenimientosFiltros(prevStr, "mensual");
+    const { data: dataNext, isLoading: load3 } = useMantenimientosFiltros(nextStr, "mensual");
+
+    const isLoading = load1 || load2 || load3;
+
+    // Combinar datos de los 3 meses
+    // Usamos Map para evitar duplicados si por alguna razón el API devuelve lo mismo (aunque filtramos por mes)
+    // Realmente para "Ghost Events", necesitamos todos.
+
+    const inspecciones = [
+        ...(dataPrev?.inspecciones || []),
+        ...(dataActual?.inspecciones || []),
+        ...(dataNext?.inspecciones || [])
+    ];
+
+    const mantenimientos = [
+        ...(dataPrev?.mantenimientos || []),
+        ...(dataActual?.mantenimientos || []),
+        ...(dataNext?.mantenimientos || [])
+    ];
 
     // Helper para verificar si hay mantenimientos en una fecha
     const hasMantenimientos = (date: Date) => {
@@ -130,11 +156,28 @@ const MonthlyCalendar = ({ onDayClick }: MonthlyCalendarProps) => {
 
     // Helper para verificar si hay proyecciones en una fecha
     const hasProjections = (date: Date, tipo: 'Mantenimiento' | 'Inspeccion') => {
-        const dateStr = date.toISOString().split('T')[0];
+        // Safe local date string generation
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const dateStr = `${year}-${month}-${day}`;
+
         const list = tipo === 'Mantenimiento' ? mantenimientos : inspecciones;
 
         const projections = list.filter((item: any) => {
-            const fechaProj = item.fechaProximaGeneracion ? item.fechaProximaGeneracion.split('T')[0] : '';
+            let fechaProj = '';
+            if (item.fechaProximaGeneracion) {
+                const rawDate = String(item.fechaProximaGeneracion);
+                fechaProj = rawDate.includes('T')
+                    ? rawDate.split('T')[0]
+                    : rawDate;
+                fechaProj = fechaProj.trim();
+
+                // DEBUG log specifically for the target date
+                // if (dateStr === '2026-02-20' && (fechaProj === '2026-02-20')) {
+                //     console.log(`DEBUG: Match found in hasProjections! Date: ${dateStr}, Item ID: ${item.id}`);
+                // }
+            }
             return fechaProj === dateStr;
         });
 
