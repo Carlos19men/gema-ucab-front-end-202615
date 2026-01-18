@@ -72,7 +72,7 @@ const resumen = () => {
 
     //Usar el hook para traer los datos del Backend
     const { data: resumenData, isLoading, isError } = useGetResumen(apiDateParams, vistaActual);
-    
+
     const { user, isLoading: isLoadingAuth } = useAuth();
     const router = useRouter();
 
@@ -186,6 +186,11 @@ const resumen = () => {
 
         // Normalizar: minúsculas y reemplazamos espacios por guiones
         const statusNormalizado = task.estado.toLowerCase().replace(/\s+/g, '-');
+
+        if (filtroActivo === 'en-ejecucion' &&
+            (statusNormalizado.includes('ejecucion') || statusNormalizado.includes('ejecución') || statusNormalizado.includes('ejecutando'))) {
+            return true;
+        }
 
         return statusNormalizado === filtroActivo;
     });
