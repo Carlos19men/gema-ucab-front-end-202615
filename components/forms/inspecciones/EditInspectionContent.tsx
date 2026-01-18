@@ -55,10 +55,12 @@ export const InspectionFormContent: React.FC<{
     const onSubmit = (data: InspeccionForm) => {
 
         const payload: EditInspectionRequest = {
-            id: initialData.idInspeccion,
+            idMantenimiento: "0",
+            idInspeccion: initialData.idInspeccion.toString(),
             frecuencia: data.frecuencia,
-            especificacion: data.especificacion,
-            fechaCreacion: data.fechaCreacion
+            observacion: data.especificacion,
+            fechaCreacion: data.fechaCreacion,
+            prioridad: initialData.prioridad
         };
 
         console.log(payload);

@@ -17,9 +17,15 @@ export interface CreateInspectionRequest {
 
 
 export interface EditInspectionRequest {
-  id: number;
-  frecuencia: "Diaria" | "Semanal" | "Mensual" | "Trimestral" | "Anual";
-  especificacion: string;
+  idMantenimiento: string;
+  idInspeccion: string;
+  nombre?: string;
+  tipo?: 'Periodico' | 'Condicion';
+  fechaLimite?: string;
+  prioridad?: 'BAJA' | 'MEDIA' | 'ALTA';
+  frecuencia?: 'Diaria' | 'Semanal' | 'Mensual' | 'Trimestral' | 'Anual';
+  resumen?: string;
+  observacion?: string;
   fechaCreacion?: string;
 }
 

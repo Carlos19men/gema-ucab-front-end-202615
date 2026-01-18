@@ -8,7 +8,7 @@ export const useUpdateInspection = (id: number) => {
 
   return useMutation({
     mutationFn: async (data: EditInspectionRequest) => {
-      const response = await apiClient.patch(`/inspecciones/${id}`, data);
+      const response = await apiClient.patch(`/work-creation`, data);
       return response;
     },
     onSuccess: () => {
