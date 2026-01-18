@@ -12,6 +12,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
+import { useAuth } from "@/lib/auth/context";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+
 import { CreateUsuarioForm } from "@/components/forms/usuarios/CreateUsuarioForm";
 import { EditUsuarioForm } from "@/components/forms/usuarios/EditUsuarioForm";
 import { EliminarUsuarioForm } from "@/components/forms/usuarios/EliminarUsuarioForm";
@@ -24,13 +28,30 @@ const RegistroUsuarios: React.FC = () => {
     const [usuarioEliminar, setUsuarioEliminar] = useState<any | null>(null);
 
     const { usuarios, isLoading } = useUsuarios();
+    const { user, isLoading: isLoadingAuth } = useAuth();
+    const router = useRouter();
 
-    if (isLoading) {
+    // Proteger la ruta: Solo DIRECTORES y COORDINADORES
+    useEffect(() => {
+        if (!isLoadingAuth && user) {
+            const role = user.tipo?.toUpperCase();
+            if (role !== 'DIRECTOR' && role !== 'COORDINADOR') {
+                router.push('/calendario'); // Redirigir a una página segura
+            }
+        }
+    }, [user, isLoadingAuth, router]);
+
+    if (isLoading || isLoadingAuth) {
         return (
             <div className="p-6 text-center">
                 <LoaderCircle className="animate-spin text-lg" />
             </div>
         );
+    }
+
+    // Bloquear renderizado si no tiene permisos (mientras redirige)
+    if (user?.tipo?.toUpperCase() !== 'DIRECTOR' && user?.tipo?.toUpperCase() !== 'COORDINADOR') {
+        return null;
     }
 
     return (

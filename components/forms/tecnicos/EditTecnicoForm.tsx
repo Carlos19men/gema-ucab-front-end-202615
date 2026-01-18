@@ -28,12 +28,13 @@ import {
 } from "@/components/ui/select";
 import { useEditTecnico } from "@/hooks/tecnicos/useEditTecnico";
 import { useGrupos } from "@/hooks/grupos-trabajo/useGrupoTrabajo";
+import { useTecnicos } from "@/hooks/tecnicos/useTecnicos";
 import { useEffect } from "react";
 import { Tecnico } from "@/types/tecnicos.types";
 
 // Esquema de validación
 const tecnicoSchema = z.object({
-    nombre: z.string().min(1, "El nombre es requerido"),
+    nombre: z.string().min(1, "El nombre es requerido").max(40, "Máximo 40 caracteres"),
     correo: z
         .string()
         .regex(
@@ -66,6 +67,7 @@ export const EditarTecnicoForm: React.FC<Props> = ({ open, onClose, tecnico }) =
     // Hooks
     const mutation = useEditTecnico();
     const { data: grupos } = useGrupos();
+    const { tecnicos } = useTecnicos();
 
     // Efecto para cargar los datos del técnico cuando se abre el modal
     useEffect(() => {
@@ -81,6 +83,12 @@ export const EditarTecnicoForm: React.FC<Props> = ({ open, onClose, tecnico }) =
     // Función para manejar el envío
     const onSubmit = (values: TecnicoForm) => {
         if (!tecnico) return;
+
+        // Verificar si el correo ya existe en otro técnico
+        if (tecnicos && tecnicos.some(t => t.correo?.toLowerCase() === values.correo.trim().toLowerCase() && t.idTecnico !== tecnico.idTecnico)) {
+            form.setError("correo", { type: "manual", message: "Este correo ya está registrado por otro técnico" });
+            return;
+        }
 
         // Mapeamos los datos del formulario a la estructura que espera la API
         const payload: Tecnico = {

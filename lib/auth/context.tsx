@@ -40,11 +40,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       const response = await authAPI.login(credentials)
 
-      // Usar los datos del usuario que vienen en la respuesta del login
-      setUser(response.data.usuario)
+      // Normalizar datos del usuario para evitar errores de mayúsculas/minúsculas
+      const rawUser: any = response.data.usuario;
+      const normalizedUser: User = {
+          id: rawUser.id || rawUser.Id,
+          nombre: rawUser.nombre || rawUser.Nombre,
+          correo: rawUser.correo || rawUser.Correo,
+          tipo: rawUser.tipo || rawUser.Tipo
+      };
+
+      // Guardar usuario en estado y localStorage
+      setUser(normalizedUser);
+      localStorage.setItem('gema_user', JSON.stringify(normalizedUser));
 
       router.push('/calendario')
-
     } catch (err: any) {
       const errorMessage = err.message || 'Error en el inicio de sesión'
       setError(errorMessage)
@@ -55,12 +64,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const logout = async () => {
+    // 1. Prioridad UX: Limpiar estado y redirigir inmediatamente
+    setUser(null);
+    localStorage.removeItem('gema_user');
+    router.push('/login');
+
+    // 2. Notificar al backend en segundo plano (Fire & Forget)
     try {
       await authAPI.logout();
     } catch (error) {
       console.error("Error al notificar logout al backend", error);
-    } finally {
-      setUser(null); 
     }
   };
 
@@ -68,17 +81,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const userData = await authAPI.getCurrentUser()
       setUser(userData)
+      localStorage.setItem('gema_user', JSON.stringify(userData));
     } catch (error) {
       setUser(null)
-      // No redirigir aquí, dejar que el middleware o ProtectedRoute lo maneje
+      localStorage.removeItem('gema_user');
     }
   }
 
   // Verificar autenticación al cargar
-  // TODO: Descomentar cuando el backend implemente /auth/me
   useEffect(() => {
     const initializeAuth = async () => {
-      // await checkAuth()  // Comentado temporalmente - backend no tiene /auth/me aún
+      // Intentar recuperar del localStorage primero
+      const storedUser = localStorage.getItem('gema_user');
+      if (storedUser) {
+        try {
+          setUser(JSON.parse(storedUser));
+        } catch (e) {
+          localStorage.removeItem('gema_user');
+        }
+      }
+      
+      // Opcional: validar con backend si existe endpoint /me
+      // await checkAuth()
+      
       setIsLoading(false)
     }
 

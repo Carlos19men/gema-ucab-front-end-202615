@@ -1,9 +1,9 @@
 // Usuario que viene del backend
 export interface User {
-  Id: number;
-  Nombre: string;
-  Correo: string;
-  Tipo: string;
+  id: number;
+  nombre: string;
+  correo: string;
+  tipo: string;
 }
 
 // Datos para login

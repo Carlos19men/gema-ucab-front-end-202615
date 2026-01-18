@@ -28,10 +28,11 @@ import {
 } from "@/components/ui/select";
 import { useCreateTecnico } from "@/hooks/tecnicos/useCreateTecnico";
 import { useGrupos } from "@/hooks/grupos-trabajo/useGrupoTrabajo";
+import { useTecnicos } from "@/hooks/tecnicos/useTecnicos";
 
 // Esquema de validación
 const tecnicoSchema = z.object({
-  nombre: z.string().min(2, "El nombre es requerido"),
+  nombre: z.string().min(2, "El nombre es requerido").max(40, "Máximo 40 caracteres"),
   correo: z
     .string()
     .email("Correo inválido")
@@ -65,9 +66,16 @@ const FormNuevoTecnico: React.FC<Props> = ({ open, onClose }) => {
   // Usamos el hook centralizado
   const mutation = useCreateTecnico();
   const { data: grupos } = useGrupos();
+  const { tecnicos } = useTecnicos();
 
   // Función para manejar el envío
   const onSubmit = (values: TecnicoForm) => {
+    // Verificar si el correo ya existe
+    if (tecnicos && tecnicos.some(t => t.correo?.toLowerCase() === values.correo.trim().toLowerCase())) {
+        form.setError("correo", { type: "manual", message: "Este correo ya está registrado por otro técnico" });
+        return;
+    }
+
     // Mapeamos los datos del formulario (zod) a la estructura que espera la API
     const payload = {
       nombre: values.nombre,

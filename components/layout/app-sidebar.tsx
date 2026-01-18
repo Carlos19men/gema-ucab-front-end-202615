@@ -18,7 +18,17 @@ import { useAuth } from "@/lib/auth/context"
 import { usePathname, useRouter } from "next/navigation"
 import Link from "next/link"
 
-const items = [
+// Definir los roles permitidos en el sistema
+type UserRole = 'SUPERVISOR' | 'COORDINADOR' | 'DIRECTOR';
+
+interface MenuItem {
+    icon: any;
+    label: string;
+    path: string;
+    roles?: UserRole[]; // Roles permitidos para ver este ítem. Si no se define, es público para todos los logueados.
+}
+
+const items: MenuItem[] = [
   {
     icon: Calendar,
     label: 'Calendario',
@@ -32,7 +42,8 @@ const items = [
   {
     icon: Users,
     label: "Grupos de Trabajo",
-    path: "/grupos-de-trabajo"
+    path: "/grupos-de-trabajo",
+    roles: ['DIRECTOR', 'COORDINADOR'] // Solo directores y coordinadores pueden ver grupos de trabajo
   },
   {
     icon: UserPlus,
@@ -42,12 +53,14 @@ const items = [
   {
     icon: FileText,
     label: 'Resumen',
-    path: '/resumen'
+    path: '/resumen',
+    roles: ['DIRECTOR', 'COORDINADOR'] // Solo directores y coordinadores pueden ver el resumen
   },
   {
     icon: User,
     label: 'Usuarios',
-    path: '/usuarios'
+    path: '/usuarios',
+    roles: ['DIRECTOR'] // Ejemplo: Solo directores y coordinadores ven esto
   },
   {
     icon: ClipboardCheck,
@@ -57,12 +70,14 @@ const items = [
   {
     icon: File,
     label: 'Plantillas',
-    path: '/plantillas'
+    path: '/plantillas',
+    roles: ['DIRECTOR', 'COORDINADOR'] // Solo directores y coordinadores pueden ver plantillas
   },
   {
     icon: BarChart3,
     label: 'Estadísticas',
-    path: '/estadisticas'
+    path: '/estadisticas',
+    roles: ['DIRECTOR'] // Solo directores pueden ver estadísticas
   },
 
 ]
@@ -110,9 +125,11 @@ export function AppSidebar() {
                 <UserCircle size={24} />
                 <div className="flex flex-col group-data-[collapsible=icon]:hidden">
                   <span className="text-[1.05rem] font-semibold text-wrap!">
-                    {user?.Nombre || "Usuario"}
+                    {user?.nombre || "Usuario"}
                   </span>
-                  <span className="text-sm">Coordinador</span>
+                  <span className="text-sm capitalize text-gray-500">
+                    {user?.tipo?.toLowerCase() || "Sin rol"}
+                  </span>
                 </div>
               </div>
             </SidebarMenuButton>
@@ -124,7 +141,12 @@ export function AppSidebar() {
 
       <SidebarContent>
         <SidebarMenu>
-          {items.map((item) => (
+          {items.filter(item => {
+             if (!item.roles) return true;
+             // Normalizar el rol del usuario a mayúsculas para comparar
+             const currentRole = user?.tipo?.toUpperCase() as UserRole;
+             return item.roles.includes(currentRole);
+          }).map((item) => (
             <SidebarMenuItem key={item.label}>
               <SidebarMenuButton
                 asChild
