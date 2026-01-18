@@ -11,6 +11,10 @@ import {
 
 import { Button } from "@/components/ui/button";
 
+import { useAuth } from "@/lib/auth/context";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+
 // ✅ Usar hooks organizados
 import { useGrupos } from "@/hooks/grupos-trabajo/useGrupoTrabajo";
 import { useTrabajadoresPorGrupo } from "@/hooks/grupos-trabajo/useTrabajadoresPorGrupo";
@@ -31,6 +35,9 @@ const GruposTrabajo: React.FC = () => {
     const [grupoEditar, setGrupoEditar] = useState<GrupoTrabajo | null>(null);
     const [grupoEliminar, setGrupoEliminar] = useState<GrupoTrabajo | null>(null);
 
+    const { user, isLoading: isLoadingAuth } = useAuth();
+    const router = useRouter();
+
     // ✅ Usar hooks organizados
     const { data: grupos, isLoading: isLoadingGrupos } = useGrupos();
     const { data: trabajadoresPorGrupo, isLoading: isLoadingTrabajadores } = useTrabajadoresPorGrupo();
@@ -42,7 +49,7 @@ const GruposTrabajo: React.FC = () => {
         queryFn: () => tecnicosAPI.getAll(),
     });
 
-    const isLoading = isLoadingGrupos || isLoadingSupervisores || isLoadingTrabajadores;
+    const isLoading = isLoadingGrupos || isLoadingSupervisores || isLoadingTrabajadores || isLoadingAuth;
 
     const openTecnicosModal = (grupoId: number) => {
         setSelectedGrupoId(grupoId);

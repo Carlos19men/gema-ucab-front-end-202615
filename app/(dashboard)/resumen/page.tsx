@@ -5,7 +5,8 @@ import DateNavigator from "@/components/ui/dateNavigator";
 import DropdownFilter from "@/components/ui/dropdownFilter";
 import MaintenanceCard from "@/components/resumen/maintenanceCard";
 import type { resumen } from "@/types/resume.types";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
+import { useAuth } from "@/lib/auth/context";
 import {
     Calendar,
     Upload,
@@ -15,6 +16,7 @@ import { useMemo, useState } from "react";
 import InspeccionCard from "@/components/resumen/inspeccionCard";
 import { useGetResumen } from "@/hooks/resumen/useGetResumen";
 import { exportResumenPDF } from "@/lib/api/resumen";
+import { useEffect } from "react";
 
 /*Nombres de los meses */
 const MONTH_NAMES = [
@@ -70,6 +72,19 @@ const resumen = () => {
 
     //Usar el hook para traer los datos del Backend
     const { data: resumenData, isLoading, isError } = useGetResumen(apiDateParams, vistaActual);
+    
+    const { user, isLoading: isLoadingAuth } = useAuth();
+    const router = useRouter();
+
+    // Proteger ruta: Solo DIRECTOR y COORDINADOR
+    useEffect(() => {
+        if (!isLoadingAuth && user) {
+            const role = user.tipo?.toUpperCase();
+            if (role !== 'DIRECTOR' && role !== 'COORDINADOR') {
+                router.push('/calendario');
+            }
+        }
+    }, [user, isLoadingAuth, router]);
 
     // Lógica específica del MES: sumar/restar el mes
     const handlePrevMonth = () => {

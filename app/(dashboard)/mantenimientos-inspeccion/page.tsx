@@ -2,18 +2,40 @@
 
 import { useMantenimientosConInspeccion } from "@/hooks/mantenimientos-por-inspeccion/useMantenimientosConInspeccion";
 import { LoaderCircle, MapPin } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/auth/context";
+import { useEffect } from "react";
 
 const MantenimientosInspeccion = () => {
 
+  const { user, isLoading: isLoadingAuth } = useAuth();
+  const router = useRouter();
+
+  // Proteger ruta: Solo DIRECTOR y COORDINADOR
+  useEffect(() => {
+    if (!isLoadingAuth && user) {
+        const role = user.tipo?.toUpperCase();
+        if (role !== 'DIRECTOR' && role !== 'COORDINADOR') {
+            router.push('/calendario');
+        }
+    }
+  }, [user, isLoadingAuth, router]);
+
   const { data, isLoading, error } = useMantenimientosConInspeccion();
 
+  const isLoadingTotal = isLoading || isLoadingAuth;
 
-  if (isLoading) {
+  if (isLoadingTotal) {
     return (
       <div className="p-6 text-center">
         <LoaderCircle className="animate-spin h-5 w-5 mx-auto" />
       </div>
     );
+  }
+
+  // Bloquear renderizado si no tiene permisos
+  if (user?.tipo?.toUpperCase() !== 'DIRECTOR' && user?.tipo?.toUpperCase() !== 'COORDINADOR') {
+      return null;
   }
 
   const mantenimientos = data ?? [];

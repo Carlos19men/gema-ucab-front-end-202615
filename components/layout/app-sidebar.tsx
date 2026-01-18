@@ -43,7 +43,6 @@ const items: MenuItem[] = [
     icon: Users,
     label: "Grupos de Trabajo",
     path: "/grupos-de-trabajo",
-    roles: ['DIRECTOR', 'COORDINADOR'] // Solo directores y coordinadores pueden ver grupos de trabajo
   },
   {
     icon: UserPlus,
@@ -65,7 +64,8 @@ const items: MenuItem[] = [
   {
     icon: ClipboardCheck,
     label: 'Mantenimientos por Inspección',
-    path: '/mantenimientos-inspeccion'
+    path: '/mantenimientos-inspeccion',
+    roles: ['DIRECTOR', 'COORDINADOR']
   },
   {
     icon: File,

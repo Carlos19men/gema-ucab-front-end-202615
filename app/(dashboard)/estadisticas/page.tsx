@@ -18,14 +18,45 @@ import {
     useMantenimientosReprogramadosPorArea,
     useMantenimientosResumenMesActual,
 } from '@/hooks/estadisticas/useEstadisticas'
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/auth/context";
+import { useEffect } from "react";
+import { Loader2 } from "lucide-react";
 
 
 export default function EstadisticasPage() {
+    const { user, isLoading: isLoadingAuth } = useAuth();
+    const router = useRouter();
+
+    // Proteger ruta: Solo DIRECTOR
+    useEffect(() => {
+        if (!isLoadingAuth && user) {
+            const role = user.tipo?.toUpperCase();
+            if (role !== 'DIRECTOR') {
+                router.push('/calendario');
+            }
+        }
+    }, [user, isLoadingAuth, router]);
+
     const { data: totalReprogramados, isLoading: isLoadingReprogramados } = useMantenimientosReprogramados()
     const { data: mantenimientosEmpezadosPorArea, isLoading: isLoadingEmpezados } = useMantenimientosEmpezadosPorArea()
     const { data: mantenimientosReprogramadosPorArea, isLoading: isLoadingReprogramadosPorArea } = useMantenimientosReprogramadosPorArea()
     const { data: mantenimientosResumenMesActual, isLoading: isLoadingResumenMesActual } = useMantenimientosResumenMesActual()
 
+    const isLoading = isLoadingReprogramados || isLoadingEmpezados || isLoadingReprogramadosPorArea || isLoadingResumenMesActual || isLoadingAuth;
+
+    if (isLoading) {
+        return (
+            <div className="flex h-screen items-center justify-center">
+                <Loader2 className="animate-spin h-10 w-10 text-gema-green" />
+            </div>
+        );
+    }
+
+    // Bloquear renderizado si no tiene permisos
+    if (user?.tipo?.toUpperCase() !== 'DIRECTOR') {
+        return null;
+    }
 
     const chartEmpezados = (mantenimientosEmpezadosPorArea ?? []).map(({ Grupo, Total }) => ({
         name: Grupo,

@@ -12,6 +12,9 @@ import { toast } from "react-hot-toast";
 import FormNuevaPlantilla from "@/components/forms/plantillas/FormNuevaPlantilla";
 import ConfirmDeleteDialog from "@/components/ConfirmDeleteDialog";
 import type { Plantilla } from "@/types/models/plantillas.types";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/auth/context";
+import { useEffect } from "react";
 
 const Plantillas = () => {
   const queryClient = useQueryClient();
@@ -19,10 +22,28 @@ const Plantillas = () => {
   const [editingPlantilla, setEditingPlantilla] = useState<Plantilla | null>(null);
   const [deletingPlantillaId, setDeletingPlantillaId] = useState<number | null>(null);
 
+  const { user, isLoading: isLoadingAuth } = useAuth();
+  const router = useRouter();
+
+  // Proteger ruta: Solo DIRECTOR y COORDINADOR
+  useEffect(() => {
+    if (!isLoadingAuth && user) {
+      const role = user.tipo?.toUpperCase();
+      if (role !== 'DIRECTOR' && role !== 'COORDINADOR') {
+        router.push('/calendario');
+      }
+    }
+  }, [user, isLoadingAuth, router]);
+
   const { data: plantillasData, isLoading } = useQuery({
     queryKey: ["plantillas"],
     queryFn: getPlantillas,
   });
+
+  // Bloquear renderizado si no tiene permisos
+  if (user?.tipo?.toUpperCase() !== 'DIRECTOR' && user?.tipo?.toUpperCase() !== 'COORDINADOR') {
+    if (!isLoadingAuth) return null;
+  }
 
   const deleteMutation = useMutation({
     mutationFn: deletePlantilla,
