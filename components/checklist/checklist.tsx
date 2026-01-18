@@ -37,7 +37,6 @@ const ChecklistComp = ({ checklist, onBack, isTemplate = false }: ChecklistProps
 
     // Actualizar tareas si el checklist cambia
     useEffect(() => {
-        console.log("Datos actualizados recibidos:", checklist.tareas); // Debug
         setTasks(checklist.tareas || []);
     }, [checklist.tareas]);
 
@@ -120,9 +119,9 @@ const ChecklistComp = ({ checklist, onBack, isTemplate = false }: ChecklistProps
     };
 
     return (
-        <div className="m-2">
+        <div className="m-2 pb-80 md:pb-0">
             {/* HEADER CHECKLIST */}
-            <header className="flex flex-col md:flex-row md:justify-between items-start md:items-center mb-4 m-2">
+            <header className="flex flex-col md:flex-row md:justify-between items-start md:items-center mb-4 m-2 gap-4">
                 <div className="items-center gap-1">
                     <div className="flex items-center gap-3 mb-1">
                         <button onClick={onBack} className="p-1 rounded-full hover:bg-slate-100 text-slate-400 transition-colors">
@@ -161,7 +160,7 @@ const ChecklistComp = ({ checklist, onBack, isTemplate = false }: ChecklistProps
 
             {/* LISTA */}
             <section className="m-2 mt-6">
-                <div className="flex justify-between items-center mb-4">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                     <h2 className="text-xl font-semibold ml-2">Lista de Actividades</h2>
                     <Button className="bg-gema-green hover:bg-green-700 text-white"
                         onClick={() => setIsAddModalOpen(true)}>
@@ -241,7 +240,6 @@ const ChecklistComp = ({ checklist, onBack, isTemplate = false }: ChecklistProps
                 setActividad={setActivityToDelete}
                 checklistId={checklist.id}
                 onDelete={(id) => {
-                    console.log("Elemento eliminado:", id);
                 }}
                 isTemplate={isTemplate}
             />

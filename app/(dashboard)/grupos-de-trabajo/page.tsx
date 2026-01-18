@@ -50,7 +50,7 @@ const GruposTrabajo: React.FC = () => {
     };
 
     const getSupervisorNombre = (id: number | null) =>
-        supervisores?.find((s) => s.Id === id)?.Nombre || "No asignado";
+        supervisores?.find((s) => s.id === id)?.nombre || "No asignado";
 
     if (isLoading) {
         return (
@@ -96,24 +96,24 @@ const GruposTrabajo: React.FC = () => {
 
             <EliminarGrupoForm grupo={grupoEliminar} setGrupo={setGrupoEliminar} />
 
-            <div className="overflow-x-auto">
+            <div className="w-full rounded-md shadow-sm border border-gray-200">
                 {/* Tabla en desktop */}
-                <table className="hidden md:table min-w-full bg-white border border-gray-200">
-                    <thead className="bg-gray-50">
+                <table className="hidden md:table w-full table-fixed bg-white">
+                    <thead className="bg-gray-50 border-b border-gray-200">
                         <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th className="w-[15%] px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Código
                             </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th className="w-[30%] px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Nombre del Grupo
                             </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th className="w-[25%] px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Supervisor
                             </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th className="w-[15%] px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Técnicos
                             </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th className="w-[15%] px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Acciones
                             </th>
                         </tr>
@@ -121,27 +121,31 @@ const GruposTrabajo: React.FC = () => {
                     <tbody className="bg-white divide-y divide-gray-200">
                         {grupos?.map((grupo) => (
                             <tr key={grupo.id}>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    <div className="flex items-center justify-center border-2 border-gray-300 rounded-lg font-bold">
+                                <td className="px-6 py-4 overflow-hidden border-b border-gray-200">
+                                    <div className="flex items-center justify-center border-2 border-gray-300 rounded-lg font-bold w-fit mx-auto px-2">
                                         {grupo.codigo}
                                     </div>
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                    {grupo.nombre}
+                                <td className="px-6 py-4 overflow-hidden border-b border-gray-200">
+                                    <div className="truncate text-sm font-medium text-gray-900" title={grupo.nombre}>
+                                        {grupo.nombre}
+                                    </div>
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                    <div className="flex items-center gap-2">
-                                        <UserCheck className="h-5 w-5 text-green-500" />
-                                        <span>{getSupervisorNombre(grupo.supervisorId)}</span>
+                                <td className="px-6 py-4 overflow-hidden border-b border-gray-200">
+                                    <div className="flex items-center gap-2 w-full">
+                                        <UserCheck className="h-5 w-5 text-green-500 flex-shrink-0" />
+                                        <span className="truncate text-sm" title={getSupervisorNombre(grupo.supervisorId)}>
+                                            {getSupervisorNombre(grupo.supervisorId)}
+                                        </span>
                                     </div>
                                 </td>
                                 <td
-                                    className="px-6 py-4 whitespace-nowrap text-sm cursor-pointer"
+                                    className="px-6 py-4 overflow-hidden border-b border-gray-200 cursor-pointer text-center"
                                     onClick={() => openTecnicosModal(grupo.id)}
                                 >
                                     <Tooltip>
                                         <TooltipTrigger asChild>
-                                            <div className="flex items-center justify-center border-2 border-gray-300 rounded-lg bg-gray-200 font-medium hover:bg-gray-300 transition">
+                                            <div className="inline-flex items-center justify-center border-2 border-gray-300 rounded-lg bg-gray-200 font-medium hover:bg-gray-300 transition px-3 py-1">
                                                 {trabajadoresPorGrupo?.[grupo.id]?.length || 0}
                                             </div>
                                         </TooltipTrigger>
@@ -150,33 +154,35 @@ const GruposTrabajo: React.FC = () => {
                                         </TooltipContent>
                                     </Tooltip>
                                 </td>
-                                <td className="flex items-center justify-evenly gap-2 px-6 py-4 whitespace-nowrap text-sm">
-                                    <Tooltip>
-                                        <TooltipTrigger asChild>
-                                            <div className="inline-block p-1 border-2 border-gray-200 rounded-sm">
-                                                <ClipboardPen
-                                                    className="h-5 w-5 text-blue-500 cursor-pointer"
-                                                    onClick={() => setGrupoEditar(grupo)}
-                                                />
-                                            </div>
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                            <span>Editar grupo</span>
-                                        </TooltipContent>
-                                    </Tooltip>
-                                    <Tooltip>
-                                        <TooltipTrigger asChild>
-                                            <div className="inline-block p-1 border-2 border-gray-200 rounded-sm">
-                                                <Trash2
-                                                    className="h-5 w-5 text-red-500 cursor-pointer"
-                                                    onClick={() => setGrupoEliminar(grupo)}
-                                                />
-                                            </div>
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                            <span>Eliminar grupo</span>
-                                        </TooltipContent>
-                                    </Tooltip>
+                                <td className="px-6 py-4 border-b border-gray-200">
+                                    <div className="flex items-center justify-center gap-2">
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <div className="inline-block p-1 border-2 border-gray-200 rounded-sm">
+                                                    <ClipboardPen
+                                                        className="h-5 w-5 text-blue-500 cursor-pointer"
+                                                        onClick={() => setGrupoEditar(grupo)}
+                                                    />
+                                                </div>
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                                <span>Editar grupo</span>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <div className="inline-block p-1 border-2 border-gray-200 rounded-sm">
+                                                    <Trash2
+                                                        className="h-5 w-5 text-red-500 cursor-pointer"
+                                                        onClick={() => setGrupoEliminar(grupo)}
+                                                    />
+                                                </div>
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                                <span>Eliminar grupo</span>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    </div>
                                 </td>
                             </tr>
                         ))}

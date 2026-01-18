@@ -58,6 +58,19 @@ export const MaintenanceFormContent: React.FC<MaintenanceFormContentProps> = ({
     // eliminar array de encargados hardcoded
 
     const onSubmit = (data: MantenimientoFormData) => {
+        // Validar que la fecha de finalización sea posterior a la de inicio
+        if (data.fechaInicio && data.fechaFin) {
+            const inicio = new Date(data.fechaInicio);
+            const fin = new Date(data.fechaFin);
+            if (fin <= inicio) {
+                form.setError("fechaFin", {
+                    type: "manual",
+                    message: "La fecha de finalización debe ser posterior a la fecha de inicio",
+                });
+                return;
+            }
+        }
+
         // Mapear los datos del formulario al formato que espera el backend
         const mantenimientoData = {
             tipoTrabajo: "Mantenimiento" as const,
@@ -129,7 +142,7 @@ export const MaintenanceFormContent: React.FC<MaintenanceFormContentProps> = ({
                                         onValueChange={(value) => field.onChange(value || 0)}
                                         placeholder={isLoadingUbicaciones ? "Cargando ubicaciones..." : "Seleccionar ubicación técnica"}
                                         searchPlaceholder="Buscar ubicación..."
-                                        triggerClassName="w-full"
+                                        triggerClassName="w-full !border-gray-200 overflow-hidden text-ellipsis"
                                         contentClassName="w-full"
                                     />
                                 </FormControl>
@@ -204,7 +217,7 @@ export const MaintenanceFormContent: React.FC<MaintenanceFormContentProps> = ({
                                     defaultValue={field.value?.toString()}
                                 >
                                     <FormControl>
-                                        <SelectTrigger>
+                                        <SelectTrigger className="w-full overflow-hidden text-ellipsis">
                                             <SelectValue placeholder="Seleccionar grupo" />
                                         </SelectTrigger>
                                     </FormControl>

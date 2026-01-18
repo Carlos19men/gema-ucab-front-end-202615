@@ -18,7 +18,6 @@ export async function createChecklistItem(checklistId: number, data: Actividad) 
     descripcion: data.descripcion
   };
 
-  console.log("Payload para crear actividad:", payload); // Debug
 
   return apiClient.post<Actividad>(`/item-checklist`, payload);
 }
@@ -50,4 +49,12 @@ export async function createChecklistfromPlantilla(idInspeccion: string, idMante
 
 export async function createChecklist(nombre: string, idInspeccion: string, idMantenimiento: string) {
   return apiClient.post(`/checklists`, { nombre, idInspeccion, idMantenimiento });
+}
+
+export async function updateChecklist(id: number, nombre: string) {
+  return apiClient.put(`/checklists/${id}`, { nombre });
+}
+
+export async function deleteChecklist(id: number) {
+  return apiClient.delete(`/checklists/${id}`);
 }

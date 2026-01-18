@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,13 +10,14 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useCreateUsuario } from "@/hooks/usuarios/useCreateUsuario";
+import { useUsuarios } from "@/hooks/usuarios/useUsuarios";
 
 const usuarioSchema = z.object({
     nombre: z.string().min(1, "El nombre es requerido"),
     correo: z.string().email("Correo inválido").refine((val) => val.includes("ucab.edu.ve") && val.includes("@"), {
         message: "El correo debe ser del dominio @ucab.edu.ve"
     }),
-    contraseña: z.string().min(8, "La contraseña debe tener al menos 8 caracteres"),
+    contraseña: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
     tipo: z.string().min(1, "El tipo es requerido"),
 });
 
@@ -34,15 +36,30 @@ export const CreateUsuarioForm: React.FC<CreateUsuarioFormProps> = ({
             nombre: "",
             correo: "",
             tipo: "",
-            contraseña: "defaultPassword123",
+            contraseña: "",
         },
     });
 
     const { errors } = form.formState;
 
+    // Resetear el formulario cuando se cierra el modal
+    useEffect(() => {
+        if (!open) {
+            form.reset();
+        }
+    }, [open, form]);
+
     const createUsuarioMutation = useCreateUsuario();
+    const { usuarios } = useUsuarios();
 
     const handleSubmit = (values: z.infer<typeof usuarioSchema>) => {
+        // Validar si el correo ya existe en la lista de usuarios cargada (verificación frontend)
+        if (usuarios && usuarios.some(u => u.correo.toLowerCase() === values.correo.trim().toLowerCase())) {
+            form.setError("correo", { type: "manual", message: "Este correo ya está asignado a un usuario" });
+            form.setFocus("correo");
+            return;
+        }
+
         createUsuarioMutation.mutate({
             nombre: values.nombre,
             correo: values.correo,
@@ -56,8 +73,10 @@ export const CreateUsuarioForm: React.FC<CreateUsuarioFormProps> = ({
             onError: (error) => {
                 const message = error instanceof Error ? error.message : "Error al crear usuario";
                 const lower = message.toLowerCase();
-                if (lower.includes("correo") || lower.includes("email")) {
-                    form.setError("correo", { type: "manual", message: "El correo electrónico ya está en uso" });
+                
+                // Catch duplicates (often 500 or specific message)
+                if (lower.includes("correo") || lower.includes("email") || lower.includes("error interno") || lower.includes("server error")) {
+                    form.setError("correo", { type: "manual", message: "Este correo ya está asignado a un usuario" });
                     form.setFocus("correo");
                 }
             }
@@ -104,6 +123,23 @@ export const CreateUsuarioForm: React.FC<CreateUsuarioFormProps> = ({
                         />
                         <FormField
                             control={form.control}
+                            name="contraseña"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Contraseña</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            type="password"
+                                            placeholder="password123"
+                                            {...field}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
                             name="tipo"
                             render={({ field }) => (
                                 <FormItem>
@@ -117,7 +153,6 @@ export const CreateUsuarioForm: React.FC<CreateUsuarioFormProps> = ({
                                         <SelectContent>
                                             <SelectItem value="SUPERVISOR">Supervisor</SelectItem>
                                             <SelectItem value="COORDINADOR">Coordinador</SelectItem>
-                                            <SelectItem value="DIRECTOR">Director</SelectItem>
                                         </SelectContent>
                                     </Select>
                                     <FormMessage />

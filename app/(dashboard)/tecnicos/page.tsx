@@ -23,6 +23,8 @@ const Tecnicos = () => {
 
   const { tecnicos, isLoading } = useTecnicos();
 
+console.log("Técnicos cargados:", tecnicos);
+
   if (isLoading) {
     return (
       <div className="p-6 text-center">
@@ -51,20 +53,20 @@ const Tecnicos = () => {
       </div>
 
       {/* Tabla para desktop */}
-      <div className="overflow-x-auto">
-        <table className="hidden md:table min-w-full bg-white border border-gray-200 rounded-lg">
-          <thead className="bg-gray-50">
+      <div className="w-full rounded-md shadow-sm border border-gray-200">
+        <table className="hidden md:table w-full table-fixed bg-white">
+          <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="w-[30%] px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Nombre
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+              <th className="w-[35%] px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Correo
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+              <th className="w-[20%] px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Area
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+              <th className="w-[15%] px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Acciones
               </th>
             </tr>
@@ -72,42 +74,50 @@ const Tecnicos = () => {
           <tbody className="divide-y divide-gray-200">
             {tecnicos.map((tecnico) => (
               <tr key={tecnico.idTecnico} className="hover:bg-gray-50">
-                <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                  {tecnico.nombre}
+                <td className="px-6 py-4 border-b border-gray-200 overflow-hidden">
+                  <div className="truncate text-sm font-medium text-gray-900" title={tecnico.nombre}>
+                    {tecnico.nombre}
+                  </div>
                 </td>
-                <td className="px-6 py-4 text-sm text-gray-600">
-                  {tecnico.correo || "No disponible"}
+                <td className="px-6 py-4 border-b border-gray-200 overflow-hidden">
+                  <div className="truncate text-sm text-gray-600" title={tecnico.correo || "No disponible"}>
+                    {tecnico.correo || "No disponible"}
+                  </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm">
-                  {tecnico.area || "No disponible"}
+                <td className="px-6 py-4 border-b border-gray-200 overflow-hidden">
+                  <div className="truncate text-sm" title={tecnico.area || "No disponible"}>
+                    {tecnico.area || "No disponible"}
+                  </div>
                 </td>
-                <td>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className="inline-block m-2 p-1 border-2 border-gray-200 rounded-sm">
-                        <ClipboardPen
-                          className="h-5 w-5 text-blue-500 cursor-pointer"
-                          onClick={() => setTecnicoEditar(tecnico)}
-                        />
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <span>Editar usuario</span>
-                    </TooltipContent>
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className="inline-block m-2 p-1 border-2 border-gray-200 rounded-sm">
-                        <Trash2
-                          className="h-5 w-5 text-red-500 cursor-pointer"
-                          onClick={() => setTecnico(tecnico)}
-                        />
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <span>Eliminar Tecnico</span>
-                    </TooltipContent>
-                  </Tooltip>
+                <td className="px-6 py-4 border-b border-gray-200">
+                  <div className="flex items-center gap-2">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="inline-block p-1 border-2 border-gray-200 rounded-sm">
+                          <ClipboardPen
+                            className="h-5 w-5 text-blue-500 cursor-pointer"
+                            onClick={() => setTecnicoEditar(tecnico)}
+                          />
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <span>Editar usuario</span>
+                      </TooltipContent>
+                    </Tooltip>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="inline-block p-1 border-2 border-gray-200 rounded-sm">
+                          <Trash2
+                            className="h-5 w-5 text-red-500 cursor-pointer"
+                            onClick={() => setTecnico(tecnico)}
+                          />
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <span>Eliminar Tecnico</span>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -131,6 +141,19 @@ const Tecnicos = () => {
                   {tecnico.area || "No disponible"}
                 </p>
                 <div className="flex gap-2 mt-2">
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="inline-block p-1 border-2 border-gray-200 rounded-sm">
+                        <ClipboardPen
+                          className="h-5 w-5 text-blue-500 cursor-pointer"
+                          onClick={() => setTecnicoEditar(tecnico)}
+                        />
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <span>Editar usuario</span>
+                    </TooltipContent>
+                  </Tooltip>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <div className="inline-block p-1 border-2 border-gray-200 rounded-sm">

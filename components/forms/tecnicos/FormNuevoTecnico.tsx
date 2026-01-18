@@ -74,9 +74,7 @@ const FormNuevoTecnico: React.FC<Props> = ({ open, onClose }) => {
       correo: values.correo,
       idGT: values.idGrupo
     };
-
-    console.log(payload);
-
+    
     mutation.mutate(payload, {
       onSuccess: () => {
         // Solo nos encargamos de limpiar la UI, el hook ya muestra el toast
@@ -168,7 +166,11 @@ const FormNuevoTecnico: React.FC<Props> = ({ open, onClose }) => {
             />
 
             <div className="flex justify-end gap-2">
-              <Button variant="outline" type="button" onClick={onClose}>
+              <Button
+                variant="outline"
+                type="button"
+                onClick={onClose}
+              >
                 Cancelar
               </Button>
               <Button

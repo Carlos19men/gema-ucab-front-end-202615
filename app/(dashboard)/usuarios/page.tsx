@@ -9,31 +9,21 @@ import {
     User
 } from "lucide-react";
 
-import {
-    fetchUsuarios as getAllUsuarios,
-} from "@/services/usuarios";
-
-
 import { Button } from "@/components/ui/button";
-import { useQuery } from "@tanstack/react-query";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 import { CreateUsuarioForm } from "@/components/forms/usuarios/CreateUsuarioForm";
 import { EditUsuarioForm } from "@/components/forms/usuarios/EditUsuarioForm";
 import { EliminarUsuarioForm } from "@/components/forms/usuarios/EliminarUsuarioForm";
 import { Usuario } from "@/types/usuarios.types";
+import { useUsuarios } from "@/hooks/usuarios/useUsuarios";
 
 const RegistroUsuarios: React.FC = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [usuarioEditar, setUsuarioEditar] = useState<any | null>(null);
     const [usuarioEliminar, setUsuarioEliminar] = useState<any | null>(null);
 
-    const usuariosQuery = useQuery({
-        queryKey: ["usuarios"],
-        queryFn: () => getAllUsuarios(),
-    });
-
-    const isLoading = usuariosQuery.isLoading;
+    const { usuarios, isLoading } = useUsuarios();
 
     if (isLoading) {
         return (
@@ -44,7 +34,7 @@ const RegistroUsuarios: React.FC = () => {
     }
 
     return (
-        <div className="p-6 max-w-6xl">
+        <div className="p-6">
             <h1 className="text-2xl font-bold mb-3">Registro de Usuarios</h1>
 
             <Button
@@ -74,38 +64,42 @@ const RegistroUsuarios: React.FC = () => {
                 />
             )}
 
-            <div className="overflow-x-auto">
-                {/* Tabla en desktop */}
-                <table className="hidden md:table min-w-full bg-white border border-gray-200">
-                    <thead className="bg-gray-50">
+            <div className="w-full rounded-md shadow-sm border border-gray-200">
+                {/* Tabla en desktop (visible desde md - 768px) */}
+                <table className="hidden md:table w-full table-fixed bg-white">
+                    <thead className="bg-gray-50 border-b border-gray-200">
                         <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th className="w-[30%] px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Nombre
                             </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th className="w-[40%] px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Correo
                             </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th className="w-[15%] px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Tipo
                             </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th className="w-[15%] px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Acciones
                             </th>
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                        {usuariosQuery.data?.map((usuario: Usuario) => (
-                            <tr key={usuario.id}>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    <div className="flex items-center gap-2">
-                                        <User className="h-5 w-5 text-gray-500" />
-                                        {usuario.nombre}
+                        {usuarios?.map((usuario: Usuario) => (
+                            <tr key={usuario.id || usuario.correo}>
+                                <td className="px-6 py-4 border-b border-gray-200 overflow-hidden">
+                                    <div className="flex items-center gap-2 w-full">
+                                        <User className="h-5 w-5 text-gray-500 flex-shrink-0" />
+                                        <span className="truncate text-sm font-medium text-gray-900" title={usuario.nombre}>
+                                            {usuario.nombre}
+                                        </span>
                                     </div>
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    <div className="flex items-center gap-2">
-                                        <Mail className="h-5 w-5 text-gray-400" />
-                                        {usuario.correo}
+                                <td className="px-6 py-4 border-b border-gray-200 overflow-hidden">
+                                    <div className="flex items-center gap-2 w-full">
+                                        <Mail className="h-5 w-5 text-gray-400 flex-shrink-0" />
+                                        <span className="truncate text-sm text-gray-500" title={usuario.correo}>
+                                            {usuario.correo}
+                                        </span>
                                     </div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm">
@@ -148,9 +142,9 @@ const RegistroUsuarios: React.FC = () => {
 
                 {/* Cards en móvil */}
                 <div className="md:hidden space-y-4">
-                    {usuariosQuery.data?.map((usuario: Usuario) => (
+                    {usuarios?.map((usuario: Usuario) => (
                         <div
-                            key={usuario.id}
+                            key={usuario.id || usuario.correo}
                             className="bg-white p-4 rounded-lg shadow border border-gray-200"
                         >
                             <div className="space-y-3">

@@ -10,7 +10,8 @@ export const grupoTrabajoSchema = z.object({
   
   nombre: z
     .string()
-    .min(1, "El nombre es requerido"),
+    .min(1, "El nombre es requerido")
+    .max(40, "El nombre no puede exceder los 40 caracteres"),
   
   supervisor: z
     .string()

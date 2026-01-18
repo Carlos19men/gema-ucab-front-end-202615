@@ -23,6 +23,8 @@ import type {
   UbicacionTecnica,
   PadreUbicacion,
 } from "@/types/models/ubicacionesTecnicas.types";
+import { ubicacionesTecnicasAPI } from "@/lib/api/ubicacionesTecnicas";
+
 import VerManualDialog from "@/components/VerManualDialog";
 import { UbicacionHierarchy } from "./components/UbicacionHierarchy";
 import { UbicacionesFilters } from "./components/UbicacionesFilters";
@@ -97,10 +99,8 @@ function UbicacionesTecnicasContent() {
   const deleteMutation = useDeleteUbicacion();
 
   const initializeFormValues = (codigo: string) => {
-    console.log("🔧 Inicializando formulario desde código:", codigo);
 
     const nivelesExtraidos = codigo.split("-");
-    console.log("📋 Niveles extraídos:", nivelesExtraidos);
 
     const valoresIniciales = { ...formValues };
     let levelAmount = 0;
@@ -109,18 +109,11 @@ function UbicacionesTecnicasContent() {
       const valor = nivelesExtraidos[index] || "";
       valoresIniciales[nivel] = valor;
       if (valor) levelAmount++;
-      console.log(`📝 Nivel ${index + 1} (${nivel}): "${valor}"`);
     });
 
     const newDisplayedLevels = Math.min(levelAmount + 1, NIVELES.length);
 
-    console.log("🎯 Configuración final:", {
-      valoresIniciales,
-      levelAmount,
-      newDisplayedLevels,
-      abrirModal: true
-    });
-
+   
     setFormValues(valoresIniciales);
     setDisplayedLevels(newDisplayedLevels);
     setOpen(true);
@@ -180,51 +173,23 @@ function UbicacionesTecnicasContent() {
   };
 
   // Exportación simplificada
+  // Exportación simplificada
   const handleExportExcel = async () => {
     setIsExporting(true);
     try {
-      const baseUrl = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
-      const token = typeof window !== 'undefined' ? localStorage.getItem("authToken") : null;
+      const blob = await ubicacionesTecnicasAPI.exportExcel();
 
-      if (!baseUrl) {
-        toast.error("Backend URL no configurada");
-        return;
-      }
-
-      if (!token) {
-        toast.error("Token de autenticación no encontrado");
-        return;
-      }
-
-      const url = `${baseUrl}/ubicaciones-tecnicas/export/excel`;
-      const response = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) throw new Error("Error al descargar el archivo");
-
-      const blob = await response.blob();
-
-      // Obtener nombre del archivo
-      const contentDisposition = response.headers.get("Content-Disposition");
-      let filename = "ubicaciones.xlsx";
-      if (contentDisposition) {
-        const filenameMatch = contentDisposition.match(/filename="?(.+)"?/);
-        if (filenameMatch && filenameMatch.length > 1) {
-          filename = filenameMatch[1];
-        }
-      }
-
-      const downloadUrl = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = downloadUrl;
-      link.setAttribute("download", filename);
+      // Crear URL para descarga
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'ubicaciones.xlsx'); // Nombre por defecto seguro
       document.body.appendChild(link);
       link.click();
+
+      // Limpieza
       link.remove();
-      window.URL.revokeObjectURL(downloadUrl);
+      window.URL.revokeObjectURL(url);
 
       toast.success("Exportación completada");
     } catch (error) {
@@ -359,7 +324,7 @@ function UbicacionesTecnicasContent() {
               </p>
             )}
             <div className="flex justify-end gap-2 pt-4">
-              <Button variant="outline" onClick={() => setVerDetalle(null)}>
+              <Button variant="destructive" onClick={() => setVerDetalle(null)}>
                 Cerrar
               </Button>
             </div>
@@ -414,7 +379,7 @@ function UbicacionesTecnicasContent() {
               </p>
             )}
 
-            <div className="flex flex-col sm:flex-row justify-between items-center pt-4 gap-4 sm:gap-0">
+            <div className="flex flex-col sm:flex-row sm:justify-end items-center pt-4 gap-4 sm:gap-2 sm:ml-auto">
               <Button
                 className="bg-gema-blue hover:bg-blue-500 text-black w-full sm:w-auto"
                 onClick={handleExportExcel}
@@ -427,7 +392,7 @@ function UbicacionesTecnicasContent() {
                 {isExporting ? "Exportando..." : "Guardar respaldo"}
               </Button>
 
-              <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-[70%]">
+              <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                 <Button
                   variant="outline"
                   onClick={() => setBorrarUbicacion(null)}

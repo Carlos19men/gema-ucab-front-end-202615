@@ -128,6 +128,19 @@ const MonthlyCalendar = ({ onDayClick }: MonthlyCalendarProps) => {
         return inspeccionesDelDia.length > 0;
     };
 
+    // Helper para verificar si hay proyecciones en una fecha
+    const hasProjections = (date: Date, tipo: 'Mantenimiento' | 'Inspeccion') => {
+        const dateStr = date.toISOString().split('T')[0];
+        const list = tipo === 'Mantenimiento' ? mantenimientos : inspecciones;
+
+        const projections = list.filter((item: any) => {
+            const fechaProj = item.fechaProximaGeneracion ? item.fechaProximaGeneracion.split('T')[0] : '';
+            return fechaProj === dateStr;
+        });
+
+        return projections.length > 0;
+    };
+
     // Generar días del calendario basándose en la fecha actual
     const diasCalendario = generateCalendarDays(currentDate);
 
@@ -186,38 +199,65 @@ const MonthlyCalendar = ({ onDayClick }: MonthlyCalendarProps) => {
                     {diasCalendario.map((item, index) => {
                         const tieneMantenimientos = hasMantenimientos(item.date);
                         const tieneInspecciones = hasInspecciones(item.date);
+                        const tieneProyeccionMantenimiento = hasProjections(item.date, 'Mantenimiento');
+                        const tieneProyeccionInspeccion = hasProjections(item.date, 'Inspeccion');
                         const isToday = item.date.toDateString() === new Date().toDateString();
+
+                        // Verifica si el dia es pasado
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+                        const dayToCompare = new Date(item.date);
+                        dayToCompare.setHours(0, 0, 0, 0);
+                        const isPastDay = dayToCompare < today;
 
                         return (
                             <div
                                 key={index}
                                 onClick={() => handleDayClick(item)}
                                 className={`
+                                        
                                         relative min-h-30 max-w-full p-2 rounded-lg flex flex-col gap-2 transition-all hover:ring-2 hover:ring-blue-100 cursor-pointer 
-                                        ${item.actual ? 'bg-gema-lightgrey hover:bg-gray-50' : 'bg-gema-darkgrey cursor-default'}
+                                        ${!item.actual ? 'bg-gema-darkgrey cursor-default' : isPastDay ? 'bg-gema-darkgrey' : 'bg-gema-lightgrey hover:bg-gray-50'}
                                     `}
                             >
                                 {isToday && (
-                                    <div className="absolute top-0 left-0 right-0 h-1.5 rounded-t-lg bg-linear-to-r from-gema-yellow via-gema-blue to-gema-green" />
+                                    <>
+                                        <div className="absolute inset-0 rounded-lg bg-linear-to-r from-gema-yellow via-gema-blue to-gema-green" />
+                                        <div className="absolute inset-[4px] rounded-lg bg-gema-lightgrey group-hover:bg-gray-50" />
+                                    </>
                                 )}
-                                {/* Número del día */}
-                                <span className={`text-sm font-bold text-gema-grey-text`}>
-                                    {item.dia < 10 ? `0${item.dia}` : item.dia}
-                                </span>
+                                <div className="relative z-10 flex flex-col gap-2 h-full w-full">
+                                    {/* Número del día */}
+                                    <span className={`text-sm font-bold text-gema-grey-text`}>
+                                        {item.dia < 10 ? `0${item.dia}` : item.dia}
+                                    </span>
 
-                                {/* Iconos de contenido */}
-                                <div className="flex gap-1">
-                                    {/* Icono de Mantenimientos (azul) */}
-                                    {(filtroActivo === 'todos' || filtroActivo === 'mantenimientos') &&
-                                        tieneMantenimientos && (
-                                            <FileCog className="w-7 h-7 text-gema-blue" />
-                                        )}
+                                    {/* Iconos de contenido */}
+                                    <div className="flex gap-1 flex-wrap">
+                                        {/* Icono de Mantenimientos (azul) */}
+                                        {(filtroActivo === 'todos' || filtroActivo === 'mantenimientos') &&
+                                            tieneMantenimientos && (
+                                                <FileCog className="w-7 h-7 text-gema-blue" />
+                                            )}
 
-                                    {/* Icono de Inspecciones (verde) */}
-                                    {(filtroActivo === 'todos' || filtroActivo === 'inspecciones') &&
-                                        tieneInspecciones && (
-                                            <FileSearchCorner className="w-7 h-7 text-gema-green" />
-                                        )}
+                                        {/* Icono de Inspecciones (verde) */}
+                                        {(filtroActivo === 'todos' || filtroActivo === 'inspecciones') &&
+                                            tieneInspecciones && (
+                                                <FileSearchCorner className="w-7 h-7 text-gema-green" />
+                                            )}
+
+                                        {/* Icono de Proyecciones Mantenimientos (azul transparente) */}
+                                        {(filtroActivo === 'todos' || filtroActivo === 'mantenimientos') &&
+                                            tieneProyeccionMantenimiento && (
+                                                <FileCog className="w-7 h-7 text-gema-blue opacity-40" />
+                                            )}
+
+                                        {/* Icono de Proyecciones Inspecciones (verde transparente) */}
+                                        {(filtroActivo === 'todos' || filtroActivo === 'inspecciones') &&
+                                            tieneProyeccionInspeccion && (
+                                                <FileSearchCorner className="w-7 h-7 text-gema-green opacity-40" />
+                                            )}
+                                    </div>
                                 </div>
                             </div>
                         );

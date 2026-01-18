@@ -8,7 +8,8 @@ import type { resumen } from "@/types/resume.types";
 import { useSearchParams } from "next/navigation";
 import {
     Calendar,
-    Upload
+    Upload,
+    Loader2
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import InspeccionCard from "@/components/resumen/inspeccionCard";
@@ -26,7 +27,7 @@ const opcionesFiltro = [
     { id: 'todos', label: 'Todos', color: null },
     { id: 'no-empezado', label: 'No empezado', color: 'bg-gema-darkgrey' },
     { id: 'reprogramado', label: 'Reprogramado', color: 'bg-gema-yellow' },
-    { id: 'en-ejecucion', label: 'En ejecucion', color: 'bg-gema-blue' },
+    { id: 'en-ejecucion', label: 'En ejecución', color: 'bg-gema-blue' },
     { id: 'culminado', label: 'Culminado', color: 'bg-gema-green' },
 ];
 
@@ -42,6 +43,9 @@ const resumen = () => {
 
     // Este estado controla qué se mostrara en el resumen
     const [filtroActivo, setFiltroActivo] = useState('todos');
+
+    // Estado para controlar la carga de la exportación del PDF
+    const [isExporting, setIsExporting] = useState(false);
 
     // Formatear la fecha para la API (YYYY-MM-DD)
     const apiDateParams = useMemo(() => {
@@ -172,27 +176,34 @@ const resumen = () => {
     });
 
     const handleExport = async () => {
+        setIsExporting(true);
         try {
-            console.log("Generando PDF..."); // Feedback visual opcional
+            // Aseguramos que el loading se vea al menos 1 segundo para mejor UX
+            const minTimePromise = new Promise(resolve => setTimeout(resolve, 1000));
 
             // response SERÁ el objeto Blob directamente gracias al cambio en client.ts
-            const blob = await exportResumenPDF(apiDateParams, vistaActual);
+            const [blob] = await Promise.all([
+                exportResumenPDF(apiDateParams, vistaActual),
+                minTimePromise
+            ]);
 
             // Crear URL y descargar
             const url = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute('download', `pdf`);
+            link.setAttribute('download', `resumen_${vistaActual}_${apiDateParams}.pdf`);
             document.body.appendChild(link);
             link.click();
 
             link.parentNode?.removeChild(link);
             window.URL.revokeObjectURL(url);
 
-            console.log("PDF descargado correctamente");
+
         } catch (error) {
             console.error("Error al exportar PDF:", error);
-            console.log("Error al descargar el PDF");
+
+        } finally {
+            setIsExporting(false);
         }
     };
 
@@ -203,10 +214,14 @@ const resumen = () => {
                     <h1 className="text-2xl font-bold">Resumen de Mantenimientos e Inspecciones</h1>
                     <h2 className="text-lg text-gray-500">{labelHeader}</h2>
                 </div>
-                <Button className="bg-sidebar-border text-black hover:bg-gray-300"
-                    onClick={handleExport}>
-                    <Upload className="mr-2 h-4 w-4" />
-                    Exportar
+                <Button
+                    className="bg-gema-green/80 hover:bg-gema-green text-primary-foreground"
+                    onClick={handleExport}
+                    disabled={isExporting}
+                >
+                    {!isExporting && <Upload className="mr-2 h-4 w-4" />}
+                    {isExporting ? "Exportando..." : "Exportar"}
+                    {isExporting && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
                 </Button>
             </div>
             <div className="w-full flex justify-end items-center gap-4 mb-4">
@@ -218,14 +233,18 @@ const resumen = () => {
                     filtroActual={filtroActivo}
                     onFiltroChange={setFiltroActivo}
                 />
-                <Button onClick={alternarVista} className="bg-sidebar-border text-black hover:bg-gray-300">
+                <Button onClick={alternarVista} variant="outline">
                     <Calendar className="mr-2 h-4 w-4" />
                     {vistaActual === 'mensual' ? 'Vista Semanal' : 'Vista Mensual'}
                 </Button>
-                <span className="text-gema-green font-semibold flex items-center">
+                <Button
+                    variant="outline"
+                    className="text-gema-green border-gema-green/50 hover:bg-gema-green/10"
+                    disabled
+                >
                     <Calendar className="mr-2 h-4 w-4" />
                     {vistaActual === 'mensual' ? 'Vista Mensual' : 'Vista Semanal'}
-                </span>
+                </Button>
             </div>
             <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 w-full">
                 {/*CARDS CON LOS DATOS */}
@@ -234,12 +253,12 @@ const resumen = () => {
                         filteredTasks.map((task) => (
                             "idMantenimiento" in task ? (
                                 <MaintenanceCard
-                                    key={task.idMantenimiento}
+                                    key={`m-${task.idMantenimiento}`}
                                     mantenimiento={task}
                                 />
                             ) : (
                                 <InspeccionCard
-                                    key={(task as any).idInspeccion}
+                                    key={`i-${(task as any).idInspeccion}`}
                                     inspeccion={task as any}
                                 />
                             )

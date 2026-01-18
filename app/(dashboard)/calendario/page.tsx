@@ -8,8 +8,8 @@ import { WeeklyCalendar } from "@/components/calendar/weeklyCalendar";
 import { Button } from "@/components/ui/button";
 import { Modal } from '@/components/ui/modal';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { InspectionFormContent } from "@/components/forms/inspecciones/InspectionFormModal";
-import { MaintenanceFormContent } from "@/components/forms/mantenimientos/MaintenanceFormContent";
+import { InspectionFormContent } from "@/components/forms/inspecciones/CreateInspectionFormModal";
+import { MaintenanceFormContent } from "@/components/forms/mantenimientos/CrearMantenimientoContent";
 import {
     CirclePlus,
     FileText,
@@ -87,18 +87,18 @@ const Calendario = () => {
                     <h2 className="text-lg text-gray-500">Gestiona los mantenimientos preventivos e inspecciones programados por semana</h2>
                 </div>
                 <div className="flex flex-wrap items-center gap-3">
-                    <Button onClick={alternarVista} className="bg-sidebar-border text-black hover:bg-gray-300">
+                    <Button onClick={alternarVista} variant="outline">
                         <Calendar className="mr-2 h-4 w-4" />
                         {vistaActual === 'mensual' ? 'Vista Semanal' : 'Vista Mensual'}
                     </Button>
                     <Button
                         onClick={() => router.push(`/resumen?view=${vistaActual}`)}
-                        className="bg-gema-blue hover:bg-blue-700 text-white"
+                        className="bg-gema-blue hover:bg-blue-700 text-primary-foreground"
                     >
                         <FileText className="mr-2 h-4 w-4" />
                         {vistaActual === 'mensual' ? "Resumen Mensual" : "Resumen Semanal"}
                     </Button>
-                    <Button className="bg-gema-green hover:bg-green-700 text-white" onClick={() => setIsModalOpen(true)}>
+                    <Button className="bg-gema-green/80 hover:bg-gema-green text-primary-foreground" onClick={() => setIsModalOpen(true)}>
                         <CirclePlus className="mr-2 h-4 w-4" />
                         Nuevo Elemento
                     </Button>
@@ -140,7 +140,6 @@ const Calendario = () => {
                             onSuccess={() => {
                                 // Aquí puedes agregar lógica adicional después de crear el mantenimiento
                                 // Por ejemplo, refrescar el calendario o mostrar una notificación
-                                console.log('Mantenimiento creado exitosamente');
                             }}
                         />
                     )}
@@ -149,7 +148,6 @@ const Calendario = () => {
                             onClose={handleCloseModal}
                             onSuccess={() => {
                                 // Aquí puedes agregar lógica adicional después de crear la inspección
-                                console.log('Inspección creada exitosamente');
                             }}
                         />
                     )}

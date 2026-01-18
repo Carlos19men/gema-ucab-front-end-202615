@@ -194,16 +194,15 @@ const FormNuevaUbicacion: React.FC<Props> = ({
   };
 
   const downloadGuia = () => {
-    window.open('/guia-ubicaciones-tecnicas.pdf', '_blank');
+    window.open('/guia-tecnica', '_blank');
   };
 
   // ✅ Función onSubmit mejorada con validación de duplicados
   const onSubmit = () => {
-    console.log("🚀 Iniciando envío de formulario de ubicación...");
-    
+
     // Limpiar mensaje de error previo
     setErrorMessage("");
-    
+
     // Validación básica
     if (!formValues.descripcion.trim()) {
       setErrorMessage("La descripción es requerida");
@@ -224,12 +223,12 @@ const FormNuevaUbicacion: React.FC<Props> = ({
     // Validación de duplicados si tenemos ubicaciones cargadas
     if (ubicaciones) {
       const flatUbicaciones = flattenUbicaciones(ubicaciones);
-      
+
       // Verificar si ya existe una ubicación con la misma abreviación
-      const duplicadoAbreviacion = flatUbicaciones.find(u => 
+      const duplicadoAbreviacion = flatUbicaciones.find(u =>
         u.abreviacion.toLowerCase() === abreviacion.toLowerCase()
       );
-      
+
       if (duplicadoAbreviacion) {
         setErrorMessage(`Ya existe una ubicación con la abreviación "${abreviacion}": ${duplicadoAbreviacion.descripcion}`);
         return;
@@ -238,10 +237,10 @@ const FormNuevaUbicacion: React.FC<Props> = ({
       // Si estamos creando con jerarquía, verificar el código completo
       if (displayedLevels > 1) {
         const codigoCompleto = generarCodigo(formValues);
-        const duplicadoCodigo = flatUbicaciones.find(u => 
+        const duplicadoCodigo = flatUbicaciones.find(u =>
           u.codigo_Identificacion === codigoCompleto
         );
-        
+
         if (duplicadoCodigo) {
           setErrorMessage(`Ya existe una ubicación con el código "${codigoCompleto}": ${duplicadoCodigo.descripcion}`);
           return;
@@ -264,11 +263,10 @@ const FormNuevaUbicacion: React.FC<Props> = ({
       const codigoCompleto = generarCodigo(formValues);
       const partes = codigoCompleto.split("-");
       const codigoSinUltimoNivel = partes.slice(0, -1).join("-");
-      
+
       const padreFisico = flatUbicaciones.find(u => u.codigo_Identificacion === codigoSinUltimoNivel);
-      
+
       if (padreFisico) {
-        console.log("🔗 Agregando padre físico:", padreFisico);
         padresArray.push({
           idPadre: padreFisico.idUbicacion,
           esUbicacionFisica: true
@@ -288,7 +286,6 @@ const FormNuevaUbicacion: React.FC<Props> = ({
           esUbicacionFisica: false
         }));
 
-      console.log("🔗 Agregando padres lógicos:", padresLogicos);
 
       // Evitar duplicados
       for (const padreLogico of padresLogicos) {
@@ -303,18 +300,11 @@ const FormNuevaUbicacion: React.FC<Props> = ({
       payload.padres = padresArray;
     }
 
-    console.log("📦 Enviando payload:", payload);
-    console.log("📊 Resumen:", {
-      descripcion: payload.descripcion,
-      abreviacion: payload.abreviacion,
-      cantidadPadres: payload.padres?.length || 0,
-      padres: payload.padres
-    });
 
     // ✅ Usar hook de creación
     createMutation.mutate(payload, {
       onSuccess: () => {
-        console.log("✅ Creación exitosa");
+
         closeModal();
         toast.success("Ubicación técnica creada correctamente");
       },
@@ -326,7 +316,7 @@ const FormNuevaUbicacion: React.FC<Props> = ({
           data: error?.response?.data,
           message: error?.message
         });
-        
+
         // Manejo específico de errores
         if (error?.response?.status === 409) {
           const errorMessage = error?.response?.data?.message || error?.response?.data?.error || "La ubicación técnica ya existe";
@@ -541,7 +531,13 @@ const FormNuevaUbicacion: React.FC<Props> = ({
       )}
 
       <div className="flex justify-end gap-2">
-        <Button variant="outline" onClick={closeModal} className="px-4 md:px-8">Cancelar</Button>
+        <Button
+          variant="outline"
+          onClick={closeModal}
+          className="px-4 md:px-8 rounded-md"
+        >
+          Cancelar
+        </Button>
         <Button className="bg-gema-green/80 hover:bg-gema-green text-primary-foreground px-4 md:px-8" onClick={onSubmit} disabled={createMutation.isPending}>
           {createMutation.isPending ? "Creando..." : "Crear Ubicación"}
         </Button>

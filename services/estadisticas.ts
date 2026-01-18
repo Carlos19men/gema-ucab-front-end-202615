@@ -3,33 +3,33 @@
 import { apiClient } from "@/lib/api/client";
 
 import type {
-    mantenimientosReabiertos,
-    mantenimientosReabiertosPorArea,
+    mantenimientosReprogramados,
+    mantenimientosReprogramadosPorArea,
     mantenimientosResumenMesActual,
-    mantenimientosActivosPorArea
+    mantenimientosEmpezadosPorArea
 } from "@/types/estadisticas.types";
 
-type mantenimientosReabiertosResponse = number;
+type mantenimientosReprogramadosResponse = number;
 
-type mantenimientosReabiertosPorAreaResponse = {
+type mantenimientosReprogramadosPorAreaResponse = {
     Grupo: string;
     total: number;  
 }[];
 
 type mantenimientosResumenMesActualResponse = {
-    completados: number;
-    porcentajeCompletados: number;
+    culminados: number;
+    porcentajeculminados: number;
     totalMantenimientos: number;
 };
 
-type mantenimientosActivosPorAreaResponse = {
+type mantenimientosEmpezadosPorAreaResponse = {
     grupo: string;
     total: number;  
 }[];
 
-export const normalizeMantenimientosReabiertosPorArea = (
-    data?: mantenimientosReabiertosPorAreaResponse | null
-): mantenimientosReabiertosPorArea | null => {
+export const normalizeMantenimientosReprogramadosPorArea = (
+    data?: mantenimientosReprogramadosPorAreaResponse | null
+): mantenimientosReprogramadosPorArea | null => {
     if (!data) {
         return null;
     }
@@ -52,14 +52,14 @@ export const normalizeMantenimientosResumenMesActual = (
     return (
         {
         totalMantenimientos: data.totalMantenimientos,
-        completados: data.completados,
-        porcentajeCompletados: data.porcentajeCompletados
+        culminados: data.culminados,
+        porcentajeCulminados: data.porcentajeculminados
     });
 }
 
-export const normalizeMantenimientosActivosPorArea = (
-    data?: mantenimientosActivosPorAreaResponse | null
-): mantenimientosActivosPorArea | null => {
+export const normalizeMantenimientosEmpezadosPorArea = (
+    data?: mantenimientosEmpezadosPorAreaResponse | null
+): mantenimientosEmpezadosPorArea | null => {
     
     if (!data) {
         return null;
@@ -72,18 +72,18 @@ export const normalizeMantenimientosActivosPorArea = (
     })));
 }
 
-export async function getMantenimientosReabiertos(): Promise<mantenimientosReabiertos | null>  {
-    const response = await apiClient.get<mantenimientosReabiertosResponse | null>(
-        `/trabajos/reabiertos`
+export async function getMantenimientosReprogramados(): Promise<mantenimientosReprogramados | null>  {
+    const response = await apiClient.get<mantenimientosReprogramadosResponse | null>(
+        `/trabajos/reprogramados`
       );
       return response ?? null;
 
 }
 
-export async function getMantenimientosReabiertosPorArea(): Promise<mantenimientosReabiertosPorArea | null> {
-    const response = await apiClient.get<mantenimientosReabiertosPorAreaResponse>('/trabajos/reabiertos/por-area');
+export async function getMantenimientosReprogramadosPorArea(): Promise<mantenimientosReprogramadosPorArea | null> {
+    const response = await apiClient.get<mantenimientosReprogramadosPorAreaResponse>('/trabajos/reprogramados/por-area');
 
-    return(normalizeMantenimientosReabiertosPorArea(response));
+    return(normalizeMantenimientosReprogramadosPorArea(response));
 }
 
 export async function getMantenimientosResumenMesActual(): Promise<mantenimientosResumenMesActual | null> {
@@ -91,7 +91,7 @@ export async function getMantenimientosResumenMesActual(): Promise<mantenimiento
     return normalizeMantenimientosResumenMesActual(response);
 }
 
-export async function getMantenimientosActivosPorArea(): Promise<mantenimientosActivosPorArea | null> {
-    const response = await apiClient.get<mantenimientosActivosPorAreaResponse>('/trabajos/activos/por-area');
-    return normalizeMantenimientosActivosPorArea(response);
+export async function getMantenimientosEmpezadosPorArea(): Promise<mantenimientosEmpezadosPorArea | null> {
+    const response = await apiClient.get<mantenimientosEmpezadosPorAreaResponse>('/trabajos/empezado/por-area');
+    return normalizeMantenimientosEmpezadosPorArea(response);
 }

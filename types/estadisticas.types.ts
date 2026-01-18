@@ -1,17 +1,17 @@
-export type mantenimientosReabiertos = number;
+export type mantenimientosReprogramados = number;
 
-export type mantenimientosReabiertosPorArea = {
+export type mantenimientosReprogramadosPorArea = {
     Grupo: string;
     Total: number;
 }[];
 
 export type mantenimientosResumenMesActual = {
-    completados: number;
-    porcentajeCompletados: number;
+    culminados: number;
+    porcentajeCulminados: number;
     totalMantenimientos: number;
 };
 
-export type mantenimientosActivosPorArea = {
+export type mantenimientosEmpezadosPorArea = {
     Grupo: string;
     Total: number;
 }[];

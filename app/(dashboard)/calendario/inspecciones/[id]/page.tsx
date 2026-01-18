@@ -19,19 +19,30 @@ import {
 import Link from 'next/link';
 import { useInspeccionDetalle } from '@/hooks/inspecciones/useInspecciones';
 import { toast } from 'react-hot-toast';
+import { useGetAllChecklistItem } from "@/hooks/checklist/useGetAllChecklistItem";
+import { EditarChecklistForm } from "@/components/forms/checklist/EditarChecklistForm";
+import { DeleteChecklistModal } from "@/components/forms/checklist/DeleteChecklistModal";
+import { ClipboardPen } from "lucide-react";
 
 export default function InspeccionDetalle() {
     const [editModalOpen, setEditModalOpen] = useState(false);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [deriveModalOpen, setDeriveModalOpen] = useState(false);
     const [addChecklistModalOpen, setAddChecklistModalOpen] = useState(false);
+    const [editChecklistModalOpen, setEditChecklistModalOpen] = useState(false);
+    const [deleteChecklistModalOpen, setDeleteChecklistModalOpen] = useState(false);
 
     // Obtener el ID de la URL
     const params = useParams();
     const id = parseInt(params.id as string);
 
-    // Usar el hook para obtener datos del mantenimiento
+    // Usar el hook para obtener datos de la inspeccion
     const { data, isLoading, error } = useInspeccionDetalle(id);
+
+    // Obtener datos del checklist
+    const { data: checklistData } = useGetAllChecklistItem("inspecciones", id, {
+        enabled: !!data?.checklist
+    });
 
     if (isLoading) {
         return (
@@ -40,6 +51,10 @@ export default function InspeccionDetalle() {
     }
 
     console.log(data);
+
+
+    const checklistId = checklistData?.id;
+    const checklistTitle = data.checklist;
 
     return (
         <div className="p-8 space-y-6  min-h-screen">
@@ -84,20 +99,11 @@ export default function InspeccionDetalle() {
 
                 {/* Status & Supervisor Row */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 w-full md:w-2/3">
-                    {/* Estado */}
-                    <div className="space-y-2">
-                        <h3 className="font-bold text-lg">Estado</h3>
-                        <div className="flex items-center gap-2 px-4 py-2 bg-sky-300 text-slate-900 rounded-md border border-sky-400 w-fit font-medium">
-                            <Check className="w-4 h-4" />
-                            {data?.estado}
-                        </div>
-                    </div>
-
                     {/* Supervisor */}
                     <div className="space-y-2">
                         <h3 className="font-bold text-lg">Supervisor</h3>
                         <div className="p-2 bg-slate-200/50 rounded-md border border-slate-300 font-medium text-slate-700 min-w-[200px]">
-                            {data.supervisor}
+                            {data.supervisor ? data.supervisor : "Sin supervisor asignado"}
                         </div>
                     </div>
                 </div>
@@ -108,7 +114,7 @@ export default function InspeccionDetalle() {
                 <div className="mb-8">
                     <h3 className="font-bold text-lg mb-3">Observación</h3>
                     <div className="p-4 border border-slate-300 rounded-lg text-slate-700 min-h-[60px]">
-                        {data?.observacion}
+                        {data?.observacion ? data.observacion : "Sin observaciones"}
                     </div>
                 </div>
 
@@ -139,7 +145,7 @@ export default function InspeccionDetalle() {
                     <h3 className="font-bold text-lg mb-4">Programación de Inspección</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div className="space-y-2">
-                            <span className="font-bold">Fecha de creación</span>
+                            <span className="font-bold">Fecha de Incio</span>
                             <div className="p-3 border border-slate-300 rounded-md text-slate-700 font-medium">
                                 {data?.fechaCreacion}
                             </div>
@@ -160,14 +166,38 @@ export default function InspeccionDetalle() {
                     <h3 className="font-bold text-lg mb-4">Actividades</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         {/* Checklist Item */}
-                        {data.checklist ? (
-                            <div className="flex items-center justify-between p-3 border border-slate-300 rounded-lg hover:border-slate-400 transition-colors">
+                        {checklistTitle ? (
+                            <div className="flex items-center justify-between p-3 border border-slate-300 rounded-lg group hover:border-slate-400 transition-colors relative">
                                 <Link
                                     href={`/detalle-trabajo/inspecciones/${id}`}
                                     className="flex-1 hover:underline cursor-pointer"
                                 >
-                                    <span className="font-medium text-slate-900">{data.checklist}</span>
+                                    <span className="font-medium text-slate-900">{checklistTitle}</span>
                                 </Link>
+                                {checklistId && (
+                                    <div className="flex z-10 relative">
+                                        <div className="inline-block p-1 border-2 border-gray-200 rounded-[10px] mx-1 cursor-pointer hover:bg-gray-50 transition-colors"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                console.log("Opening edit modal, ID:", checklistId);
+                                                setEditChecklistModalOpen(true);
+                                            }}
+                                        >
+                                            <ClipboardPen className="h-5 w-5 text-blue-500" />
+                                        </div>
+                                        <div className="inline-block p-1 border-2 border-gray-200 rounded-[10px] mx-1 cursor-pointer hover:bg-gray-50 transition-colors"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                console.log("Opening delete modal, ID:", checklistId);
+                                                setDeleteChecklistModalOpen(true);
+                                            }}
+                                        >
+                                            <Trash2 className="h-5 w-5 text-red-500" />
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         ) : (
                             <Button
@@ -184,7 +214,9 @@ export default function InspeccionDetalle() {
 
             </div>
 
-            {/* Derive Maintenance Modal */}
+            {/* Derive Maintenance Modal */
+
+            }
             <DeriveMaintenanceModal
                 open={deriveModalOpen}
                 idInsp={id}
@@ -196,8 +228,11 @@ export default function InspeccionDetalle() {
                 open={editModalOpen}
                 onClose={() => setEditModalOpen(false)}
                 onConfirm={() => { alert('Editando...'); setEditModalOpen(false); }}
-                inspectionName={"fata"}
+                inspectionName={data.titulo}
+                data={data}
             />
+
+
 
             {/* Delete Modal */}
             <DeleteInspectionModal
@@ -205,7 +240,7 @@ export default function InspeccionDetalle() {
                 onClose={() => setDeleteModalOpen(false)}
                 onConfirm={() => { toast.success("Inspección eliminada con éxito"); setDeleteModalOpen(false); }}
                 inspectionName={data.titulo}
-                idInspeccion={data.idInspeccion}
+                idInspeccion={id}
             />
 
             {/* Add Checklist Modal */}
@@ -213,11 +248,25 @@ export default function InspeccionDetalle() {
                 open={addChecklistModalOpen}
                 onClose={() => setAddChecklistModalOpen(false)}
                 onSuccess={(data) => {
-                    console.log("Checklist added:", data);
                     setAddChecklistModalOpen(false);
                 }}
                 maintenanceId={id}
                 type="inspecciones"
+            />
+
+            {/* Edit Checklist Modal */}
+            <EditarChecklistForm
+                open={editChecklistModalOpen}
+                onClose={() => setEditChecklistModalOpen(false)}
+                checklistId={checklistId || 0}
+                currentName={checklistTitle || ""}
+            />
+
+            <DeleteChecklistModal
+                open={deleteChecklistModalOpen}
+                onClose={() => setDeleteChecklistModalOpen(false)}
+                checklistId={checklistId || 0}
+                checklistName={checklistTitle || ""}
             />
         </div>
     );

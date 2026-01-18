@@ -60,7 +60,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (error) {
       console.error("Error al notificar logout al backend", error);
     } finally {
-      setUser(null); 
+      setUser(null);
     }
   };
 
@@ -78,7 +78,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // TODO: Descomentar cuando el backend implemente /auth/me
   useEffect(() => {
     const initializeAuth = async () => {
-      // await checkAuth()  // Comentado temporalmente - backend no tiene /auth/me aún
+      await checkAuth()
       setIsLoading(false)
     }
 

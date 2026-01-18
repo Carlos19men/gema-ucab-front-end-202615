@@ -20,8 +20,6 @@ export const MaintenanceSummaryModal: React.FC<MaintenanceSummaryModalProps> = (
         return <div>Cargando...</div>;
     }
 
-
-
     return (
         <Modal
             isOpen={open}
@@ -44,17 +42,13 @@ export const MaintenanceSummaryModal: React.FC<MaintenanceSummaryModalProps> = (
                             <span className="font-semibold">{mantenimiento?.prioridad ?? '...'}</span>
                         </div>
                         <div className="bg-slate-50 p-3 rounded-md border text-center">
+                            <span className="block text-sm text-gray-500">Tipo </span>
+                            <span className="font-semibold">{(mantenimiento?.tipo === "Condicion" ? "Por Condición" : mantenimiento?.tipo) ?? "..."}</span>
+                        </div>
+                        <div className="bg-slate-50 p-3 rounded-md border text-center">
                             <span className="block text-sm text-gray-500">Frecuencia</span>
                             <span className="font-semibold">{mantenimiento?.frecuencia ?? '...'}</span>
                         </div>
-
-                        {mantenimiento?.repeticion && (
-                            <div className="bg-slate-50 p-3 rounded-md border text-center">
-                                <span className="block text-sm text-gray-500">Repetición</span>
-                                <span className="font-semibold">{mantenimiento?.repetición ?? '...'}</span>
-                            </div>
-                        )}
-
                     </div>
                 </div>
 
@@ -73,9 +67,20 @@ export const MaintenanceSummaryModal: React.FC<MaintenanceSummaryModalProps> = (
                         <span className="text-red-700 font-semibold">{mantenimiento?.fechaLimite ?? '...'}</span>
                     </div>
                 </div>
+
+                {/* Section 4: Summary */}
+                <div>
+                    <h3 className="text-lg font-medium mb-2">Resumen</h3>
+                    <div className="bg-slate-50 p-4 rounded-md border">
+                        <p className="text-sm whitespace-pre-wrap">{mantenimiento?.resumen || mantenimiento?.especificacion || 'Sin resumen'}</p>
+                    </div>
+                </div>
             </div>
+
             <div className="flex justify-end gap-2 mt-4">
-                <Button variant="ghost" onClick={onClose}>Cancelar</Button>
+                <Button variant="outline" onClick={onClose}>
+                    Cancelar
+                </Button>
                 <Link href={`/calendario/mantenimientos/${mantenimientoId}`}>
                     <Button variant="outline" className="border-gema-green text-gema-green hover:bg-gema-green/10">
                         Ver detalle del mantenimiento
