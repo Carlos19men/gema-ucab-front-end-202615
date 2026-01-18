@@ -17,7 +17,7 @@ const usuarioSchema = z.object({
     correo: z.string().email("Correo inválido").refine((val) => val.includes("ucab.edu.ve") && val.includes("@"), {
         message: "El correo debe ser del dominio @ucab.edu.ve"
     }),
-    contraseña: z.string().min(8, "La contraseña debe tener al menos 8 caracteres"),
+    contraseña: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
     tipo: z.string().min(1, "El tipo es requerido"),
 });
 

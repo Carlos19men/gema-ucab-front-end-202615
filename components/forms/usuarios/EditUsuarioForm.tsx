@@ -21,8 +21,8 @@ const usuarioSchema = z.object({
     contraseña: z
         .string()
         .optional()
-        .refine((val) => !val || val.length >= 8, {
-            message: "La contraseña debe tener al menos 8 caracteres",
+        .refine((val) => !val || val.length >= 6, {
+            message: "La contraseña debe tener al menos 6 caracteres",
         }),
 });
 
