@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { getPlantillas } from "@/lib/plantillas";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, CirclePlus, CheckCircle2, Circle, Download, ClipboardPen, Trash2 } from "lucide-react";
-import FormNuevaActividad from "@/components/FormNuevaActividad";
+import FormNuevaActividad from "@/components/forms/plantillas/FormNuevaActividad";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 // Actividades de ejemplo
