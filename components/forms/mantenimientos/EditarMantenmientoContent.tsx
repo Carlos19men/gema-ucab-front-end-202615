@@ -68,9 +68,9 @@ export const EditarMantenimientoFormContent: React.FC<MaintenanceFormContentProp
 
 
         const payload: EditMantenimientoRequest = {
-            id: mantenimientoId,
+            idMantenimiento: mantenimientoId.toString(),
             nombre: data.titulo,
-            prioridad: data.prioridad?.toUpperCase(),
+            prioridad: data.prioridad,
             fechaLimite: data.fechaLimite,
             tipo: data.tipo === "Periodico" ? "Periodico" : "Condicion",
             frecuencia: data.frecuencia,
@@ -98,6 +98,23 @@ export const EditarMantenimientoFormContent: React.FC<MaintenanceFormContentProp
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit, onError)}>
+                {/* Nombre del mantenimiento */}
+
+                <div className="p-4">
+                    <FormField
+                        control={form.control}
+                        name="titulo"
+                        render={({ field }) => (
+                            <FormItem className="w-3/4 border-gray-200">
+                                <FormLabel>Nombre</FormLabel>
+                                <FormControl className=" border-gray-200">
+                                    <Input placeholder="Ej: Mantenimiento preventivo de aires acondicionados" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
 
                 <div className="p-4 grid grid-cols-2 gap-6 my-2">
 

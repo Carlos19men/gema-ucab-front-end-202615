@@ -15,16 +15,16 @@ export interface CreateMantenimientoRequest {
 }
 
 export interface EditMantenimientoRequest {
-    id: number;
+    idMantenimiento: string;
+    idInspeccion?: string;
     nombre?: string;
-    prioridad?: string;
+    prioridad?: "ALTA" | "MEDIA" | "BAJA";
     fechaCreacion?: string;
     fechaLimite?: string;
     frecuencia?: "Diaria" | "Semanal" | "Mensual" | "Trimestral" | "Anual";
     resumen?: string;
-    tipo?: "Periodico" | "Condicion",
-    instancia?: string;
-    titulo?: string;
+    tipo?: "Periodico" | "Condicion";
+    observacion?: string;
 }
 
 interface MantenimientosResponse {
@@ -57,6 +57,6 @@ export const mantenimientosAPI = {
     },
 
     async update(data: EditMantenimientoRequest) {
-        return apiClient.patch<any>(`/mantenimientos/${data.id}`, data)
+        return apiClient.patch<any>(`/work-creation/`, data)
     }
 }
