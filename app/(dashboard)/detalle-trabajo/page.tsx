@@ -1,20 +1,25 @@
-'use client';
+"use client";
 
+import { Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import ChecklistComponent from "@/components/checklist/checklist";
 import type { Checklist } from "@/types/checklist.types";
 import { LoaderCircle } from "lucide-react";
 import { useGetPlantillaById } from "@/hooks/plantillas/useGetPlantillaById";
 
-const ChecklistPage = () => {
+const ChecklistContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const plantillaId = searchParams.get('id');
+  const plantillaId = searchParams.get("id");
 
-  const { data: plantilla, isLoading, isError } = useGetPlantillaById(Number(plantillaId));
+  const {
+    data: plantilla,
+    isLoading,
+    isError,
+  } = useGetPlantillaById(Number(plantillaId));
 
   const handleBack = () => {
-    router.push('/plantillas');
+    router.push("/plantillas");
   };
 
   if (isLoading) {
@@ -28,7 +33,11 @@ const ChecklistPage = () => {
   if (isError || !plantilla) {
     return (
       <div className="p-6 text-center">
-        <p className="text-red-500 mb-4">{!plantillaId ? "No se especificó una plantilla" : "Error al cargar la plantilla"}</p>
+        <p className="text-red-500 mb-4">
+          {!plantillaId
+            ? "No se especificó una plantilla"
+            : "Error al cargar la plantilla"}
+        </p>
         <button
           onClick={handleBack}
           className="text-gema-green hover:underline"
@@ -45,14 +54,33 @@ const ChecklistPage = () => {
     titulo: plantilla.plantilla,
     ubicacion: "",
     tareas: plantilla.actividades || [],
-    idTrabajo: 0
+    idTrabajo: 0,
   };
 
   return (
     <div>
-      <ChecklistComponent checklist={checklistData} onBack={handleBack} idTrabajo={0} isTemplate={true} />
+      <ChecklistComponent
+        checklist={checklistData}
+        onBack={handleBack}
+        idTrabajo={0}
+        isTemplate={true}
+      />
     </div>
-  )
-}
+  );
+};
+
+const ChecklistPage = () => {
+  return (
+    <Suspense
+      fallback={
+        <div className="p-6 flex justify-center items-center">
+          <LoaderCircle className="animate-spin h-8 w-8 text-gema-green" />
+        </div>
+      }
+    >
+      <ChecklistContent />
+    </Suspense>
+  );
+};
 
 export default ChecklistPage;
