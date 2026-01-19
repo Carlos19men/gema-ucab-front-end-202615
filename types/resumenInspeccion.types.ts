@@ -4,7 +4,7 @@ export type ResumenInspeccion = { // en realiadad es inspección
     titulo: string;
     supervisor: string;
     areaEncargada: string;
-    estado: "No empezado" | "En ejecucion" | "Reprogramado" | "Culminado";
+    estado: "No empezado" | "En ejecución" | "Reprogramado" | "Culminado";
     ubicacion: string;
     frecuencia?: string;
     checklist?: string;

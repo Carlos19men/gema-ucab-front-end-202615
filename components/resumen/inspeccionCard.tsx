@@ -18,7 +18,7 @@ const InspeccionCard = ({
     onClick
 }: InspeccionCardProps) => {
     // Diccionario para asignar colores según el estado
-    const statusStyles = {
+    const statusStyles: Record<ResumenInspeccion['estado'], string> = {
         'No empezado': 'bg-white text-black',
         'Reprogramado': 'bg-gema-yellow text-black',
         'En ejecución': 'bg-gema-blue text-black',
