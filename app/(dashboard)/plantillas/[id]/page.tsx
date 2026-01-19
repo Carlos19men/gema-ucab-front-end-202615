@@ -8,13 +8,27 @@ import { ArrowLeft, CirclePlus, CheckCircle2, Circle, Download, ClipboardPen, Tr
 import FormNuevaActividad from "@/components/forms/plantillas/FormNuevaActividad";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
+// Actividades de ejemplo
+interface Actividad {
+  id: number;
+  nombre: string;
+  descripcion: string;
+  completada: boolean;
+}
+
+const actividadesEjemplo: Actividad[] = [
+  { id: 1, nombre: "Revisar nivel de aceite", descripcion: "Verificar que el nivel de aceite esté en el rango adecuado", completada: true },
+  { id: 2, nombre: "Inspeccionar filtros", descripcion: "Revisar el estado de los filtros de aire y aceite", completada: false },
+  { id: 3, nombre: "Verificar presión de neumáticos", descripcion: "Comprobar que la presión esté según especificaciones", completada: false },
+];
+
 export default function ChecklistPage() {
   const params = useParams();
   const router = useRouter();
   const idParam = params?.id;
   const [title, setTitle] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [actividades, setActividades] = useState(actividadesEjemplo);
+  const [actividades, setActividades] = useState<Actividad[]>(actividadesEjemplo);
 
   const totalActividades = actividades.length;
   const completadas = actividades.filter(a => a.completada).length;
@@ -43,9 +57,9 @@ export default function ChecklistPage() {
     };
   }, [idParam]);
 
-  const [editingActivity, setEditingActivity] = useState<any>(null);
+  const [editingActivity, setEditingActivity] = useState<Actividad | null>(null);
 
-  const handleEdit = (actividad: any) => {
+  const handleEdit = (actividad: Actividad) => {
     setEditingActivity(actividad);
     setIsModalOpen(true);
   };
