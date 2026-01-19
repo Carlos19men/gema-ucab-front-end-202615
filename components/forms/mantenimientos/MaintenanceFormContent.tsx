@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { mantenimientoSchema } from "@/lib/validations/mantenimientoSchema";
 import { useCreateMantenimiento } from "@/hooks/mantenimientos/useCreateMantenimientos";
+import { CreateMantenimientoRequest } from "@/lib/api/mantenimientos";
 import { useUbicacionesLista } from "@/hooks/ubicaciones-tecnicas/useUbicaciones";
 import { Combobox } from "@/components/ui/combobox";
 import { useSupervisores } from "@/hooks/usuarios/useUsuarios";
@@ -38,32 +39,31 @@ export const MaintenanceFormContent: React.FC<MaintenanceFormContentProps> = ({
         resolver: zodResolver(mantenimientoSchema),
         defaultValues: {
             nombre: initialValues?.nombre || '',
-            prioridad: initialValues?.prioridad || 'Media',
+            prioridad: (initialValues?.prioridad as any) || 'MEDIA',
             estado: initialValues?.estado || 'no_empezado',
             supervisor: initialValues?.supervisor || '',
-            fechaInicio: initialValues?.fechaInicio || '',
-            fechaFin: initialValues?.fechaFin || '',
-            tipoMantenimiento: initialValues?.tipoMantenimiento || 'Periodico',
-            repeticion: initialValues?.repeticion || 'unico',
+            fechaCreacion: initialValues?.fechaCreacion || '',
+            fechaLimite: initialValues?.fechaLimite || '',
+            tipo: initialValues?.tipo || 'Periodico',
             frecuencia: initialValues?.frecuencia,
             idUbicacionTecnica: initialValues?.idUbicacionTecnica || 0, // 0 as empty/initial
             idGrupo: initialValues?.idGrupo || 1,
             areaEncargada: initialValues?.areaEncargada || (initialValues as any)?.AreaEncargada || '',
-            especificacion: initialValues?.especificacion || ''
+            resumen: initialValues?.resumen || ''
         }
     });
 
-    const tipoMantenimiento = form.watch("tipoMantenimiento");
+    const tipo = form.watch("tipo");
 
     // eliminar array de encargados hardcoded
 
     const onSubmit = (data: MantenimientoFormData) => {
         // Validar que la fecha de finalización sea posterior a la de inicio
-        if (data.fechaInicio && data.fechaFin) {
-            const inicio = new Date(data.fechaInicio);
-            const fin = new Date(data.fechaFin);
+        if (data.fechaCreacion && data.fechaLimite) {
+            const inicio = new Date(data.fechaCreacion);
+            const fin = new Date(data.fechaLimite);
             if (fin <= inicio) {
-                form.setError("fechaFin", {
+                form.setError("fechaLimite", {
                     type: "manual",
                     message: "La fecha de finalización debe ser posterior a la fecha de inicio",
                 });
@@ -72,20 +72,21 @@ export const MaintenanceFormContent: React.FC<MaintenanceFormContentProps> = ({
         }
 
         // Mapear los datos del formulario al formato que espera el backend
-        const mantenimientoData = {
-            tipoTrabajo: "Mantenimiento" as const,
-            fechaCreacion: new Date().toISOString(),
+        const mantenimientoData: CreateMantenimientoRequest = {
+            tipoTrabajo: "Mantenimiento",
+            nombre: data.nombre,
+            fechaCreacion: new Date(data.fechaCreacion).toISOString(),
             idUbicacionTecnica: data.idUbicacionTecnica,
             idGrupo: data.idGrupo,
-            supervisorId: supervisores?.find(s => s.Nombre === data.supervisor)?.Id || 0, // Buscar ID del supervisor seleccionado
+            // supervisorId is not in CreateMantenimientoRequest? Check interface again. 
+            // The interface I saw earlier had: tipoTrabajo, nombre, prioridad, fechaCreacion, fechaLimite, tipo, frecuencia, idUbicacionTecnica, idGrupo, resumen
+            // It did NOT have supervisorId, areaEncargada, repeticion, estado.
+            // Wait, let's check CreateMantenimientoRequest again.
             prioridad: data.prioridad,
-            areaEncargada: data.areaEncargada,
-            fechaLimite: data.fechaFin,
-            frecuencia: data.frecuencia || "Mensual",
-            tipoMantenimiento: data.tipoMantenimiento,
-            repeticion: data.tipoMantenimiento === 'Periodico' ? 'periodico' : 'unico',
-            estado: 'no_empezado' as const, // Default
-            especificacion: data.especificacion
+            fechaLimite: new Date(data.fechaLimite).toISOString(),
+            frecuencia: data.frecuencia,
+            tipo: data.tipo,
+            resumen: data.resumen
         };
 
         createMantenimientoMutation.mutate(mantenimientoData, {
@@ -167,9 +168,9 @@ export const MaintenanceFormContent: React.FC<MaintenanceFormContentProps> = ({
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
-                                        <SelectItem value="Baja">Baja</SelectItem>
-                                        <SelectItem value="Media">Media</SelectItem>
-                                        <SelectItem value="Alta">Alta</SelectItem>
+                                        <SelectItem value="BAJA">Baja</SelectItem>
+                                        <SelectItem value="MEDIA">Media</SelectItem>
+                                        <SelectItem value="ALTA">Alta</SelectItem>
                                     </SelectContent>
                                 </Select>
                                 <FormMessage />
@@ -263,7 +264,7 @@ export const MaintenanceFormContent: React.FC<MaintenanceFormContentProps> = ({
                     {/* Fecha de inicio */}
                     <FormField
                         control={form.control}
-                        name="fechaInicio"
+                        name="fechaCreacion"
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Fecha de inicio</FormLabel>
@@ -278,7 +279,7 @@ export const MaintenanceFormContent: React.FC<MaintenanceFormContentProps> = ({
                     {/* Fecha de finalización */}
                     <FormField
                         control={form.control}
-                        name="fechaFin"
+                        name="fechaLimite"
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Fecha de finalización</FormLabel>
@@ -293,7 +294,7 @@ export const MaintenanceFormContent: React.FC<MaintenanceFormContentProps> = ({
                     {/* Tipo de mantenimiento */}
                     <FormField
                         control={form.control}
-                        name="tipoMantenimiento"
+                        name="tipo"
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Tipo de mantenimiento</FormLabel>
@@ -314,7 +315,7 @@ export const MaintenanceFormContent: React.FC<MaintenanceFormContentProps> = ({
                     />
 
                     {/* Frecuencia (solo si es periódico) */}
-                    {tipoMantenimiento === "Periodico" && (
+                    {tipo === "Periodico" && (
                         <FormField
                             control={form.control}
                             name="frecuencia"
@@ -347,7 +348,7 @@ export const MaintenanceFormContent: React.FC<MaintenanceFormContentProps> = ({
                 {/* Resumen */}
                 <FormField
                     control={form.control}
-                    name="especificacion"
+                    name="resumen"
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Resumen</FormLabel>

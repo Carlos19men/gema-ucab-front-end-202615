@@ -12,13 +12,13 @@ export type AreaEncargada = typeof AREA_OPTIONS[number];
 
 // If you also have prioridad options, define them as const too
 export const PRIORIDAD_OPTS = ['ALTA', 'MEDIA', 'BAJA'] as const;
-export const FRECUENCIAS = ["Diaria","Semanal","Mensual","Trimestral","Anual"]; 
+export const FRECUENCIAS = ["Diaria", "Semanal", "Mensual", "Trimestral", "Anual"];
 export type Prioridad = typeof PRIORIDAD_OPTS[number];
 
 export const mantenimientoSchema = z.object({
   // prioridad as enum (refine is redundant with enum)
   tipoTrabajo: z.literal("Mantenimiento"),
-  titulo: z.string().min(1, "El nombre es requerido").max(200, "Máximo 200 caracteres"),
+  nombre: z.string().min(1, "El nombre es requerido").max(200, "Máximo 200 caracteres"),
   prioridad: z.enum(PRIORIDAD_OPTS),
 
   // Ubicación técnica y grupo
@@ -40,12 +40,18 @@ export const mantenimientoSchema = z.object({
     }),
 
   frecuencia: z
-    .enum(["Diaria","Semanal","Mensual","Trimestral","Anual"])
+    .enum(["Diaria", "Semanal", "Mensual", "Trimestral", "Anual"])
     .optional(),
 
   resumen: z
     .string()
-    .max(1000, "El especificacion no puede exceder 1000 caracteres")
+    .max(1000, "El especificacion no puede exceder 1000 caracteres"),
+
+  // UI Fields (Optional or specific validation)
+  supervisor: z.string().optional(),
+  areaEncargada: z.string().optional(),
+  estado: z.string().optional(),
+  repeticion: z.string().optional()
 });
 
 export const mantenimientoEditSchema = z.object({
@@ -61,7 +67,7 @@ export const mantenimientoEditSchema = z.object({
     .optional(),
 
   frecuencia: z
-    .enum(["Diaria","Semanal","Mensual","Trimestral","Anual"])
+    .enum(["Diaria", "Semanal", "Mensual", "Trimestral", "Anual"])
     .optional(),
 
   resumen: z
