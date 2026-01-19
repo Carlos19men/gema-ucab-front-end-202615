@@ -10,6 +10,7 @@ type ResumenMantenimientoResponse = {
   estado: string;
   ubicacion: string;
   fechaLimite: string;
+  titulo: string;
 };
 
 const normalizeResumenMantenimiento = (
@@ -24,6 +25,7 @@ const normalizeResumenMantenimiento = (
     estado: data.estado as ResumenMantenimiento["estado"],
     ubicacion: data.ubicacion,
     fechaLimite: data.fechaLimite,
+    titulo: data.titulo,
   };
 };
 

@@ -5,3 +5,5 @@ export type ResumenMantenimiento = {
     fechaLimite: string;
     titulo: string;
 };
+
+export type ResumenMantenimientoList = ResumenMantenimiento[];
