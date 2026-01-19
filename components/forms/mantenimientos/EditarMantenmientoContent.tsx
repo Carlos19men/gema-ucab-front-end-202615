@@ -98,23 +98,6 @@ export const EditarMantenimientoFormContent: React.FC<MaintenanceFormContentProp
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit, onError)}>
-                {/* Nombre del mantenimiento */}
-
-                <div className="p-4">
-                    <FormField
-                        control={form.control}
-                        name="titulo"
-                        render={({ field }) => (
-                            <FormItem className="w-3/4 border-gray-200">
-                                <FormLabel>Nombre</FormLabel>
-                                <FormControl className=" border-gray-200">
-                                    <Input placeholder="Ej: Mantenimiento preventivo de aires acondicionados" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                </div>
 
                 <div className="p-4 grid grid-cols-2 gap-6 my-2">
 

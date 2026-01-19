@@ -24,6 +24,7 @@ export interface EditMantenimientoRequest {
     resumen?: string;
     tipo?: "Periodico" | "Condicion",
     instancia?: string;
+    titulo?: string;
 }
 
 interface MantenimientosResponse {
